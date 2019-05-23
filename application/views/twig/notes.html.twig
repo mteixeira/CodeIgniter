@@ -1,0 +1,117 @@
+{% extends 'twig/template.html.twig' %}
+{% block title %}Notas{% endblock %}
+{% block content %}
+  {# {{ notes }}#}
+  <h1>Members</h1>
+	<div class="row">
+  {% for note in notes %}
+        <div class="col-md-4">
+			<div class="card mb-4 shadow-sm">
+				<div class="card-body">
+				 <h5 class="card-title">{{ note.title|e }}</h5>
+				<p class="card-text">{{ note.description|e[0:10] }} ...</p>
+				<div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#exampleModal" data-type="view" data-title="{{ note.title|e }}" data-description="{{ note.description|e }}" data-uuid="{{ note.uuid|e }}">Ver</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#exampleModal" data-type="edit" data-title="{{ note.title|e }}" data-description="{{ note.description|e }}" data-uuid="{{ note.uuid|e }}">Editar</button>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+				</div>
+			</div>
+	   </div>
+    {% endfor %}
+	</div>
+	<!--
+	<div class="modal" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title">Modal title</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			  <span aria-hidden="true">&times;</span>
+			</button>
+		  </div>
+		  <div class="modal-body">
+			<p>Modal body text goes here.</p>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-primary">Save changes</button>
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	-->
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Open modal for @mdo</button>
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@fat">Open modal for @fat</button>
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@getbootstrap">Open modal for @getbootstrap</button>
+
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="exampleModalLabel">Nova Nota</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			  <span aria-hidden="true">&times;</span>
+			</button>
+		  </div>
+		  <div class="modal-body">
+		  
+		  {# {form_open('form/data_submitted')} #}
+			<form>
+			  <div class="form-group">
+				<label for="recipient-name" class="col-form-label">ID:</label>
+				<label for="recipient-uuid" class="form-control" id="recipient-uuid"/>
+			  </div>
+			  <div class="form-group">
+				<label for="recipient-name" class="col-form-label">Titulo:</label>
+				<input type="text" class="form-control" id="recipient-name">
+			  </div>
+			  <div class="form-group">
+				<label for="message-text" class="col-form-label">Descricao:</label>
+				<textarea class="form-control" id="message-text"></textarea>
+			  </div>
+			</form>
+		  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+				<button type="button" class="btn btn-primary" id="save-btn">Salvar Nota</button>
+				
+			  </div>
+		</div>
+	  </div>
+	</div>
+	
+	
+  <div id="infoMessage"></div>
+
+  
+  {% endblock %}
+  
+{% block post_script %}
+  <script type="text/javascript" charset="utf-8">
+  $(function() {
+ 
+	$('#exampleModal').on('show.bs.modal', function (event) {
+	  var button = $(event.relatedTarget) // Button that triggered the modal
+	  var recipient = button.data('title') // Extract info from data-* attributes
+	  var description = button.data('description') // Extract info from data-* attributes
+	  var uuid = button.data('uuid') // Extract info from data-* attributes
+	  var type = button.data('type') // Extract info from data-* attributes
+	  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+	  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+	  var modal = $(this) 
+	  modal.find('.modal-title').text('Editando ' + uuid)
+	  modal.find('.modal-body input').val(recipient)
+	  modal.find('.modal-body textarea').val(description)
+	  modal.find('.modal-body label#recipient-uuid').text(uuid)
+	  
+	  if(type!=="edit") modal.find('#save-btn').hide();
+	  if(type=="edit") modal.find('#save-btn').show();
+	  
+	})
+
+  });
+  </script>
+  {% endblock %}

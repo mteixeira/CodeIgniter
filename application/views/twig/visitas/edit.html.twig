@@ -1,0 +1,109 @@
+{% extends 'twig/template.html.twig' %}
+{% block title %}Visitas{% endblock %}
+{% block content %}
+  {# {{ notes }}#}
+  <h1>Visita</h1>
+	
+	<form action="{{ path('update/{id}', {'id', entry.id } ) }}" method="post">
+		<div class="form-group">
+			<label for="id">ID:</label>
+			<input type="text" name="id" class="form-control" id="id" aria-describedby="idHelp" placeholder="Enter id" value="{{ entry.id }}" readonly/>
+			 <small id="idHelp" class="form-text text-muted">Ajuda.</small>
+		  </div>
+		  <div class="form-group">
+			<label for="recipient-name" class="col-form-label">Data:</label>
+			<input type="datetime-local" name="data" class="form-control" id="data" value="{{ entry.data|date('Y-m-d') }}T{{ entry.data|date('H:i:s') }}"/>
+		  </div>
+		  <div class="form-group">
+			<label for="message-text" class="col-form-label">Status:</label>
+			<!--<input type="text"  class="form-control" id="message-text">{{ entry.status }}</input>-->
+			<select class="form-control" name="status" id="status">
+			
+		  {% for status_entry in status_entries %}
+			{% set selected = '' %}
+			{% if status_entry.status  == entry.status %}
+			   {% set selected = 'selected' %}
+			{% endif %}
+					  <option {{ selected }}>{{ status_entry.status }}</option>
+			{% endfor %}
+			</select>
+		  </div>
+			<input type="hidden" name="uuid" class="form-control" id="uuid" value="{{ entry.uuid|e }}"/>
+			<input type="hidden" name="cli_id" class="form-control" id="cli_id" value="{{ entry.cli_id|e }}"/>
+		  
+		  <button type="submit" class="btn btn-primary">Salvar</button>
+		</form>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Operação</th>
+					<th scope="col">Data</th>
+					<th scope="col">Usuario</th>
+					<th scope="col">Status</th>
+				</tr>
+			</thead>
+  	<tbody>
+			{% if entry.data %}
+			<tr>
+				<th scope="row">Solicitação</th>
+				<td>{{ entry.data }}</td>
+				<td>{{ entry.cli_id }}</td>
+				<td>{{ entry.cli_name }}</td>
+			</tr>
+			{% endif %}
+			{% if entry.data_visualizacao %}
+			<tr>
+				<th scope="row">1</th>
+				<td>{{ entry.data_visualizacao }}</td>
+				<td>{{ entry.data_visualizacao }}</td>
+				<td>@mdo</td>
+			</tr>
+			{% endif %}
+			<tr>
+				<th scope="row">2</th>
+				<td>Jacob</td>
+				<td>Thornton</td>
+				<td>@fat</td>
+			</tr>
+			<tr>
+				<th scope="row">3</th>
+				<td>Larry</td>
+				<td>the Bird</td>
+				<td>@twitter</td>
+			</tr>
+		</tbody>
+</table>
+          
+	
+  <div id="infoMessage"></div>
+
+  
+  {% endblock %}
+  
+{% block post_script %}
+  <script type="text/javascript" charset="utf-8">
+  $(function() {
+ 
+	$('#exampleModal').on('show.bs.modal', function (event) {
+	  var button = $(event.relatedTarget) // Button that triggered the modal
+	  var recipient = button.data('title') // Extract info from data-* attributes
+	  var description = button.data('description') // Extract info from data-* attributes
+	  var uuid = button.data('uuid') // Extract info from data-* attributes
+	  var type = button.data('type') // Extract info from data-* attributes
+	  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+	  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+	  var modal = $(this) 
+	  modal.find('.modal-title').text('Editando ' + uuid)
+	  modal.find('.modal-body input').val(recipient)
+	  modal.find('.modal-body textarea').val(description)
+	  modal.find('.modal-body label#recipient-uuid').text(uuid)
+	  
+	  if(type!=="edit") modal.find('#save-btn').hide();
+	  if(type=="edit") modal.find('#save-btn').show();
+	  
+	})
+
+  });
+  </script>
+  {% endblock %}

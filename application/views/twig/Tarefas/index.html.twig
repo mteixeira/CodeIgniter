@@ -1,0 +1,131 @@
+{% extends 'template1.html.twig' %}
+
+{% block title %}MTeixeira - Tarefas{% endblock %}
+
+
+	   
+	    {% block page_content %}
+
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-4 text-gray-800">Tarefas</h1>
+           <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#novaTarefa"><i class="fas fa-download fa-sm text-white-50"></i> Nova Tarefa</a>
+          </div>
+            <div class="card  py-3 border-bottom-primary">
+                <a href="#" data-toggle="modal" data-target="#exampleModal">
+                    <div class="card-body">
+                        Tarefa 1
+                    </div>
+                </a>
+        '   </div>
+            <div class="card py-3 border-bottom-primary">
+                <div class="card-body">
+                Tarefa 2
+                </div>
+            </div>
+            
+            <div class="card py-3 border-bottom-primary">
+                <div class="card-body">
+                Tarefa 3
+                </div>
+            </div>
+
+      {% endblock %}
+
+
+
+ {% block modals %}
+ {{ parent() }}
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Recipient:</label>
+            <input type="text" class="form-control" id="recipient-name">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Message:</label>
+            <textarea class="form-control" id="message-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Send message</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="novaTarefa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Criar uma Tarefa</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form  method="post" id="createForm">
+          <div class="form-group">
+            <label for="task-title" class="col-form-label">Titulo da tarefa:</label>
+            <input type="text" class="form-control" id="task-title" name="titulo">
+          </div>
+          <div class="form-group">
+            <label for="task-description" class="col-form-label">Descrição:</label>
+            <textarea class="form-control" id="task-description" name="detalhes"></textarea>
+          </div>
+          <div class="form-group">
+			<label for="task-status" class="col-form-label">Status:</label>
+			<!--<input type="text"  class="form-control" id="message-text">{{ entry.status }}</input>-->
+			<select class="form-control" name="status" id="task-status">
+			
+                {% for status_entry in status_entries %}
+                    {% set selected = '' %}
+                    {#{% if status_entry.status  == entry.status %}
+                    {% set selected = 'selected' %}
+                    {% endif %}#}
+                            <option {{ selected }}>{{ status_entry }}</option>
+                {% endfor %}
+			</select>
+		  </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        <button type="submit" class="btn btn-primary" id="createSubmit">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+      {% endblock %}
+
+{% block scripts %}
+ {{ parent() }}
+ <script>
+$('#createSubmit').click(function(e){
+      e.preventDefault();
+      alert($('#task-title').val());
+      ser = $('#createForm').serialize();
+      alert(ser);
+      $.post("{{ _site_url('/Tarefas/create') }}", 
+         $('#createForm').serialize(), 
+         function(data, status, xhr){
+           // do something here with response;
+           alert(data);
+           alert(status);
+           alert(xhr);
+         });
+      /**/
+});
+</script>
+
+ {% endblock %}

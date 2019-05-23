@@ -1,0 +1,16 @@
+{% extends 'twig/template.html.twig' %}
+{% block title %}Notas{% endblock %}
+{% block content %}
+  {{ title }}
+
+  <div id="infoMessage">{{ message }}</div>
+
+  <div class="row">
+    <div class="span4 offset4">
+    <h1 class="offset1">Login</h1>
+    <p>Please login with your email/username and password below.</p>
+     
+      <p><a href="/testtwig/forgot_password">Forgot your password?</a></p>
+    </div>
+  </div>
+  {% endblock %}
