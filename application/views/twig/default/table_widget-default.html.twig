@@ -1,0 +1,65 @@
+
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead>
+        <tr>
+          {% block table_head %}
+            {% for entry in entries  %}<!--for 1-->
+              {% if loop.first %}
+                {% for k,v in entry  %}<!--for 2-->
+                    <th scope="col">{{k}}</th>
+                {% endfor %}    
+              {% endif %}
+            {% endfor %}
+          {% endblock %}
+        </tr>
+    </thead>
+    <tbody>
+      {% for rows in entries %}
+          <tr>
+            {% block table_row %}
+              {% for _,value in rows %}
+                   {% if loop.first %}
+                      <th scope="col"><a href="{{ path(app.controller~'/edit/{id}', {id:value})}}">{{value}}</a></th>
+                    {% else %}
+                      <td>{{value}}</th>
+                    {% endif %}
+                    {% include [
+    "twig/"~app.controller~"/table_widget.html.twig", 
+    'twig/default/table_row.html.twig'
+]  %}
+              {% endfor %}  
+              
+            {% endblock %}
+          <tr>
+      {% endfor %}  
+      
+      {# 
+       <tr>
+            <th>1</th>
+            <td>Kolor Tea Shirt For Man</td>
+            <td><span class="badge badge-primary px-2">Sale</span>
+            </td>
+            <td>January 22</td>
+            <td class="color-primary">$21.56</td>
+        </tr>
+        <tr>
+            <th>2</th>
+            <td>Kolor Tea Shirt For Women</td>
+            <td><span class="badge badge-danger px-2">Tax</span>
+            </td>
+            <td>January 30</td>
+            <td class="color-success">$55.32</td>
+        </tr>
+        <tr>
+            <th>3</th>
+            <td>Blue Backpack For Baby</td>
+            <td><span class="badge badge-success px-2">Extended</span>
+            </td>
+            <td>January 25</td>
+            <td class="color-danger">$14.85</td>
+        </tr>
+        #}
+    </tbody>
+  </table>
+</div>

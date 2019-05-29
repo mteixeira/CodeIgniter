@@ -1,5 +1,5 @@
 <?php
-require_once '../../vendor/autoload.php';
+//require_once '../vendor/autoload.php';
 require_once 'base_controller.php';
 
 abstract class CRUD_Controller extends base_controller {
@@ -28,27 +28,120 @@ abstract class CRUD_Controller extends base_controller {
 	{
 		parent::__construct();
 	}
+
+	protected function getEditForm($data)
+	{
+		return $this->form("", $data["entry"])
+		->input("id"			, "id"			, "task-id"			, "text"			, "ID"		)
+		->submit("btn-submit", "Salvar")
+		->build();
+	}
+
+	protected function getCreateForm($data)
+	{
+		return $this->form($this->getName()+"/create", $data["entry"])
+			->submit("btn-submit", "Salvar")
+			->build();
+	}
+
+	/*
+		$v = ['a','b','c'];
+		foreach($v as $key => $value)
+		{
+			echo $key;
+			echo $value;
+		}
+		return;
+*/		
+
 	public function edit($id) {
+		log_message('info', __METHOD__);
+		log_message('info', $id);
 		
 		
+		log_message('info', 'Metodo Edit');
+		
+		log_message('info', 'Inicializando Controlador');
+		$data = $this->init();		
+
+		//echo json_encode($data);
+		//return;
+		
+		//$data = $this->getSessionData();
+		log_message('info', 'Carregando Modelo');
 		$this->loadModel();
+		log_message('info', 'Carregando Item');
 		$note = $this->model->get_by_id($id);
+		log_message('info', 'Resultado Obtido');
 		
+		log_message('debug', json_encode($note));
+
+		if(!$note)
+		{
+			log_message('warn', 'Item Nao Encontrado');
+
+			echo "edit".__LINE__;
+			redirect($this->getName(), 'refresh', 301);
+			return;
+		}
+		log_message('info', 'Item Encontrado');
+		//$c = 'a'.$note."b" ;
+		log_message('debug', $note);
+		
+		//echo __LINE__;
+		//return;
 		$data['entry'] = $note;
-		$data = $this->prepareGet($data);
 		
-		$file = $this->getTwigDefDir().'/edit.html.twig';
+		log_message('info', 'Preparando Consulta');
+		$data = $this->prepareGet($data);
+
+		log_message('info', "Montando Formulario");
+		$form = $this->getEditForm($data);
+		if($this->isPost()) 
+		{
+			log_message('debug', "isPost");
+			$form = $this->handleRequest($this, $form);
+			$data = $this->getData($this, $form);
+			$notes = $this->model->update_entry_by_id($data["id"],$data);
+			$this->load->helper('url');
+			//echo base_url();
+			redirect($this->getName(), 'refresh', 301);
+			return;
+		}
+		
+		log_message('debug', "get");
+		log_message('debug', $form);
+		$data['form'] = $form;
+		$file = 'twig/default/edit.html.twig';
+		log_message('info', "Carregando Pagina $file");
+		log_message('debug', $data);
 		$this->twig->display($file, $data);
 	}
 	
+	protected function createDefaultEntry()
+	{
+		return [];
+	}
+
 	public function create() {
-		log_message('info', 'Create Controller.');
+		log_message('info', 'Create Controller.'); 
+
+		$note = $this->createDefaultEntry();
+		
+
+		$this->loadModel();
+		$data['entry'] = $note;
+		$data = $this->prepareGet($data);
+		$form = $this->getCreateForm($data);
+
 		if($this->isPost()) 
 		{
 			$this->loadModel();
-			$data = $this->input->input_stream();
+			$form = $this->handleRequest($this, $form);
+			$data = $this->getData($this, $form);
 			
 			log_message('debug', json_encode($data));
+			log_message('debug', json_encode($form));
 			$notes = $this->model->insert_entry($data);
 			$this->load->helper('url');
 			//echo base_url();
@@ -56,29 +149,59 @@ abstract class CRUD_Controller extends base_controller {
 			return;
 		}
 		//$note = $this->model->get_by_id($id);
-			
-		$note = array(
-			'cli_id' => '2',
-			'status' => 'Solicitada'
-		);
-
-		$data['entry'] = $note;
-		$data = $this->prepareGet($data);
-		
+			 
+		$data['form'] = $form;
+		/*
+		[
+			"action"=>"abcd",
+			"task"=>
+			["id" => "task-code"
+			]
+		];
+		*/
 		$file = $this->getTwigDefDir().'/create.html.twig';
 		$this->twig->display($file, $data);
 	}
 	
+	
 	public function index() {
+		return $this->list();
+	}
+	protected function getDefaultEntries() {
+		return $this->model->get_entries_array();
+	}
+
+
+	public function list() {
+		log_message('info', __METHOD__);
+
 		
+		log_message('info', 'Metodo List');
+		//echo "oi";
+		//return;
 		//echo $this->isPost();
 		//return ;
-		$this->loadModel();
-		$notes = $this->model->get_entries();
-		$data['entries'] = $notes;
-		$data = $this->prepareGet($data);
 		
-		$file = $this->getTwigDefDir().'/index.html.twig';
+		log_message('info', 'Inicializando Dados Controls');
+		$data = $this->init();
+		
+		log_message('info', 'Carregando Modelo');
+		$this->loadModel();
+		
+		log_message('info', 'Carregando Objetos');
+		$notes = $this->getDefaultEntries();
+		log_message('info', 'Resultado Obtido');
+		log_message('info', $notes);
+
+		$data['entries'] = $notes;
+		
+		log_message('debug', $data);
+		log_message('info', 'Preparando Dados de Controle');
+		$data = $this->prepareGet($data);
+
+		$file = 'twig/default/index.html.twig';
+		log_message('info', "Carregando Pagina $file");
+		log_message('debug', $data);
 		$this->twig->display($file, $data);
 	}
 	

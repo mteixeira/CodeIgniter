@@ -466,6 +466,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	$CI = new $class();
 
+
 /*
  * ------------------------------------------------------
  *  Is there a "post_controller_constructor" hook?

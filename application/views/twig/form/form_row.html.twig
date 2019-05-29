@@ -1,0 +1,64 @@
+
+{% set c = "" %} 
+{% if field.value %}
+    {% set value2 = field.value %} 
+{% else %}
+    {% set value2 = "" %} 
+{% endif %}
+
+{% set options = "" %} 
+{#
+		$vars = "";
+		foreach ($field['vars'] as $key => $value)
+		{
+			$vars = $vars."$key = '$value' ";
+		}
+
+		<select class="form-control" name="status" id="task-status">
+		
+				  {% for status_entry in status_entries %}
+					  {% set selected = '' %}
+					  {% if status_entry  == entry.status %}
+						{% set selected = 'selected' %}
+					  {% endif %}
+						<option {{ selected }}>{{ status_entry }}</option>
+				  {% endfor %}
+		</select>
+		*#}
+        
+    {% if field._form_label %}
+    <div class='form-group' {{ field.vars.hidden is defined ? 'hidden'}} >
+		<label for="{{field.vars.id}}" class='col-form-label'>{{field.label}}:</label>
+		<{{field._form_type}} 
+        {% for key,value in field.vars %}
+            {{key}} = "{{value}}"
+        {% endfor %}
+         >{{field.value}}{%
+        
+          for key,value in field.options %}
+            {% set selected = '' %}
+            
+            {% if value is iterable %}
+                {% set id = value.id %}
+                {% set val = value.value %}
+            {% else %}
+                {% set id = value %}
+                {% set val = value %}
+            {% endif %}
+            {% if id  == field.value %}
+                {% set selected = 'selected' %}
+            {% endif %}
+            <option value='{{id}}' {{selected}}>{{val}}</option>".PHP_EOL;
+        {% endfor 
+        
+        %}</{{field._form_type}}>
+		  </div>
+    {% else %}
+        <{{field._form_type}} 
+        {% for key,value in field.vars %}
+            {{key}} = "{{value}}"
+        {% endfor %}
+         >
+         {{field.label}}
+         </{{field._form_type}}>
+    {% endif %}

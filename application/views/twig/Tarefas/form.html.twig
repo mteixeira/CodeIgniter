@@ -1,0 +1,45 @@
+<form  method="POST" id="createForm" action="{{ path('tarefas') }}">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Criar uma tarefa: {{entry.Codigo}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="task-code" class="col-form-label">Codigo:</label>
+            <input type="text" class="form-control" id="task-code" name="codigo" value="{{entry.Codigo}}">
+          </div>
+          <div class="form-group">
+            <label for="task-title" class="col-form-label">Titulo da tarefa:</label>
+            <input type="text" class="form-control" id="task-title" name="titulo" value="{{entry.titulo}}">
+          </div>
+          <div class="form-group">
+            <label for="task-description" class="col-form-label">Descrição:</label>
+            <textarea class="form-control" id="task-description" name="detalhes" >{{entry.detalhes}}</textarea>
+          </div>
+          <div class="form-group">
+            <label for="task-status" class="col-form-label">Status:</label>
+            <!--<input type="text"  class="form-control" id="message-text">{#{ entry.status }#}</input>-->
+            <select class="form-control" name="status" id="task-status">
+            
+                      {% for status_entry in status_entries %}
+                          {% set selected = '' %}
+                          {% if status_entry  == entry.status %}
+                            {% set selected = 'selected' %}
+                          {% endif %}
+                            <option {{ selected }}>{{ status_entry }}</option>
+                      {% endfor %}
+            </select>
+		</div>
+          
+        <div class="form-group">
+            <label for="task-cli" class="col-form-label">Cliente:</label>
+            <input type="text" class="form-control" id="task-cli" name="titulo">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="{{ app.request.headers.get('referer') }}"><button type="button" class="btn btn-secondary" {#data-dismiss="modal" #} >Fechar</button></a>
+        <button type="submit" class="btn btn-primary" id="createSubmit">Salvar</button>
+    </div>
+</form>

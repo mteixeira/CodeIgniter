@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<link href="{{asset('css/message.css') }}" rel="stylesheet" type="text/css">
+<!------ Include the above in your HEAD tag ---------->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet"
+
+</head>
+<!--<body>
+<body onload="setInterval('chat.update()', 1000)">
+-->
+<body onload="setInterval('chat.update()', 1000)">
+<!--
+{{chats|json_encode}}
+{{messages|json_encode}}
+-->
+<div class="container">
+<h3 class=" text-center">Messaging</h3>
+<div class="messaging">
+      <div class="inbox_msg">
+        <div class="inbox_people">
+          <div class="headind_srch">
+            <div class="recent_heading">
+              <h4>Recent</h4>
+            </div>
+            <div class="srch_bar">
+              <div class="stylish-input-group">
+                <input type="text" class="search-bar"  placeholder="Search" >
+                <span class="input-group-addon">
+                <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
+                </span> </div>
+            </div>
+          </div>
+          <div class="inbox_chat">
+
+          
+			{% for chat in chats %}
+            <!-- {{chat|json_encode}}-->
+            <a href="{{ path('Pages/message/{id}/{id2}', {id: chat.user1, id2: chat.user2} ) }}">
+            <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>{{chat.nome}} <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div>
+            </a>
+				{% endfor %}
+<!--
+            <div class="chat_list active_chat">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div>
+            <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div>
+            <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div>
+            <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div>
+            <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div>
+            <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div>
+            <div class="chat_list">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
+                  <p>Test, which is a new approach to have all solutions 
+                    astrology under one roof.</p>
+                </div>
+              </div>
+            </div>
+-->
+          </div>
+        </div>
+        <div class="mesgs">
+          <div class="msg_history" id="chat-area">
+
+			{% for message in messages2 %}
+            
+            {% if message.user1  == message.usuario_enviado %}
+            <div class="outgoing_msg">
+              <div class="sent_msg">
+                <p>{{message.message_text}}</p>
+                <span class="time_date"> 11:01 AM    |    June 9</span> </div>
+            </div>
+            {% else  %}
+            <div class="incoming_msg">
+              <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+              <div class="received_msg">
+                <div class="received_withd_msg">
+                  <p>{{message.message_text}}</p>
+                  <span class="time_date"> 11:01 AM    |    June 9</span></div>
+              </div>
+            </div>
+          
+            {% endif  %}
+				{% endfor %}
+                {#
+            <div class="incoming_msg">
+              <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+              <div class="received_msg">
+                <div class="received_withd_msg">
+                  <p>Test, which is a new approach to have</p>
+                  <span class="time_date"> 11:01 AM    |    Yesterday</span></div>
+              </div>
+            </div>
+            <div class="outgoing_msg">
+              <div class="sent_msg">
+                <p>Apollo University, Delhi, India Test</p>
+                <span class="time_date"> 11:01 AM    |    Today</span> </div>
+            </div>
+            <div class="incoming_msg">
+              <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+              <div class="received_msg">
+                <div class="received_withd_msg">
+                  <p>We work directly with our designers and suppliers,
+                    and sell direct to you, which means quality, exclusive
+                    products, at a price anyone can afford.</p>
+                  <span class="time_date"> 11:01 AM    |    Today</span></div>
+              </div>
+            </div>
+            #}
+          </div>
+          <div class="type_msg">
+            <div class="input_msg_write">
+              <input type="text" class="write_msg" placeholder="Type a message" id="txt_msg" />
+              <button class="msg_send_btn" type="button" id="send_btn"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <p class="text-center top_spac"> Design by <a target="_blank" href="#">Sunil Rajput</a></p>
+      
+    </div></div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<!--<script src="chat.js"></script>-->
+<script>
+class Chat {
+    
+    constructor() {
+    this.update = updateChat;
+    this.send = sendChat;
+    this.getState = getStateOfChat;
+    }
+}
+instanse = false;
+//gets the state of the chat
+function getStateOfChat() {
+	if(!instanse){
+		instanse = true;
+		$.ajax({
+			type: "POST",
+			url: "process.php",
+			data: {'function': 'getState'/*, 'file': file*/},
+			dataType: "json",	
+			success: function(data) {state = data.state;instanse = false;}
+		});
+	}	
+}
+state = 0
+//Updates the chat
+function updateChat() {
+	if(!instanse){
+		instanse = true;
+                console.log("updateChat");
+		$.ajax({
+			//type: "POST",
+			url: "{{ path('Pages/messagearea/{id1}/{id2}' , {id1:user1, id2:user2} ) }}/"+state,
+			//data: {'function': 'update'/*,'state': state,'file': file*/},
+			dataType: "json",
+			success: function(data) {
+                console.log("update success");
+                console.log(data);
+                //return;
+                /*
+				if(data.text){
+					for (var i = 0; i < data.text.length; i++) {
+						$('#chat-area').append(
+                            $("
+
+						"+ data.text[i] +"
+
+						"));
+					}	
+				}
+                */
+                console.log(state);
+                console.log(data.maxid);
+                 $('#chat-area').append(data.html);
+                if(state = 0 || state < data.maxid)
+                {
+                    document.getElementById('chat-area').scrollTop = document.getElementById('chat-area').scrollHeight;
+                }
+                    instanse = false;
+                    state = data.maxid;
+			},
+            error: function(){
+                console.log("erro");
+                //your code here
+            }
+		});
+	}
+	else {
+		setTimeout(updateChat, 1500);
+	}
+}
+
+//send the message
+function sendChat(message, user, chat_id) { 
+	updateChat();
+	$.ajax({
+		type: "POST",
+		url: "{{ path('Pages/addmessage') }}",
+		data: {'function': 'message', 'data' : {'message_text': message,'usuario_enviado': user,'chat_id': chat_id}},
+		dataType: "json",
+		success: function(data){
+                console.log("add success");
+			updateChat();
+		},
+        error: function(data){
+            console.log("add erro");
+            console.log(data);
+            //your code here
+        }
+	});
+}
+  // ask user for name with popup prompt    
+  
+  /*
+  var name = prompt("Enter your chat name:", "Guest");
+ 
+  // default name is 'Guest'
+  if (!name || name === ' ') {
+    name = "Guest";  
+  }
+  
+  // strip tags
+  name = name.replace(/(<([^>]+)>)/ig,"");
+  */
+  
+  // display name on page
+  $("#name-area").html("You are: <span>" + name + "</span>");
+  
+  // kick off chat
+  var chat =  new Chat();
+
+  $(function() {
+  
+     //chat.getState(); 
+     chat.update(); 
+     
+     // watch textarea for key presses
+     $("#sendie").keydown(function(event) {  
+     
+         var key = event.which;  
+   
+         //all keys including return.  
+         if (key >= 33) {
+           
+             var maxLength = $(this).attr("maxlength");  
+             var length = this.value.length;  
+             
+             // don't allow new content if length is maxed out
+             if (length >= maxLength) {  
+                 event.preventDefault();  
+             }  
+         }  
+           });
+     // watch textarea for release of key press
+     $('#sendie').keyup(function(e) {  
+                
+        if (e.keyCode == 13) { 
+        
+              var text = $(this).val();
+              var maxLength = $(this).attr("maxlength");  
+              var length = text.length; 
+               
+              // send 
+              if (length <= maxLength + 1) { 
+                chat.send(text, name);  
+                $(this).val("");
+              } else {
+                $(this).val(text.substring(0, maxLength));
+              }  
+        }
+     });
+
+     $('#send_btn').click(function() {
+          text= $('#txt_msg').val();
+          chat.send(text, {{user1}}, {{ chat_id}} );  
+          $('#txt_msg').val("");
+          //alert( {{chats[0].id}} );
+         //function(e) {  
+        //alert( "Handler for .click() called." );
+        //return;
+           
+     });
+  });
+</script>
+    </body>
+    </html>

@@ -1,0 +1,5 @@
+
+{% include  [
+    "twig/"~app.controller~"/edit.html.twig", 
+    'twig/default/edit-default.html.twig'
+] with {'title' : resource.title } %}

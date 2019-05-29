@@ -1,122 +1,199 @@
-{% extends 'template1.html.twig' %}
+{% extends 'twig/default/index-default.html.twig' %}
 
+{% set __currentPath = _current_url() %} 
 {% block title %}MTeixeira - Tarefas{% endblock %}
 
+{% block table_row_column %}
+  {% if loop.first %}
+    <th scope="col"><a href="{{ path(app.controller~'/edit/{id}', {id:value})}}">{{value}}</a></th>
+  {% else %}
+    <td>{{value}}</th>
+  {% endif %}
+{% endblock %}
 
-	   
-	    {% block page_content %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('plugins/summernote/dist/summernote.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/toastr/css/toastr.min.css') }}" rel="stylesheet">
+    <style>
+      {% for tipo in TiposTarefas %}
+        .task_tp_{{tipo.id}} {
+          border-left: .25rem solid #{{tipo.color}}!important;
+        }
+      {% endfor %}
+    </style>
+{% endblock %}
 
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-4 text-gray-800">Tarefas</h1>
-           <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#novaTarefa"><i class="fas fa-download fa-sm text-white-50"></i> Nova Tarefa</a>
+
+{% block page_content2 %}
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <h1 class="h3 mb-4 text-gray-800">Tarefas</h1>
+      <a href="{{ path('tarefas/create')}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" {#data-toggle="modal" data-target="#novaTarefa"#}>
+          <i class="fas fa-download fa-sm text-white-50"></i> Nova Tarefa
+      </a>
+    </div>
+
+    <div class="card text-center">
+      <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+          <li class="nav-item">
+            <a class="nav-link {{ path('tarefas/status/all')  == currentPath ? 'active'}}"  href="{{ path('tarefas/status/all') }}" >All</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{ path('tarefas/status/opened')  == currentPath ? 'active'}}" href="{{ path('tarefas/status/opened') }}" >opened</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{ path('tarefas/status/closed')  == currentPath ? 'active'}}" href="{{ path('tarefas/status/closed') }}" >Closed</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+      </div>
+      <div id="accordion" class="SubTarefas_group accordion" ondragOver="dragOver(event)">
+        {% for entry in entries %}
+           {{ block('html', 'twig/Tarefas/task.html.twig') }}
+          {#
+          <div class="card  py-1 border-left-primary" id="card_{{entry.id}}">
+            <!--<a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" # } >-->
+            <div  class="card-header" id="heading{{entry.id}}">
+              <h5 class="mb-0">
+              
+                  <div class="btn-group">
+                    <button class="btn btn-link" >
+                        <a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" # } >
+                          {{entry.titulo }}
+                        </a>
+                    </button>
+                      <button class="btn colapse-toggle" type="button" data-toggle="collapse" data-target="#collapse{{entry.id}}" aria-expanded="true" aria-controls="collapse{{entry.id}}">
+                        <i class="fas fa-angle-down"></i>
+                          <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                  </div>
+              </h5>
+            </div>
+              
+            <div id="collapse{{entry.id}}" class="collapse" aria-labelledby="heading{{entry.id}}" data-parent="#accordion">
+        
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-2 text-muted">  - {{entry.status}}</h6>
+                  <p class="card-text">{{entry.detalhes}}</p>
+                </div>
+            </div>
           </div>
-            <div class="card  py-3 border-bottom-primary">
-                <a href="#" data-toggle="modal" data-target="#exampleModal">
-                    <div class="card-body">
-                        Tarefa 1
-                    </div>
-                </a>
-        '   </div>
-            <div class="card py-3 border-bottom-primary">
-                <div class="card-body">
-                Tarefa 2
-                </div>
-            </div>
+          #}
+        {% endfor %}
+      </div>
             
-            <div class="card py-3 border-bottom-primary">
-                <div class="card-body">
-                Tarefa 3
-                </div>
-            </div>
+      
+    </div>
 
-      {% endblock %}
+{% endblock %}
 
 
 
  {% block modals %}
- {{ parent() }}
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Recipient:</label>
-            <input type="text" class="form-control" id="recipient-name">
+ 
+   {{ parent() }}
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
-          <div class="form-group">
-            <label for="message-text" class="col-form-label">Message:</label>
-            <textarea class="form-control" id="message-text"></textarea>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="recipient-name" class="col-form-label">Recipient:</label>
+                <input type="text" class="form-control" id="recipient-name">
+              </div>
+              <div class="form-group">
+                <label for="message-text" class="col-form-label">Message:</label>
+                <textarea class="form-control" id="message-text"></textarea>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Send message</button>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Send message</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-<div class="modal fade" id="novaTarefa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Criar uma Tarefa</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form  method="post" id="createForm">
-          <div class="form-group">
-            <label for="task-title" class="col-form-label">Titulo da tarefa:</label>
-            <input type="text" class="form-control" id="task-title" name="titulo">
-          </div>
-          <div class="form-group">
-            <label for="task-description" class="col-form-label">Descrição:</label>
-            <textarea class="form-control" id="task-description" name="detalhes"></textarea>
-          </div>
-          <div class="form-group">
-			<label for="task-status" class="col-form-label">Status:</label>
-			<!--<input type="text"  class="form-control" id="message-text">{{ entry.status }}</input>-->
-			<select class="form-control" name="status" id="task-status">
-			
-                {% for status_entry in status_entries %}
-                    {% set selected = '' %}
-                    {#{% if status_entry.status  == entry.status %}
-                    {% set selected = 'selected' %}
-                    {% endif %}#}
-                            <option {{ selected }}>{{ status_entry }}</option>
-                {% endfor %}
-			</select>
-		  </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-        <button type="submit" class="btn btn-primary" id="createSubmit">Salvar</button>
-      </div>
-    </div>
-  </div>
-</div>
-      {% endblock %}
 
-{% block scripts %}
+    <div class="modal fade" id="novaTarefa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        
+          <form  method="POST" id="createForm" action="{{ path('create_tarefa') }}">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Criar uma Tarefa</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <div class="form-group">
+                <label for="task-title" class="col-form-label">Titulo da tarefa:</label>
+                <input type="text" class="form-control" id="task-title" name="titulo">
+              </div>
+              <div class="form-group">
+                <label for="task-description" class="col-form-label">Descrição:</label>
+                <textarea class="form-control" id="task-description" name="detalhes"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="task-status" class="col-form-label">Status:</label>
+                <!--<input type="text"  class="form-control" id="message-text">{#{ entry.status }#}</input>-->
+                <select class="form-control" name="status" id="task-status">
+                
+                          {% for status_entry in status_entries %}
+                              {% set selected = '' %}
+                              {#{% if status_entry.status  == entry.status %}
+                              {% set selected = 'selected' %}
+                              {% endif %}#}
+                                      <option {{ selected }}>{{ status_entry }}</option>
+                          {% endfor %}
+                </select>
+    		      </div>
+              
+              <div class="form-group">
+                <label for="task-cli" class="col-form-label">Cliente:</label>
+                <input type="text" class="form-control" id="task-cli" name="titulo">
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            <button type="submit" class="btn btn-primary" id="createSubmit">Salvar</button>
+          </div>
+          </form>
+          
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
  {{ parent() }}
+    <script src="{{ asset('plugins/summernote/dist/summernote.min.js') }}"></script>
+    <script src="{{ asset('plugins/summernote/dist/summernote-init.js') }}"></script>
+
+
+    <!-- Toastr -->
+    <script src="{{ asset('plugins/toastr/js/toastr.min.js') }}"></script>
+    <script src="{{ asset('plugins/toastr/js/toastr.init.js') }}"></script>
+
  <script>
-$('#createSubmit').click(function(e){
+$('#createSubmit1').click(function(e){
       e.preventDefault();
       alert($('#task-title').val());
       ser = $('#createForm').serialize();
       alert(ser);
-      $.post("{{ _site_url('/Tarefas/create') }}", 
+      $.post("{{ path('create_tarefa') }}", 
          $('#createForm').serialize(), 
          function(data, status, xhr){
            // do something here with response;
@@ -128,4 +205,5 @@ $('#createSubmit').click(function(e){
 });
 </script>
 
+    {{ block('js', 'twig/Tarefas/task.html.twig') }}
  {% endblock %}

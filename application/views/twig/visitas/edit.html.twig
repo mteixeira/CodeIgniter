@@ -4,7 +4,7 @@
   {# {{ notes }}#}
   <h1>Visita</h1>
 	
-	<form action="{{ path('update/{id}', {'id', entry.id } ) }}" method="post">
+	<form action="{{ path('update/{id}', {'id': entry.id } ) }}" method="post">
 		<div class="form-group">
 			<label for="id">ID:</label>
 			<input type="text" name="id" class="form-control" id="id" aria-describedby="idHelp" placeholder="Enter id" value="{{ entry.id }}" readonly/>

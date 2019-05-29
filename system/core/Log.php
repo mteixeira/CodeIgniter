@@ -253,6 +253,9 @@ class CI_Log {
 	 */
 	protected function _format_line($level, $date, $message)
 	{
+		if(is_array($message)) {	
+			$message = json_encode($message);
+		};
 		return $level.' - '.$date.' --> '.$message."\n";
 	}
 

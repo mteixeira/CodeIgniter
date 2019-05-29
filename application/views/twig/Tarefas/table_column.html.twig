@@ -1,0 +1,28 @@
+{% if type == "Header" %}
+	{% set passed = false %}
+	{% if key == "titulo" %}{% set passed = true %}<th scope="col" style="width: 60%">{{key}}</th>{% endif %}
+		{% if not passed %}		
+			<th scope="col" style="width: 10%">{{key}}</th> 
+		{% endif %}
+{% else %}
+	{% if loop.first %}
+	 	<th scope="col"><a href="{{ path(app.controller~'/edit/{id}', {id:value})}}">{{value}}</a></th>
+	{% else %}
+		{% set res = '' %}
+
+		{% if key == "rank" %}
+			{% set res %}<td><span class="badge badge-primary px-2">{{value}}</span></td>{% endset %}
+		{% endif %}
+		{% if key == "status" %}
+			{% set res %}<td><span class="badge badge-primary px-2">{{value}}</span></td>{% endset %}
+		{% endif %}
+		{% if key == "data" %}
+			{% set res %}<td>{{value|date("d/m/Y") }}</td>{% endset %}
+		{% endif %}
+
+		{% if res is empty %}
+			{% set res %}<td>{{value}}</th>{% endset %}
+		{% endif %}
+		{{res}}
+	{% endif %}
+{% endif %}

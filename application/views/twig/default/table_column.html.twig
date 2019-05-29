@@ -1,0 +1,12 @@
+{% if type == "Header" %}
+	<th scope="col">{{key}}</th> 
+
+{% else %}
+
+	{% if loop.first %}
+	  <th scope="col"><a href="{{ path(app.controller~'/edit/{id}', {id:value})}}">{{value}}</a></th>
+	{% else %}
+	  <td>{{value}}</th>
+	{% endif %}
+
+{% endif %}

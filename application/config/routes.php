@@ -14,7 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |	example.com/class/method/id/
 |
 | In some instances, however, you may want to remap this relationship
-| so that a different class/function is called than the one
+| so that a different class/function is called than the one 
 | corresponding to the URL.
 |
 | Please see the user guide for complete details:
@@ -48,8 +48,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
-*/
+*/ 
 $route['default_controller'] = 'welcome';
 $route['visitas'] = 'visitas/list';
+$route['dashboard'] = 'Pages/dashboard';
+$route['paginas'] = 'Pages/paginas';
+$route['[tT]arefas/(\d+)'] = 'Tarefas/list';
+$route['[tT]arefas/(\d+)'] = 'Tarefas/edit/$1';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

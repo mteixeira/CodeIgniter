@@ -1,0 +1,4 @@
+
+{% for key,value in form if key starts with '_' == false %}
+    {{ form_row(value) }}
+{% endfor %}

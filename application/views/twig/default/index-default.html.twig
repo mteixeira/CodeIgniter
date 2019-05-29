@@ -1,0 +1,363 @@
+{% extends 'twig/pages2_template.html.twig' %}
+
+{% set __currentPath = _current_url() %} 
+{% block title %}MTeixeira - {{controller}}{% endblock %}
+
+
+{% block stylesheets_old %}
+    {{ parent() }}
+    <style>
+      {% for tipo in TiposTarefas %}
+        .task_tp_{{tipo.id}} {
+          border-left: .25rem solid #{{tipo.color}}!important;
+        }
+      {% endfor %}
+    </style>
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href=" {{ asset('plugins/nestable/css/nestable.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block table_row_column %}{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+{#
+         <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">{{ app.controller }}</h4>
+                    <div class="card-content">
+                        <div class="nestable">
+                            <div class="dd" id="nestable">
+                                <ol class="dd-list">
+                                    <li class="dd-item dd3-item" data-id="13">
+                                        <div class="dd-handle dd3-handle"></div>
+                                        <div class="dd3-content">Item 13</div>
+                                    </li>
+                                    <li class="dd-item dd3-item" data-id="14">
+                                        <div class="dd-handle dd3-handle"></div>
+                                        <div class="dd3-content">Item 14</div>
+                                    </li>
+                                    <li class="dd-item dd3-item" data-id="14">
+                                        <div class="dd-handle dd3-handle"></div>
+                                        <div class="dd3-content">Item 16</div>
+                                    </li>
+                                    <li class="dd-item dd3-item" data-id="14">
+                                        <div class="dd-handle dd3-handle"></div>
+                                        <div class="dd3-content">Item 17</div>
+                                    </li>
+                                    <li class="dd-item dd3-item" data-id="14">
+                                        <div class="dd-handle dd3-handle"></div>
+                                        <div class="dd3-content">Item 18</div>
+                                    </li>
+                                    <li class="dd-item dd3-item" data-id="14">
+                                        <div class="dd-handle dd3-handle"></div>
+                                        <div class="dd3-content">Item 19</div>
+                                    </li>
+                                    <li class="dd-item dd3-item" data-id="15">
+                                        <div class="dd-handle dd3-handle"></div>
+                                        <div class="dd3-content">Item 15</div>
+                                        <ol class="dd-list">
+                                            <li class="dd-item dd3-item" data-id="16">
+                                                <div class="dd-handle dd3-handle"></div>
+                                                <div class="dd3-content">Item 16</div>
+                                            </li>
+                                            <li class="dd-item dd3-item" data-id="17">
+                                                <div class="dd-handle dd3-handle"></div>
+                                                <div class="dd3-content">Item 17</div>
+                                            </li>
+                                            <li class="dd-item dd3-item" data-id="18">
+                                                <div class="dd-handle dd3-handle"></div>
+                                                <div class="dd3-content">Item 18</div>
+                                            </li>
+                                        </ol>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Accordion</h4>
+                        <p class="text-muted"><code></code>
+                        </p>
+                        <div id="accordion-two" class="accordion">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0" data-toggle="collapse" data-target="#collapseOne1" aria-expanded="true" aria-controls="collapseOne1"><i class="fa" aria-hidden="true"></i> Accordion Header One</h5>
+                                </div>
+                                <div id="collapseOne1" class="collapse show" data-parent="#accordion-two">
+                                    <div class="card-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.</div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseTwo2" aria-expanded="false" aria-controls="collapseTwo2"><i class="fa" aria-hidden="true"></i> Accordion Header Two</h5>
+                                </div>
+                                <div id="collapseTwo2" class="collapse" data-parent="#accordion-two">
+                                    <div class="card-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.</div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseThree3" aria-expanded="false" aria-controls="collapseThree3"><i class="fa" aria-hidden="true"></i> Accordion Header Tne</h5>
+                                </div>
+                                <div id="collapseThree3" class="collapse" data-parent="#accordion-two">
+                                    <div class="card-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        #}
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                  <div class="card-title">
+                      <h4>{{app.controller}}</h4>
+                  </div>
+                    {% include [ 
+                      "twig/"~app.controller~"/show_entries.html.twig", 
+                      'twig/default/show_entries.html.twig' 
+                      ]  %}
+              </div>
+          </div>
+          <!-- /# card -->
+      </div>
+                    
+    </div>
+  
+{% endblock %}
+
+{% block page_content_old %}
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-4 text-gray-800">{{controller}}</h1>
+    <a href="{{ path('tarefas/create')}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" {#data-toggle="modal" data-target="#novaTarefa"#}>
+        <i class="fas fa-download fa-sm text-white-50"></i> Nova Tarefa
+        </a>
+    </div>
+
+    <!-- Card -->
+    <div class="card text-center">
+      <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+          <li class="nav-item">
+            <a class="nav-link {{ path('tarefas/status/all')  == currentPath ? 'active'}}"  href="{{ path('tarefas/status/all') }}" >All</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{ path('tarefas/status/opened')  == currentPath ? 'active'}}" href="{{ path('tarefas/status/opened') }}" >opened</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{ path('tarefas/status/closed')  == currentPath ? 'active'}}" href="{{ path('tarefas/status/closed') }}" >Closed</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+      </div>
+      <div id="accordion" class="SubTarefas_group accordion" ondragOver="dragOver(event)">
+        {% for entry in entries %}
+           {{ block('html', 'twig/Tarefas/task.html.twig') }}
+          {#
+          <div class="card  py-1 border-left-primary" id="card_{{entry.id}}">
+            <!--<a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" # } >-->
+            <div  class="card-header" id="heading{{entry.id}}">
+              <h5 class="mb-0">
+              
+                  <div class="btn-group">
+                    <button class="btn btn-link" >
+                        <a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" # } >
+                          {{entry.titulo }}
+                        </a>
+                    </button>
+                      <button class="btn colapse-toggle" type="button" data-toggle="collapse" data-target="#collapse{{entry.id}}" aria-expanded="true" aria-controls="collapse{{entry.id}}">
+                        <i class="fas fa-angle-down"></i>
+                          <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                  </div>
+              </h5>
+            </div>
+              
+            <div id="collapse{{entry.id}}" class="collapse" aria-labelledby="heading{{entry.id}}" data-parent="#accordion">
+        
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-2 text-muted">  - {{entry.status}}</h6>
+                  <p class="card-text">{{entry.detalhes}}</p>
+                </div>
+            </div>
+          </div>
+          #}
+        {% endfor %}
+      </div>
+            
+      
+    </div>
+
+    
+    <!-- Tabela -->
+    <div class="Tabela"> 
+      <div class="Tabela_titulo d-sm-flex align-items-center justify-content-between 4">
+        <h2 class="h4 text-gray-800">{{app.controller}}</h2>
+        
+        
+        <a href="{{ path('tarefas/create')}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" {#data-toggle="modal" data-target="#novaTarefa"#}>
+          <i class="fas fa-download fa-sm text-white-50"></i> Tempo
+        </a>
+      </div>
+    <!-- Table -->
+      <div id="Table">
+        <table class="table">
+          <thead>
+            <tr>
+                {% for entry in entries  %}<!--for 1-->
+                  {% if loop.first %}
+                    {% for k,v in entry  %}<!--for 2-->
+                        <th scope="col">{{k}}</th>
+                    {% endfor %}    
+                  {% endif %}
+                {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for rows in entries %}
+                <tr>
+                  {% for _,value in rows %}
+                    {% if loop.first %}
+                      <th scope="col"><a href="{{ path(app.controller~'/edit/{id}', {id:value})}}">{{value}}</a></th>
+                    {% else %}
+                      <td>{{value}}</th>
+                    {% endif %}
+                  {% endfor %}  
+                <tr>
+            {% endfor %}  
+          </tbody>
+        </table>
+      </div>
+      <!-- end Table -->
+    </div>
+
+{% endblock %}
+
+
+{% block javascripts %}
+ {{ parent() }}
+    <script src="{{ asset('plugins/nestable/js/jquery.nestable.js') }}"></script>
+    <script src="{{ asset('plugins/nestable/js/nestable.init.js') }}"></script>
+{% endblock %}
+
+ {% block modals %}
+ 
+    {{ parent() }}
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Recipient:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Message:</label>
+                        <textarea class="form-control" id="message-text"></textarea>
+                    </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="novaTarefa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            
+            <form  method="POST" id="createForm" action="{{ path('create_tarefa') }}">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Criar uma Tarefa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="task-title" class="col-form-label">Titulo da tarefa:</label>
+                    <input type="text" class="form-control" id="task-title" name="titulo">
+                </div>
+                <div class="form-group">
+                    <label for="task-description" class="col-form-label">Descrição:</label>
+                    <textarea class="form-control" id="task-description" name="detalhes"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="task-status" class="col-form-label">Status:</label>
+                    <!--<input type="text"  class="form-control" id="message-text">{#{ entry.status }#}</input>-->
+                    <select class="form-control" name="status" id="task-status">
+                    
+                            {% for status_entry in status_entries %}
+                                {% set selected = '' %}
+                                {#{% if status_entry.status  == entry.status %}
+                                {% set selected = 'selected' %}
+                                {% endif %}#}
+                                        <option {{ selected }}>{{ status_entry }}</option>
+                            {% endfor %}
+                    </select>
+                    </div>
+                
+                <div class="form-group">
+                    <label for="task-cli" class="col-form-label">Cliente:</label>
+                    <input type="text" class="form-control" id="task-cli" name="titulo">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="submit" class="btn btn-primary" id="createSubmit">Salvar</button>
+            </div>
+            </form>
+            
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts_old %}
+ {{ parent() }}
+
+ <script>
+$('#createSubmit1').click(function(e){
+      e.preventDefault();
+      alert($('#task-title').val());
+      ser = $('#createForm').serialize();
+      alert(ser);
+      $.post("{{ path('create_tarefa') }}", 
+         $('#createForm').serialize(), 
+         function(data, status, xhr){
+           // do something here with response;
+           alert(data);
+           alert(status);
+           alert(xhr);
+         });
+      /**/
+});
+</script>
+
+    {{ block('js', 'twig/Tarefas/task.html.twig') }}
+ {% endblock %}

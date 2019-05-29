@@ -4,7 +4,7 @@
  * Arquivo inserido em application/libraries/Twig.php 
  * 
  */
-require_once '../../vendor/autoload.php';
+require_once '../vendor/autoload.php';
 
 
 class Twig {

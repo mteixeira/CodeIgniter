@@ -1,0 +1,345 @@
+{% block html %}
+{% set active_time = '' %}
+{% set icon = 'fa-play' %}
+{% set task = '' %}
+{% if active_task_id == entry.id %}
+    {% set active_time = 'active_time' %}
+    {% set icon = 'fa-pause work_running' %}
+    {% set task = 'task_running' %}
+{% endif %}
+
+{% set time = "00:00:00" %}
+{% if times[entry.id][1] %}
+    {% set timeinSec = times[entry.id][0] %}
+    {% set time = times[entry.id][1] %}
+{% endif %}
+<div class="task_tp_{{entry.tipo_tarefa_id}} card task py-1 border-left-primary {{task}}" draggable="true" id="card_{{entry.id}}"
+    ondragOver="dragOver(event)"
+    ondragStart="dragStart(event)"
+    ondragEnd="dragEnd(event)"
+>
+    <!--<div class="cardplace" id="cp{{entry.id}}" draggable="true">-->
+    <!--<a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" #} >-->
+    <div  class="card-header" id="heading{{entry.id}}">
+        <h6 class="container-fluid"  ><!--justify-content-sm-center-->
+            <div class="row d-flex justify-content-around"><!-- d-sm-flex mb-0 justify-content-between  align-items-center-->
+            <!-- type="button"  data-toggle="collapse" data-target="#collapse{{entry.id}}" aria-expanded="true" aria-controls="collapse{{entry.id}}" -->
+            <!-- Rank -->
+            <div class="col-12 col-sm-12 col-md-1  text-center dropright" draggable="false">
+                {#<a id="rank_{{entry.id}}" href="#" class="badge badge-light btn-circle btn-primary align-self-center dropdown-toggle rankelement" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{entry.rank}}</a>#}
+                {#<div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="rank_{{entry.id}}">#}
+                
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                {{entry.rank}}
+                </button>
+                <form class="form-inline mr-auto w-100 navbar-search form_rank" id="form_rank_{{entry.id}}">
+                    <div class="input-group">
+                        <input type="text" name="task_id" hidden class="form-control bg-light border-0 small" placeholder="task_id" aria-label="Search" aria-describedby="basic-addon2" value="{{entry.id}}">
+                        <input type="text" name="rank" class="form-control bg-light border-0 small" placeholder="Rank..." aria-label="Search" aria-describedby="basic-addon2" value="{{entry.rank}}">
+                        <div class="input-group-append">
+                        <button class="btn btn-primary rank_btn" data-form="form_rank_{{entry.id}}" data-element="rank_{{entry.id}}" type="button">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
+                        </div>
+                    </div>
+                    </form>
+                {#</div>#}
+            </div>
+            
+            <!-- Titulo e Link -->
+            <div class="btn-group  btn-link col-12 col-sm-11 col-md">
+                <button class="text-left btn btn-link col-lg" >
+                    <a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" #} >{{entry.id}} - {{entry.titulo }}</a>
+                </button>
+            </div>
+            
+            <div class="timer {{active_time}}  col-12 col-sm-10 col-md-2 align-self-center d-flex justify-content-around" data-time="{{time}}">{{ time }}</div>
+            
+            <div class="col-12 col-sm-1 col-md-1  align-items-center text-center">
+                <button id="start_{{entry.id}}" class="start_work btn btn-primary btn-circle align-self-center" data-user_id='2' data-task_id="{{entry.id}}" data-card_id="card_{{entry.id}}">
+                <i class="fas {{icon}} work_icon" id="icon_work_act_{{entry.id}}"></i> </button>
+            </div>
+            
+            <button class="btn colapse-toggle col-12 col-sm-12 col-md-1" type="button" data-toggle="collapse" data-target="#collapse{{entry.id}}" aria-expanded="true" aria-controls="collapse{{entry.id}}">
+                <i class="fas fa-angle-down"></i>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            
+            </div>
+        </h6>
+        
+    
+    </div>
+        
+    <div id="collapse{{entry.id}}" class="collapse" aria-labelledby="heading{{entry.id}}" data-parent="#accordion">
+
+        <div class="card-body">
+        <h6 class="card-subtitle mb-2 text-muted">  - {{entry.status}}</h6>
+        <p class="card-text">{{entry.detalhes}}</p>
+        </div>
+    </div>
+    <!--</div>-->
+</div>
+{% endblock %}
+{% block modal %}
+
+{% endblock %}
+
+{% block js %}
+<!-- js task -->
+    {{block('js_drag')}}
+    {{block('js_time')}}
+    {{block('js_rank')}}    
+<!-- end js task -->
+{% endblock %}
+
+
+{% block js_time %}
+    <!-- js time -->
+        <script>
+
+            var timeload = new Date()
+            // Funcao de Atualizacao do tempo do 
+            function updateTime()
+            {
+                //console.log("update");
+                var active_timer = $(".task_running  .timer")
+                if ( active_timer.length == 0) return; 
+
+                var tempoCalculado_ate_load = active_timer.data('time') // Extract info from data-* attributes
+                d = new Date()
+                d1 = d - timeload
+                
+                //console.log(d);
+                //console.log(timeload);
+                //console.log(d1);
+                console.log(tempoCalculado_ate_load);
+                diff = (d1 - d1%1000)/1000
+                var tr = new Date('1970-01-01T00:00:00');
+                var datetime = new Date('1970-01-01T' + tempoCalculado_ate_load + 'Z');
+
+                console.log(tr);
+                console.log(datetime);
+                time = new Date(datetime.getTime() + diff*1000).getTime()/1000;
+                console.log(time);
+
+                seconds = time%60
+                tms_= (time - seconds)
+                mtotal = (tms_)/60
+                minutes = (mtotal)%60
+                hours  = (mtotal-minutes)/60
+                if (hours   < 10) {hours   = "0"+hours;}
+                if (minutes < 10) {minutes = "0"+minutes;}
+                if (seconds < 10) {seconds = "0"+seconds;}
+                strtime = hours+":"+minutes+":"+seconds
+                //console.log('time');
+                //console.log(time);
+                //console.log(seconds);
+                //console.log(tms_);
+                //console.log(minutes);
+                //console.log(strtime);
+                active_timer.attr('data-time', time);
+                active_timer.text(strtime);
+                //$.now()
+            };
+
+            // Controle do Botao de Start da Tarefa
+            $('.start_work').click(function (e){
+                e.preventDefault();
+                    var button = $(e.currentTarget) // Button that triggered the modal
+                console.log(e);
+                //alert(e.currentTarget.id);
+                var user_id = button.data('user_id') // Extract info from data-* attributes
+                var task_id = button.data('task_id') // Extract info from data-* attributes
+                var card_id = button.data('card_id') // Extract info from data-* attributes
+                var icon = $("#" + card_id+" .work_icon") // Extract info from data-* attributes
+                var icon_id = $(icon).attr("id")
+
+                var act = "stop";
+                if($(icon).hasClass('fa-play'))
+                {
+                    act = "play";
+                }
+
+                console.log("Action "+act);
+
+                if(act == "play") timeload = new Date();
+                    
+                //alert(user_id);
+                //alert(task_id);
+                var path = "{{ path('tarefas/stop_work') }}";
+                if(act == "play") path = "{{ path('tarefas/start_work') }}";
+
+                
+                console.log("Path "+path);
+
+                $.post(path, 
+                    {'usuario_id' : user_id, 'task_id':task_id },
+                    function(data) {
+                    
+                    $(".task_running .work_icon").removeClass('fa-pause').addClass('fa-play');
+                    $(".task_running").removeClass('task_running');
+                    if(act == "play") $(icon).removeClass('fa-play').addClass('fa-pause'); else $(icon).removeClass('fa-pause').addClass('fa-play');
+                    if(act == "play") $("#"+card_id).addClass('task_running');
+                    //alert("Sucesso");
+                    //alert(data);
+                })
+                .done(function() {
+                    //alert( "second success" );
+                })
+                .fail(function(e) {
+                console.log(e);
+                    alert( "error" );
+                    
+                    alert( e );
+                })
+                .always(function() {
+                    //alert( "finished" );
+                });
+                
+        
+            });
+            
+            
+            window.onload = function(e){
+                setInterval(updateTime, 1000);
+            };
+        </script>
+
+    <!-- end js time -->
+{% endblock %}
+{% block js_drag %}
+    <!-- js drag -->
+        <script>
+        
+            function dragStart(e) {
+                //this.refs['update'].updateGoal();
+                console.log("drag start");
+                this.dragged = e.currentTarget;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData("text/html", e.currentTarget);
+            };
+            function dragEnd(e) {
+                console.log("drag end");
+                this.dragged.style.display = "block";
+                //placeholder.remove();
+                // Update data
+                //var data = this.state.data;
+                var from = Number(this.dragged.dataset.id);
+                var to = Number(this.over.dataset.id);
+
+                console.log($(this.dragged).index());
+            
+                if (from < to) to--;
+                if (this.nodePlacement == "after") to++;
+                /*data.splice(to, 0, data.splice(from, 1)[0]);
+                this.setState({
+                    data: data
+                });
+                */
+            }
+
+            function dragOver(e){
+                console.log(this.dragged);
+                
+                //return;
+                e.preventDefault();
+                this.dragged.style.display = "none";
+                if (!$(event.target).hasClass("task")) return;
+                console.log("drag Over");
+                console.log(e.target.className);
+                this.over = e.target;
+                // Inside the dragOver method
+                var relY = e.pageY - this.over.offsetTop;
+                var height = this.over.offsetHeight / 2;
+                var relX = e.pageX - this.over.offsetLeft;
+                var width = this.over.offsetWidth / 2;
+                var parent = e.target.parentNode;
+            
+                console.log(e);
+                console.log(relY);
+                console.log(height);
+                if (relY >= height) {
+                    this.nodePlacement = "after";
+                    parent.insertBefore(this.dragged, e.target.nextElementSibling);
+                    console.log(this.nodePlacement);
+                } else {
+                    this.nodePlacement = "before";
+                    console.log(this.nodePlacement);
+                    parent.insertBefore(this.dragged, e.target);
+                }
+                //jQuery("#card12").before(jQuery("#card20"));
+                    /**/
+            };
+        
+        </script>
+
+    <!-- end js drag -->
+{% endblock %}
+
+
+{% block js_rank %}
+<!-- js rank -->
+    <script>
+     // Ordena os Cards de Acordo com a alteracao do Rank
+    function sortCards()
+    {
+
+      var myArray = $(".SubTarefas_group .task");
+      var count = 0;
+      myArray.sort(function(a,b) {
+          //console.log($(a).index())
+          //return parseInt($(a).find('.rankelement').text()) > parseInt($(b).find('.rankelement').text());
+          // convert to integers from strings
+          a = parseInt($(a).find('.rankelement').text(), 10);
+          b = parseInt($(b).find('.rankelement').text(), 10);
+          console.log(a)
+          console.log(b)
+          count += 2;
+          // compare
+          if(a > b) {
+              return 1;
+          } else if(a < b) {
+              return -1;
+          } else {
+              return 0;
+          }
+      })//.appendTo('.SubTarefas_group');
+      
+      $(".SubTarefas_group").append(myArray);
+    }
+
+    // Funcao de Controle do Rank
+    $(document).ready(function() {
+      console.log('cadastrando submit')
+      $(".rank_btn").click(function() {
+        console.log('submit')
+        form_id = $(this).data('form');
+        var form = $("#" + form_id) // Extract info from data-* attributes
+        element_id = $(this).data('element');
+        var element = $("#" + element_id) // Extract info from data-* attributes
+
+        // do the extra stuff here
+        $.ajax({
+        type: "POST",
+          url: "{{ path('tarefas/update_rank')}}",
+          data: $(form).serialize(),
+          dataType: "json",
+          success: function(data) {
+            $('.simple-sucess').fadeIn(100).show();
+            $('.contact_form').fadeOut(100).hide();
+            $('.simple_error').fadeOut(100).hide();
+            element.text(data.rank)
+            sortCards()
+          },
+          
+          fail: function() {
+            alert("Erro");
+          }
+        })
+
+      })
+    })
+    </script>
+    <!-- end js rank -->
+{% endblock %}

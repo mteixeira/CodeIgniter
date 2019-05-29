@@ -1,0 +1,173 @@
+{% extends 'twig/pages_template.html.twig' %}
+
+{% set __currentPath = _current_url() %} 
+{% block title %}MTeixeira - Tarefas{% endblock %}
+   
+{% block page_content %}
+
+<div class="row">
+  <div class="card col-sm-9">
+    Level 1: .col-sm-9
+    <div class="row">
+      <div class="card col-8 col-sm-6 ">
+        Level 2: .col-8 .col-sm-6
+      </div>
+      <div class="card col-4 col-sm-6">
+        Level 2: .col-4 .col-sm-6
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-around">
+  <div class="card col-sm-2">
+    <h5 class="card-title text-center">Etapa 1</h5>
+    
+    <br/>
+    <div id="task_1" class="task_card card border-info" draggable="true" style="width: 18rem;">
+        <div class="card-header">Header</div>
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="#" class="card-link">Card link</a>
+            <a href="#" class="card-link">Another link</a>
+        </div>
+    </div>
+    
+    <br/>
+    <div id="task_2" class="task_card card" draggable="true" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="#" class="card-link">Card link</a>
+            <a href="#" class="card-link">Another link</a>
+        </div>
+    
+    </div>
+
+  </div>
+  <div class="card col-sm-2">
+    <h5 class="card-title text-center">Etapa 2</h5>
+
+    <br/>
+    <div id="task_3" class="task_card  card" draggable="true" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="#" class="card-link">Card link</a>
+            <a href="#" class="card-link">Another link</a>
+        </div>
+    </div>
+  </div>
+  
+  <div class="card col-sm-2">
+    <h5 class="card-title text-center">Etapa 3</h5>
+    <br/>
+  </div>
+
+  
+    {{ block('js_drag', 'twig/Tarefas/task.html.twig') }}
+
+    
+  <script>
+  
+        $(document).ready(function() { 
+            $('.task_card').draggable = true
+        });
+  </script>
+
+</div>
+
+{% endblock %}
+
+{% block post_script %}
+ 
+{% endblock %}
+
+ {% block modals %}
+ 
+     {{ parent() }}
+ {% endblock %}
+
+{% block stylesheets %}
+        {{ parent() }}
+      <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+      <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+      <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+      <!------ Include the above in your HEAD tag ---------->
+      <script src='//production-assets.codepen.io/assets/editor/live/console_runner-079c09a0e3b9ff743e39ee2d5637b9216b3545af0de366d4b9aad9dc87e26bfd.js'></script>
+      <script src='//production-assets.codepen.io/assets/editor/live/events_runner-73716630c22bbc8cff4bd0f07b135f00a0bdc5d14629260c3ec49e5606f98fdd.js'></script>
+			<script src='//production-assets.codepen.io/assets/editor/live/css_live_reload_init-2c0dc5167d60a5af3ee189d570b1835129687ea2a61bee3513dee3a50c115a77.js'></script>
+      <meta charset='UTF-8'>
+      <meta name="robots" content="noindex">
+      <link rel="shortcut icon" type="image/x-icon" href="//production-assets.codepen.io/assets/favicon/favicon-8ea04875e70c4b0bb41da869e81236e54394d63638a1ef12fa558a4a835f1164.ico" />
+      <link rel="mask-icon" type="" href="//production-assets.codepen.io/assets/favicon/logo-pin-f2d2b6d2c61838f7e76325261b7195c27224080bc099486ddd6dccb469b8e8e6.svg" color="#111" />
+      <link rel="canonical" href="https://codepen.io/kharrop/pen/ZOwOgL?limit=all&page=22&q=draggable" />
+      <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css'>
+      <link rel='stylesheet prefetch' href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'>
+      
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src='//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js'></script>
+	<script src='https://fb.me/react-with-addons-15.0.0.min.js'></script>
+	<script src='https://npmcdn.com/react-dom@15.3.0/dist/react-dom.min.js'></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.29.5/react-bootstrap.min.js'></script>
+	<script src='https://npmcdn.com/react-dnd@2.1.4/dist/ReactDnD.js'></script>
+	<script src='https://npmcdn.com/react-dnd-html5-backend@2.1.2/dist/ReactDnDHTML5Backend.min.js'></script>
+			
+      <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+  <!-- Load our React component. -->
+  <!--<script src="like_button.js"></script>-->
+    <script>
+            'use strict';
+
+        const e = React.createElement;
+
+        class LikeButton extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { liked: false };
+            }
+
+            render() {
+                if (this.state.liked) {
+                return 'You liked this.';
+                }
+
+                return e(
+                'button',
+                { draggable:true,
+                onClick: () => this.setState({ liked: true }) },
+                'Like'
+                );
+            }
+        }
+        const domContainer = document.querySelector('#like_button_container');
+        ReactDOM.render(e(LikeButton), domContainer);
+    </script>
+
+    <script>
+        class ShoppingList extends React.Component {
+            render() {
+                return React.createElement("div", 
+                    {
+                        className: "shopping-list"
+                    }, 
+                    React.createElement("h1", null, 
+                        "Shopping List for ", this.props.name),
+                    React.createElement("ul", null, React.createElement("li", null, "Instagram"), React.createElement("li", null, "WhatsApp"), React.createElement("li", null, "Oculus")));
+            }
+        }
+        var GoalList
+
+        ReactDOM.render(React.createElement("ShoppingList",{name:"Mark"}), document.getElementById('container'));
+    </script>
+
+ {% endblock %}
