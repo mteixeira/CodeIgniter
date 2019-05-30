@@ -19,13 +19,15 @@ abstract class CRUD_Controller extends base_controller {
 		return $obj;
 	}
 	
-    /**
-	 * Construtor da classe
-	 *
-	 * @return void
-	 */
+	    /**
+		 * Construtor da classe
+		 *
+		 * @return void
+		 */
+
 	public function __construct()
 	{
+
 		parent::__construct();
 	}
 
@@ -52,7 +54,7 @@ abstract class CRUD_Controller extends base_controller {
 			echo $value;
 		}
 		return;
-*/		
+	*/		
 
 	public function edit($id) {
 		log_message('info', __METHOD__);
@@ -167,14 +169,17 @@ abstract class CRUD_Controller extends base_controller {
 	public function index() {
 		return $this->list();
 	}
+
 	protected function getDefaultEntries() {
 		return $this->model->get_entries_array();
 	}
 
 
-	public function list() {
+	public function list($filter="") {
 		log_message('info', __METHOD__);
 
+		//echo $this->input->get('abc');
+		//return;
 		
 		log_message('info', 'Metodo List');
 		//echo "oi";

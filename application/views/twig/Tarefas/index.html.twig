@@ -7,8 +7,28 @@
   {% if loop.first %}
     <th scope="col"><a href="{{ path(app.controller~'/edit/{id}', {id:value})}}">{{value}}</a></th>
   {% else %}
-    <td>{{value}}</th>
+      <td>{{value}}</th>
   {% endif %}
+{% endblock %}
+
+{% block page_content %}
+    <ul class="nav nav-tabs mb-3" role="tablist">
+        <li class="nav-item"><a class="nav-link "  href="?status=all">Todas</a>
+        </li>
+        <li class="nav-item"><a class="nav-link active" href="?">Abertas</a>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="?status=closed">Encerradas</a>
+        </li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="?status=canceled">Canceladas</a>
+        </li>
+        <form action="#" class="pull-right position">
+          <div class="input-append inner-append">
+            <input type="text" class="sr-input" placeholder="Search Mail">
+            <button class="btn sr-btn append-btn" type="button"><i class="fa fa-search"></i></button>
+          </div>
+        </form>
+    </ul>
+    {{ parent() }}
 {% endblock %}
 
 {% block stylesheets %}
@@ -178,7 +198,7 @@
 {% endblock %}
 
 {% block javascripts %}
- {{ parent() }}
+    {{ parent() }}
     <script src="{{ asset('plugins/summernote/dist/summernote.min.js') }}"></script>
     <script src="{{ asset('plugins/summernote/dist/summernote-init.js') }}"></script>
 
@@ -187,23 +207,23 @@
     <script src="{{ asset('plugins/toastr/js/toastr.min.js') }}"></script>
     <script src="{{ asset('plugins/toastr/js/toastr.init.js') }}"></script>
 
- <script>
-$('#createSubmit1').click(function(e){
-      e.preventDefault();
-      alert($('#task-title').val());
-      ser = $('#createForm').serialize();
-      alert(ser);
-      $.post("{{ path('create_tarefa') }}", 
-         $('#createForm').serialize(), 
-         function(data, status, xhr){
-           // do something here with response;
-           alert(data);
-           alert(status);
-           alert(xhr);
-         });
-      /**/
-});
-</script>
+    <script>
+        $('#createSubmit1').click(function(e){
+              e.preventDefault();
+              alert($('#task-title').val());
+              ser = $('#createForm').serialize();
+              alert(ser);
+              $.post("{{ path('create_tarefa') }}", 
+                 $('#createForm').serialize(), 
+                 function(data, status, xhr){
+                   // do something here with response;
+                   alert(data);
+                   alert(status);
+                   alert(xhr);
+                 });
+              /**/
+        });
+    </script>
 
     {{ block('js', 'twig/Tarefas/task.html.twig') }}
  {% endblock %}

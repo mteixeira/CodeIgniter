@@ -10,6 +10,7 @@ class Tarefas_Model extends Abstract_Model {
 	public $detalhes;
 	public $parent_task;
 	public $tipo_tarefa_id;
+	public $tempo_estimado;
 	public $cli_id;
 	public $status;
 	
@@ -144,6 +145,7 @@ class Tarefas_Model extends Abstract_Model {
         $this->titulo  	= $data['titulo'];
         $this->rank  	= $data['rank'];
 		$this->detalhes = $data['detalhes'];
+		$this->tempo_estimado = $data['tempo_estimado'];
 		$this->tipo_tarefa_id = $data['tipo_tarefa_id'];		
         $this->parent_task = !empty($data['parent_task']) ? $data['parent_task'] : null;
 
