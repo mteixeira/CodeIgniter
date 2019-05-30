@@ -43,21 +43,21 @@
 		    {% set timeinSec = times[entry.id][0] %}
 		    {% set time = times[entry.id][1] %}
 		{% endif %}
-	    <div class="card">
+	    <div id="card_{{entry.id}}" class="card">
 	        <div class="border-left-primary card-header">
 	            <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseTwo_{{entry.id}}" aria-expanded="false" aria-controls="collapseTwo_{{entry.id}}"><i class="fa" aria-hidden="true"></i>
 	            <div class="row no-gutters">
-	            	 <div class="h6 col-1">
+	            	<div class="h6 col-1">
 	            	 	<span class="badge badge-pill gradient-1 ">{{entry.rank}}</span>
 	            	</div>
-	            	 <span class="h6 col-4">
+	            	<span class="h6 col-4">
 	            		 {{entry.id}} - {{ entry.titulo }}
 	            	</span> 
 	            	<div class="h6 col-1 progress no-gutters" style="height: 10px">
-	                    <div class="progress-bar gradient-1" style="width: 100%;" role="progressbar"><span class="sr-only">10% Complete</span>
+	                    <div class="progress-bar gradient-1" style="width: 100%;" role="progressbar">	<span class="sr-only">10% Complete</span>
 	                    </div>
 	                </div> 
-	            	 <span class="offset-1 col-1">
+	            	<span class="offset-1 col-1">
 	                	{{entry.tempo_estimado}}
 	            	</span> 
 

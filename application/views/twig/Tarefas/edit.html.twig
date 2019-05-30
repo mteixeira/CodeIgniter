@@ -1,4 +1,4 @@
-{% extends 'twig/pages_template.html.twig' %}
+{% extends 'twig/pages2_template.html.twig' %}
 
 {% set parents = [] %} 
 {% set node = entry %} 
@@ -146,7 +146,7 @@
             </tr>
           </thead>
           <tbody>
-          {{task_times|json_encode}}
+          <!--{{task_times|json_encode}}-->
           
             {% for time in task_times %}
             <div>
@@ -166,7 +166,7 @@
                 <td>{{ times[entry.id][1]}}</td>
               </tr>
             </div>
-            {{times|json_encode}}
+            <!-- {{times|json_encode}}-->
            
           </tbody>
         </table>
