@@ -29,7 +29,7 @@ abstract class base_controller extends CI_Controller {
 		$this->load->helper('form');
 		$this->load->helper('url'); 
 	    $this->load->library('Twig');
-	    $this->load->library('session');
+	    //$this->load->library('session');
 		//$filter = new \Twig\TwigFilter('base_url', 'CI_Config::base_url');
 		//$this->twig->add_filter($filter);
 		//$this->twig->add_function('olabcd');
