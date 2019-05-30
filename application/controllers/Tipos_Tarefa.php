@@ -5,7 +5,7 @@ class Tipos_Tarefa extends CRUD_Controller {
 	
 	protected function getModel()	
 	{
-		return 'Tipo_Tarefa_model';
+		return 'Tipo_Tarefa_Model';
 	}
 	protected function getName()
 	{
