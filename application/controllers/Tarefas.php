@@ -23,6 +23,7 @@ class Tarefas extends CRUD_Controller {
 		->input("rank"			, "rank"		, "task-rank"		, "text"			, "Rank"		)
 		->select("parent_task"	, "parent_task"	, "task-parent"		, $data['task_ids']			, "Pai"			)
 		->select("tipo_tarefa_id", "tipo_tarefa_id"	, "task-tipo"	, $data['tipos_options']			, "Tipo"		)
+		->select("project_id", "project_id"	, "task-projeto"	, $data['projetos_options']			, "Projeto"		)
 		->select("cli_id"		, "cli_id"		, "task-cli"		, $data['users']			, "Alocados"		)
 		->input("data"			, "data"		, "task-date"		, "date"			, "Data"		)
 		->select("status"		, "status"		, "task-status"		, $data['status_entries']	, "Status"		)
@@ -39,6 +40,7 @@ class Tarefas extends CRUD_Controller {
 			->input("rank"			, "rank"		, "task-rank"		, "text"			, "Rank"		, ["hidden"=>""])
 			->select("parent_task"	, "parent_task"	, "task-parent"		, $data['task_ids']			, "Pai"			)
 			->select("tipo_tarefa_id", "tipo_tarefa_id"	, "task-tipo"	, $data['tipos_options']			, "Tipo"		)
+			->select("project_id", "project_id"	, "task-project"	, $data['projetos_options']			, "Tipo"		)
 			->select("cli_id"		, "cli_id"		, "task-cli"		, $data['users']			, "Alocados"		)
 			->input("data"			, "data"		, "task-date"		, "date-local"		, "Data"		, ["hidden"=>""])
 			->select("status"		, "status"		, "task-status"		,  $data['status_entries']	, "Status"		, ["hidden"=>""])
@@ -54,6 +56,7 @@ class Tarefas extends CRUD_Controller {
 			"rank"			=>  '1', 
 			"parent_task" 	=>  '2',
 			"tipo_tarefa_id"=>  '1',
+			"project_id"	=>  '1',
 			"cli_id"	 	=>  '2',
 			"data"		 	=>  '2019-01-01T10:10:10',
 			"status"	 	=> 'Inicializada'		,
@@ -62,7 +65,46 @@ class Tarefas extends CRUD_Controller {
 	}
 	
 	protected function getDefaultEntries() {
-		return $this->model->get_entries_array();
+
+		log_message('debug', __METHOD__);
+		if($this->input->get('tag'))
+		{
+			log_message('debug', "Tag");
+			$this->load->model('Tags_Model');
+			if($this->input->get('tag') == "-")
+			{
+				$tagsEntries =  $this->Tags_Model->get_entries_array();
+
+				$tagsRes = array_map(function($v) {
+				    return $v["task_id"];
+				},$tagsEntries);
+				return $this->model->get_entries_array_not_in(["id"=>$tagsRes], ["rank"=>"ASC"]);	
+			} else	{
+				$tagsEntries =  $this->Tags_Model->get_entries_array(["tag"=>$this->input->get('tag')]);
+
+				$tagsRes = array_map(function($v) {
+				    return $v["task_id"];
+				},$tagsEntries);//,  ARRAY_FILTER_USE_BOTH
+				//echo json_encode($tagsRes);
+				//return;
+				if(!$tagsRes) return [];
+				$cond = ["id"=>$tagsRes];
+				if($this->input->get('status')){
+					$list = $this->model->getStatusList();
+					$status = $this->input->get('status');
+					$status = isset($list[$status])? $status: "opened";
+					$c = $list[$status];
+
+					$cond = array_merge($cond, ["status"=> $c]);
+				}
+
+				return $this->model->get_entries_array_in($cond, ["rank"=>"ASC"]);	
+			}
+		} 
+		log_message('debug', "Tag False");
+		if($this->input->get('status')) return $this->model->get_entries_by_status($this->input->get('status'));
+		else return $this->model->get_entries_by_status("opened");
+
 	}
 	
 	
@@ -161,6 +203,33 @@ class Tarefas extends CRUD_Controller {
 		return;
 	}
 
+	public function set_tags($id)
+	{
+		log_message('debug', __METHOD__);
+		$data = $this->getPostData($this);
+		$task_id = $data["id"];
+		$tags = $data["tags"];
+
+		$this->load->model('Tags_Model');
+		$tags2 =  $this->Tags_Model->updateTags($task_id, $tags);
+
+		echo json_encode(["input"=>$tags, "inputStr" => json_encode($tags), "res"=> $tags2]);
+		return;
+		$res = $this->model->update_entry_by_id($task_id, ["rank" => $rank], true);
+		//echo json_encode($res);
+		if($res)
+		{
+			$result = ["result"=>"Sucesso", "rank"=> $rank];
+		}
+		else
+		{
+			$result = ["result"=>"Erro"];
+		}
+
+		echo json_encode($result);
+		return;
+	}
+
 	public function update_fields($id)
 	{
 		log_message('debug', __METHOD__);
@@ -170,11 +239,11 @@ class Tarefas extends CRUD_Controller {
 		//echo json_encode($res);
 		if($res)
 		{
-			$result = ["result"=>"Sucesso", "data"=> $data];
+			$result = ["status"=>"Sucesso", "data"=> $data, "res" => $data];
 		}
 		else
 		{
-			$result = ["result"=>"Erro"];
+			$result = ["status"=>"Erro"];
 		}
 
 		echo json_encode($result);
@@ -191,6 +260,8 @@ class Tarefas extends CRUD_Controller {
 		//$data['status_entries'] = ["Iniciada", "Em Andamento", "Concluida"];
 		$status_entries = ["Iniciada", "Em Andamento", "Concluida"];
 		$obj['status_entries'] = $status_entries;
+		
+		$obj['status'] = $this->input->get('status')?:"opened";
 
 		$userID = 2;
 		$taskID = '';
@@ -205,13 +276,14 @@ class Tarefas extends CRUD_Controller {
 		**********************************************************/
 		log_message('info', 'Carregando Tarefas');
 		
-		$res = [["id"=>"","value"=>"Raiz"]];
+		$task_ids = [["id"=>"","value"=>"Raiz"]];
+		//$task_ids = [["id"=>"","value"=>"Raiz"]];
 		$tasks =  $this->model->get_entries();
 		foreach ($tasks as $row)
 		{
-			$res[] = ["id" => $row->id, "value" => $row->titulo];
+			$task_ids[] = ["id" => $row->id, "value" => $row->titulo];
 		}
-		$obj['task_ids'] = $res;
+		$obj['task_ids'] = $task_ids;
 		
 		/******************************************************** 
 		 * 			CHIDS
@@ -219,7 +291,7 @@ class Tarefas extends CRUD_Controller {
 		log_message('info', 'Carregando Tarefa Filhas');
 		
 		// Child tasks
-		if($taskID) $obj['childs_tasks'] = $this->model->get_all_by("parent_task", $taskID);
+		if($taskID) $obj['childs_tasks'] = $this->model->get_all_by("parent_task", $taskID, ["rank"=> "ASC"]);
 		else $obj['childs_tasks'] = [];
 
 		/******************************************************** 
@@ -253,6 +325,14 @@ class Tarefas extends CRUD_Controller {
 		
 		
 		
+		$splitKeys = function($list, $id, $devault_val = []) {
+			foreach ($list as $row)
+			{
+				$devault_val[$row->$id]= $row;
+			}
+			return $devault_val;
+		};
+
 		$options = function($list, $id, $value, $devault_val = []) {
 			foreach ($list as $row)
 			{
@@ -277,7 +357,16 @@ class Tarefas extends CRUD_Controller {
 		$obj['users'] = $res;
 		
 		*/
+
+
 		
+		/******************************************************** 
+		 * 			Tipos
+		**********************************************************/
+		log_message('info', 'Carregando Tags');
+		$this->load->model('Tags_Model');
+		$tags =  $this->Tags_Model->get_entries();
+		$obj['Tags'] = $tags;
 		/******************************************************** 
 		 * 			Tipos
 		**********************************************************/
@@ -285,10 +374,25 @@ class Tarefas extends CRUD_Controller {
 		$this->load->model('Tipo_Tarefa_Model');
 		$tipos =  $this->Tipo_Tarefa_Model->get_entries();
 		$obj['TiposTarefas'] = $tipos;
+		$obj['TiposTarefas_ids'] = $splitKeys($tipos, "id");
+		
 
 		
 		$tipos_options = $options($tipos,  'id', 'nome');
 		$obj['tipos_options'] = $tipos_options;
+		/******************************************************** 
+		 * 			Projetos
+		**********************************************************/
+		log_message('info', 'Carregando Projetos');
+		$this->load->model('Projetos_model');
+		$projetos =  $this->Projetos_model->get_entries();
+		$obj['Projetos'] = $projetos;
+		$obj['Projetos_ids'] = $splitKeys($projetos, "id");
+		
+
+		
+		$projetos_options = $options($projetos,  'id', 'title');
+		$obj['projetos_options'] = $projetos_options;
 		
 		return $obj;
 	}

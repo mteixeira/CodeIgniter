@@ -1,85 +1,85 @@
 {% block html %}
-{% set active_time = '' %}
-{% set icon = 'fa-play' %}
-{% set task = '' %}
-{% if active_task_id == entry.id %}
-    {% set active_time = 'active_time' %}
-    {% set icon = 'fa-pause work_running' %}
-    {% set task = 'task_running' %}
-{% endif %}
+    {% set active_time = '' %}
+    {% set icon = 'fa-play' %}
+    {% set task = '' %}
+    {% if active_task_id == entry.id %}
+        {% set active_time = 'active_time' %}
+        {% set icon = 'fa-pause work_running' %}
+        {% set task = 'task_running' %}
+    {% endif %}
 
-{% set time = "00:00:00" %}
-{% if times[entry.id][1] %}
-    {% set timeinSec = times[entry.id][0] %}
-    {% set time = times[entry.id][1] %}
-{% endif %}
-<div class="task_tp_{{entry.tipo_tarefa_id}} card task py-1 border-left-primary {{task}}" draggable="true" id="card_{{entry.id}}"
-    ondragOver="dragOver(event)"
-    ondragStart="dragStart(event)"
-    ondragEnd="dragEnd(event)"
->
-    <!--<div class="cardplace" id="cp{{entry.id}}" draggable="true">-->
-    <!--<a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" #} >-->
-    <div  class="card-header" id="heading{{entry.id}}">
-        <h6 class="container-fluid"  ><!--justify-content-sm-center-->
-            <div class="row d-flex justify-content-around"><!-- d-sm-flex mb-0 justify-content-between  align-items-center-->
-            <!-- type="button"  data-toggle="collapse" data-target="#collapse{{entry.id}}" aria-expanded="true" aria-controls="collapse{{entry.id}}" -->
-            <!-- Rank -->
-            <div class="col-12 col-sm-12 col-md-1  text-center dropright" draggable="false">
-                {#<a id="rank_{{entry.id}}" href="#" class="badge badge-light btn-circle btn-primary align-self-center dropdown-toggle rankelement" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{entry.rank}}</a>#}
-                {#<div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="rank_{{entry.id}}">#}
-                
-                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                {{entry.rank}}
-                </button>
-                <form class="form-inline mr-auto w-100 navbar-search form_rank" id="form_rank_{{entry.id}}">
-                    <div class="input-group">
-                        <input type="text" name="task_id" hidden class="form-control bg-light border-0 small" placeholder="task_id" aria-label="Search" aria-describedby="basic-addon2" value="{{entry.id}}">
-                        <input type="text" name="rank" class="form-control bg-light border-0 small" placeholder="Rank..." aria-label="Search" aria-describedby="basic-addon2" value="{{entry.rank}}">
-                        <div class="input-group-append">
-                        <button class="btn btn-primary rank_btn" data-form="form_rank_{{entry.id}}" data-element="rank_{{entry.id}}" type="button">
-                            <i class="fas fa-search fa-sm"></i>
-                        </button>
+    {% set time = "00:00:00" %}
+    {% if times[entry.id][1] %}
+        {% set timeinSec = times[entry.id][0] %}
+        {% set time = times[entry.id][1] %}
+    {% endif %}
+    <div class="task_tp_{{entry.tipo_tarefa_id}} card task py-1 border-left-primary {{task}}" draggable="true" id="card_{{entry.id}}"
+        ondragOver="dragOver(event)"
+        ondragStart="dragStart(event)"
+        ondragEnd="dragEnd(event)"
+        >
+        <!--<div class="cardplace" id="cp{{entry.id}}" draggable="true">-->
+        <!--<a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" #} >-->
+        <div  class="card-header" id="heading{{entry.id}}">
+            <h6 class="container-fluid"  ><!--justify-content-sm-center-->
+                <div class="row d-flex justify-content-around"><!-- d-sm-flex mb-0 justify-content-between  align-items-center-->
+                <!-- type="button"  data-toggle="collapse" data-target="#collapse{{entry.id}}" aria-expanded="true" aria-controls="collapse{{entry.id}}" -->
+                <!-- Rank -->
+                <div class="col-12 col-sm-12 col-md-1  text-center dropright" draggable="false">
+                    {#<a id="rank_{{entry.id}}" href="#" class="badge badge-light btn-circle btn-primary align-self-center dropdown-toggle rankelement" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{entry.rank}}</a>#}
+                    {#<div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="rank_{{entry.id}}">#}
+                    
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    {{entry.rank}}
+                    </button>
+                    <form class="form-inline mr-auto w-100 navbar-search form_rank" id="form_rank_{{entry.id}}">
+                        <div class="input-group">
+                            <input type="text" name="task_id" hidden class="form-control bg-light border-0 small" placeholder="task_id" aria-label="Search" aria-describedby="basic-addon2" value="{{entry.id}}">
+                            <input type="text" name="rank" class="form-control bg-light border-0 small" placeholder="Rank..." aria-label="Search" aria-describedby="basic-addon2" value="{{entry.rank}}">
+                            <div class="input-group-append">
+                            <button class="btn btn-primary rank_btn" data-form="form_rank_{{entry.id}}" data-element="rank_{{entry.id}}" type="button">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+                            </div>
                         </div>
-                    </div>
-                    </form>
-                {#</div>#}
-            </div>
-            
-            <!-- Titulo e Link -->
-            <div class="btn-group  btn-link col-12 col-sm-11 col-md">
-                <button class="text-left btn btn-link col-lg" >
-                    <a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" #} >{{entry.id}} - {{entry.titulo }}</a>
+                        </form>
+                    {#</div>#}
+                </div>
+                
+                <!-- Titulo e Link -->
+                <div class="btn-group  btn-link col-12 col-sm-11 col-md">
+                    <button class="text-left btn btn-link col-lg" >
+                        <a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" #} >{{entry.id}} - {{entry.titulo }}</a>
+                    </button>
+                </div>
+                
+                <div class="timer {{active_time}}  col-12 col-sm-10 col-md-2 align-self-center d-flex justify-content-around" data-time="{{time}}">{{ time }}</div>
+                
+                <div class="col-12 col-sm-1 col-md-1  align-items-center text-center">
+                    <button id="start_{{entry.id}}" class="start_work btn btn-primary btn-circle align-self-center" data-user_id='2' data-task_id="{{entry.id}}" data-card_id="card_{{entry.id}}">
+                    <i class="fas {{icon}} work_icon" id="icon_work_act_{{entry.id}}"></i> </button>
+                </div>
+                
+                <button class="btn colapse-toggle col-12 col-sm-12 col-md-1" type="button" data-toggle="collapse" data-target="#collapse{{entry.id}}" aria-expanded="true" aria-controls="collapse{{entry.id}}">
+                    <i class="fas fa-angle-down"></i>
+                    <span class="sr-only">Toggle Dropdown</span>
                 </button>
-            </div>
+                
+                </div>
+            </h6>
             
-            <div class="timer {{active_time}}  col-12 col-sm-10 col-md-2 align-self-center d-flex justify-content-around" data-time="{{time}}">{{ time }}</div>
-            
-            <div class="col-12 col-sm-1 col-md-1  align-items-center text-center">
-                <button id="start_{{entry.id}}" class="start_work btn btn-primary btn-circle align-self-center" data-user_id='2' data-task_id="{{entry.id}}" data-card_id="card_{{entry.id}}">
-                <i class="fas {{icon}} work_icon" id="icon_work_act_{{entry.id}}"></i> </button>
-            </div>
-            
-            <button class="btn colapse-toggle col-12 col-sm-12 col-md-1" type="button" data-toggle="collapse" data-target="#collapse{{entry.id}}" aria-expanded="true" aria-controls="collapse{{entry.id}}">
-                <i class="fas fa-angle-down"></i>
-                <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            
-            </div>
-        </h6>
         
-    
-    </div>
-        
-    <div id="collapse{{entry.id}}" class="collapse" aria-labelledby="heading{{entry.id}}" data-parent="#accordion">
-
-        <div class="card-body">
-        <h6 class="card-subtitle mb-2 text-muted">  - {{entry.status}}</h6>
-        <p class="card-text">{{entry.detalhes}}</p>
         </div>
+            
+        <div id="collapse{{entry.id}}" class="collapse" aria-labelledby="heading{{entry.id}}" data-parent="#accordion">
+
+            <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted">  - {{entry.status}}</h6>
+            <p class="card-text">{{entry.detalhes}}</p>
+            </div>
+        </div>
+        <!--</div>-->
     </div>
-    <!--</div>-->
-</div>
 {% endblock %}
 {% block modal %}
 
@@ -239,7 +239,7 @@
                 */
             }
 
-            function dragOver(e){
+            function dragOveBr(e){
                 console.log(this.dragged);
                 
                 //return;

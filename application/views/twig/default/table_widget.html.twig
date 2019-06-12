@@ -1,14 +1,14 @@
-
+<!-- Default Table Widget -->
 <div class="table-responsive">
   <table class="table table-hover">
     <thead>
         <tr>
           {% block table_head %}
-            {% for entry in entries  %}<!--for 1-->
+            {% for entry in entries  %}<!--for 1  {{entry.id}}-->
               {% if loop.first %}
                 {% for key,value in entry  %}<!--for 2-->
                     {% include [
-    "twig/"~app.controller~"/table_column.html.twig", 
+    "twig/"~app.controller~"/table_csolumn.html.twig", 
     'twig/default/table_column.html.twig'
 ] with {type:"Header"} %}
                 {% endfor %}    
@@ -23,7 +23,7 @@
             {% block table_row %}
               {% for key,value in rows %}
                     {% include [
-    "twig/"~app.controller~"/table_column.html.twig", 
+    "twig/"~app.controller~"/table_coslumn.html.twig", 
     'twig/default/table_column.html.twig'
 ]  with {type:"Body"} %}
               {% endfor %}  
@@ -61,3 +61,4 @@
     </tbody>
   </table>
 </div>
+<!-- Default Table Widget -->

@@ -11,6 +11,29 @@ class Tipos_Tarefa extends CRUD_Controller {
 	{
 		return 'Tipos_Tarefa';
 	}
+
+	protected function createDefaultEntry()
+	{
+		return [
+			"nome" 			=> '',		
+			"titulo"  		=> 'Tarefa1',
+			"detalhes"	 	=>  	'detalhes',
+			"esforco_estimado"	=>  '00:30:00', 
+			"color" 	=>  'FFFFFF',
+			
+		];
+	}
+
+	protected function getCreateForm($data)
+	{
+		return $this->form("", $data["entry"])
+		->input("nome"		, "nome"		, "task-nome"		, "text"			, "Nome"		)
+		->input("color"		, "color"		, "task-color"		, "text"			, "Cor"		)
+		->input("esforco_estimado"	, "esforco_estimado"		, "task-esforco"		, "time"			, "Esforco Estimado"		)
+		->textarea("detalhes"	, "detalhes"	, "task-detalhes"	, ""				, "Detalhes"	)
+		->submit("btn-submit", "Salvar")
+		->build();
+	}
 	protected function getEditForm($data)
 	{
 		return $this->form("", $data["entry"])

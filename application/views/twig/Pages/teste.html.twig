@@ -1,1196 +1,1458 @@
 <!DOCTYPE html>
-<html lang='en' class=''>
-   <head>
-      <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-      <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-      <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-      <!------ Include the above in your HEAD tag ---------->
-      <script src='//production-assets.codepen.io/assets/editor/live/console_runner-079c09a0e3b9ff743e39ee2d5637b9216b3545af0de366d4b9aad9dc87e26bfd.js'></script>
-      <script src='//production-assets.codepen.io/assets/editor/live/events_runner-73716630c22bbc8cff4bd0f07b135f00a0bdc5d14629260c3ec49e5606f98fdd.js'></script>
-			<script src='//production-assets.codepen.io/assets/editor/live/css_live_reload_init-2c0dc5167d60a5af3ee189d570b1835129687ea2a61bee3513dee3a50c115a77.js'></script>
-      <meta charset='UTF-8'>
-      <meta name="robots" content="noindex">
-      <link rel="shortcut icon" type="image/x-icon" href="//production-assets.codepen.io/assets/favicon/favicon-8ea04875e70c4b0bb41da869e81236e54394d63638a1ef12fa558a4a835f1164.ico" />
-      <link rel="mask-icon" type="" href="//production-assets.codepen.io/assets/favicon/logo-pin-f2d2b6d2c61838f7e76325261b7195c27224080bc099486ddd6dccb469b8e8e6.svg" color="#111" />
-      <link rel="canonical" href="https://codepen.io/kharrop/pen/ZOwOgL?limit=all&page=22&q=draggable" />
-      <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css'>
-      <link rel='stylesheet prefetch' href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'>
-      <style class="cp-pen-styles">
-         @import url(https://fonts.googleapis.com/css?family=Lato:400,300,700);
-         @import url(https://fonts.googleapis.com/css?family=Lato:400,300,700);
-         body {
-         -webkit-text-size-adjust: 100%;
-         font-family: 'Lato', sans-serif;
-         text-rendering: optimizeLegibility;
-         -webkit-font-smoothing: antialiased;
-         }
-         input {
-         -webkit-appearance: none;
-         }
-         *, *:after, *:before {
-         box-sizing: border-box;
-         margin: 0;
-         padding: 0;
-         }
-         a {
-         text-decoration: none;
-         }
-         .pen-description {
-         margin: 60px 0;
-         text-align: center;
-         }
-         .pen-description .summary {
-         margin-bottom: 10px;
-         }
-         .pen-description .note {
-         color: #555;
-         font-size: .85rem;
-         }
-         html, body {
-         min-height: 100%;
-         }
-         html {
-         display: -webkit-box;
-         display: -ms-flexbox;
-         display: flex;
-         font-size: initial;
-         }
-         /* boostrap overrides */
-         a, a:hover, a:visited {
-         text-decoration: none;
-         }
-         p {
-         margin: 0;
-         }
-         label {
-         display: initial;
-         }
-         /*******************/
-         body {
-         background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuMCIgeTE9IjEuMCIgeDI9IjEuMCIgeTI9IjAuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzIyNmE5NiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzk5ZDVlOCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
-         background-size: 100%;
-         background-image: -webkit-gradient(linear, 0% 100%, 100% 0%, color-stop(0%, #226a96), color-stop(100%, #99d5e8));
-         background-image: -webkit-linear-gradient(left bottom, #226a96 0%, #99d5e8 100%);
-         background-image: linear-gradient(to right top, #226a96 0%, #99d5e8 100%);
-         font-family: 'Lato';
-         background-color: #eee;
-         color: #555;
-         min-width: 100%;
-         display: -webkit-box;
-         display: -ms-flexbox;
-         display: flex;
-         -webkit-perspective: 8000px;
-         perspective: 8000px;
-         }
-         * {
-         box-sizing: border-box;
-         margin: 0;
-         padding: 0;
-         }
-         #app {
-         display: -webkit-box;
-         display: -ms-flexbox;
-         display: flex;
-         -webkit-box-flex: 1;
-         -ms-flex-positive: 1;
-         flex-grow: 1;
-         }
-         ul {
-         list-style: none;
-         margin: auto;
-         padding: 0;
-         }
-         .card-container {
-         -webkit-transform-style: preserve-3d;
-         transform-style: preserve-3d;
-         -webkit-transition: -webkit-transform 1s;
-         transition: -webkit-transform 1s;
-         transition: transform 1s;
-         transition: transform 1s, -webkit-transform 1s;
-         }
-         li {
-         cursor: -webkit-grab;
-         cursor: grab;
-         position: relative;
-         -webkit-transform-style: preserve-3d;
-         transform-style: preserve-3d;
-         float: left;
-         }
-         li[draggable=false] {
-         cursor: default;
-         }
-         li[draggable=false] figure.front,
-         li[draggable=false] figure.back {
-         box-shadow: none;
-         }
-         li .card-container {
-         pointer-events: none;
-         }
-         li input[type="text"],
-         li input[type="number"] {
-         border: 0 none;
-         border-bottom: 1px solid #eee;
-         pointer-events: initial;
-         width: 100%;
-         height: 40px;
-         margin-bottom: 20px;
-         outline: 0 none;
-         font-size: 1rem;
-         -webkit-transition: border-bottom 0.2s ease-in-out;
-         transition: border-bottom 0.2s ease-in-out;
-         }
-         li input[type="text"]:focus,
-         li input[type="number"]:focus {
-         border-bottom: 1px solid #3a8bbb;
-         }
-         li.placeholder {
-         background: rgba(255, 255, 255, 0.2);
-         height: 494px;
-         display: -webkit-box;
-         display: -ms-flexbox;
-         display: flex;
-         width: 330px;
-         border-radius: 5px;
-         }
-         .modal {
-         overflow-y: auto;
-         }
-         .modal-dialog {
-         width: 400px;
-         }
-         .modal .fund-container {
-         border: 1px solid #ddd;
-         border-radius: 3px;
-         height: 40px;
-         margin-left: 5px;
-         margin-top: 20px;
-         margin-bottom: 10px;
-         padding: 10px 0;
-         width: 125px;
-         text-align: right;
-         }
-         .modal label {
-         display: inline-block;
-         width: 48%;
-         }
-         .modal .data {
-         width: 50%;
-         text-align: right;
-         margin-left: 5px;
-         display: inline-block;
-         }
-         .modal .smallprint {
-         font-size: .7rem;
-         text-align: right;
-         }
-         .modal .pre-money {
-         opacity: .7;
-         }
-         h1, h2, h3, h4, h5 {
-         margin: 0;
-         }
-         .modal-container {
-         position: relative;
-         }
-         .modal-container .modal, .modal-container .modal-backdrop {
-         position: absolute;
-         }
-         button {
-         pointer-events: initial;
-         }
-         .card-title {
-         text-align: center;
-         margin-bottom: 20px;
-         font-size: 1rem;
-         }
-         .back-arrow {
-         pointer-events: initial;
-         display: table;
-         position: absolute;
-         padding: 20px;
-         margin: -20px;
-         font-size: 1.2rem;
-         }
-         .back-arrow:hover .fa {
-         color: #777777;
-         }
-         .edit-money {
-         display: table;
-         position: absolute;
-         margin-top: 10px;
-         opacity: .7;
-         }
-         .edit-money + input {
-         padding-left: 15px;
-         }
-         .delete {
-         color: #777;
-         pointer-events: initial;
-         text-align: center;
-         font-size: .8rem;
-         margin: 0 auto;
-         margin-top: 10px;
-         padding: 10px;
-         display: table;
-         -webkit-transition: color 0.2s ease-in-out;
-         transition: color 0.2s ease-in-out;
-         }
-         .delete:hover {
-         color: #e54b4b;
-         }
-         figure {
-         -webkit-backface-visibility: hidden;
-         backface-visibility: hidden;
-         }
-         figure.front {
-         background: #fff;
-         -webkit-transform: rotateY(0deg);
-         transform: rotateY(0deg);
-         overflow: hidden;
-         pointer-events: intial;
-         border-radius: 5px;
-         padding: 20px;
-         margin: 10px;
-         width: 330px;
-         -webkit-transition: all 0.2s ease-in-out;
-         transition: all 0.2s ease-in-out;
-         box-shadow: 0 10px 20px 0 rgba(13, 59, 86, 0.5);
-         }
-         figure.back {
-         background-color: #fff;
-         -webkit-transform: rotateY(180deg);
-         transform: rotateY(180deg);
-         -ms-flex-wrap: wrap;
-         flex-wrap: wrap;
-         display: -webkit-box;
-         display: -ms-flexbox;
-         display: flex;
-         -webkit-box-orient: vertical;
-         -webkit-box-direction: normal;
-         -ms-flex-direction: column;
-         flex-direction: column;
-         position: absolute;
-         left: 0;
-         margin: 10px;
-         margin-top: 0;
-         padding: 20px;
-         width: 330px;
-         height: 100%;
-         top: 0;
-         border-radius: 5px;
-         opacity: 0;
-         -webkit-transition: all .3s ease-in-out;
-         transition: all .3s ease-in-out;
-         }
-         figure .input-container {
-         -webkit-box-flex: 1;
-         -ms-flex-positive: 1;
-         flex-grow: 1;
-         }
-         .flipped figure.back {
-         opacity: 1;
-         }
-         .flipped {
-         transform: rotateY(180deg);
-         -webkit-transform: rotateY(180deg);
-         }
-         .goal__name {
-         color: #777;
-         font-size: .75rem;
-         text-align: center;
-         width: 80%;
-         margin: 10px auto;
-         text-transform: uppercase;
-         letter-spacing: 3px;
-         }
-         .goal--progress {
-         color: #222;
-         font-size: 1.7rem;
-         margin-bottom: 10px;
-         text-align: center;
-         }
-         .goal--remain {
-         color: #222;
-         }
-         .goal--amount {
-         color: #777;
-         font-size: .8rem;
-         text-align: center;
-         }
-         .goal--top {
-         display: -webkit-box;
-         display: -ms-flexbox;
-         display: flex;
-         -webkit-box-orient: vertical;
-         -webkit-box-direction: normal;
-         -ms-flex-direction: column;
-         flex-direction: column;
-         position: relative;
-         height: 375px;
-         }
-         .goal--top__container {
-         margin: auto;
-         position: relative;
-         }
-         .edit {
-         pointer-events: initial;
-         padding: 20px;
-         position: absolute;
-         right: 0;
-         margin: -20px;
-         top: 0;
-         margin-top: -13px;
-         }
-         .edit:hover .fa {
-         color: #777777;
-         }
-         .edit .fa {
-         font-size: 1.2rem;
-         }
-         .money:before {
-         content: "$";
-         }
-         .right {
-         float: right;
-         margin-left: 5px;
-         }
-         .percent {
-         color: #777;
-         }
-         .descriptor {
-         font-size: .8rem;
-         margin-bottom: 20px;
-         }
-         .dropdown-wrapper {
-         margin-top: 10px;
-         pointer-events: initial;
-         border: 1px solid #eee;
-         border-radius: 5px;
-         position: relative;
-         cursor: pointer;
-         width: 100%;
-         -webkit-transition: border 0.2s ease-in-out;
-         transition: border 0.2s ease-in-out;
-         }
-         .dropdown-wrapper:hover {
-         border: 1px solid #d5d5d5;
-         }
-         .dropdown-wrapper:after {
-         font-family: 'FontAwesome';
-         content: "\f107";
-         color: #3FB8AF;
-         position: absolute;
-         right: 10px;
-         top: 7px;
-         }
-         .dropdown-wrapper.outline {
-         border: 1px solid rgba(63, 184, 175, 0.5);
-         box-shadow: 0 0 10px rgba(63, 184, 175, 0.2);
-         }
-         select {
-         cursor: pointer;
-         pointer-events: initial;
-         -webkit-appearance: none;
-         -moz-appearance: none;
-         appearance: none;
-         background: none;
-         border: 0 none;
-         font-size: .8em;
-         padding: 10px;
-         outline: 0;
-         width: 100%;
-         display: block;
-         }
-         .button {
-         background: #3a8bbb;
-         border: 0 none;
-         color: #fff;
-         margin-bottom: auto;
-         cursor: pointer;
-         border-radius: 5px;
-         pointer-events: initial;
-         height: 44px;
-         text-transform: uppercase;
-         text-align: center;
-         font-size: .7rem;
-         letter-spacing: 2px;
-         padding: 15px;
-         -webkit-transition: all 0.2s ease-in-out;
-         transition: all 0.2s ease-in-out;
-         width: 100%;
-         }
-         .button:hover {
-         background: #347da8;
-         }
-         .fa {
-         font-family: 'FontAwesome';
-         display: block;
-         text-align: center;
-         }
-         .fa.category {
-         left: 0;
-         right: 0;
-         top: -40px;
-         margin: auto;
-         position: absolute;
-         }
-         .fa.fa-plane {
-         color: #3FB8AF;
-         }
-         .fa.fa-car {
-         color: #e54b4b;
-         }
-         .fa.fa-pencil-square-o, .fa.fa-angle-left {
-         color: #aaa;
-         -webkit-transition: color 0.2s ease-in-out;
-         transition: color 0.2s ease-in-out;
-         }
-         /** svg **/
-         .svg-container {
-         display: inline-block;
-         position: relative;
-         width: 100%;
-         height: 100%;
-         vertical-align: middle;
-         overflow: hidden;
-         }
-         .svg-content {
-         display: inline-block;
-         margin: 0 auto;
-         margin-top: 20px;
-         width: 100%;
-         }
-         .animated {
-         -webkit-animation: dash 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-         animation: dash 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-         }
-         .box {
-         width: 100%;
-         height: 100%;
-         margin: 0 auto;
-         position: absolute;
-         left: 0;
-         right: 0;
-         }
-         svg {
-         -webkit-transform: rotate(-90deg);
-         transform: rotate(-90deg);
-         }
-         text {
-         text-anchor: middle;
-         }
-         circle {
-         stroke-linecap: round;
-         }
-         .shadow {
-         opacity: .6;
-         }
-         @-webkit-keyframes dash {
-         to {
-         stroke-dashoffset: 0;
-         }
-         }
-         @keyframes dash {
-         to {
-         stroke-dashoffset: 0;
-         }
-         }
-      </style>
-   </head>
-   <body>
-      <div id="app"></div>
-	  <script> 
-	  </script>
-      <script src='//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js'></script>
-			<script src='https://fb.me/react-with-addons-15.0.0.min.js'></script>
-			<script src='https://npmcdn.com/react-dom@15.3.0/dist/react-dom.min.js'></script>
-			<script src='https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.29.5/react-bootstrap.min.js'></script>
-			<script src='https://npmcdn.com/react-dnd@2.1.4/dist/ReactDnD.js'></script>
-			<script src='https://npmcdn.com/react-dnd-html5-backend@2.1.2/dist/ReactDnDHTML5Backend.min.js'></script>
-			<script > 
-				 //var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
-         'use strict';
-         
-         function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-         
-         function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-         
-         function _inherits(subClass, superClass) { 
-					 if (typeof superClass !== "function" && superClass !== null) { 
-						 throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } 
-					 subClass.prototype = Object.create(superClass && superClass.prototype, { 
-						 constructor: { 
-						 	value: subClass, enumerable: false, writable: true, configurable: true } }); 
-					 	if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; 
-					 }
-         
-         var placeholder = document.createElement("li");
-         placeholder.className = "placeholder";
-         var Button = ReactBootstrap.Button;
-         var Modal = ReactBootstrap.Modal;
-         var OverlayTrigger = ReactBootstrap.OverlayTrigger;
-         
-         var Pie = function (_React$Component) {
-         	_inherits(Pie, _React$Component);
-         
-         	function Pie() {
-         		_classCallCheck(this, Pie);
-         
-         		return _possibleConstructorReturn(this, _React$Component.apply(this, arguments));
-         	}
-         
-         	Pie.prototype.render = function render() {
-         		var _props = this.props;
-         		var color = _props.color;
-         		var width = _props.width;
-         		var progress = _props.progress;
-         
-         		var pi = 3.14159265359;
-         		var r = 400 / 2;
-         		var c = 2 * pi * r;
-         		var realProgress = c * progress;
-         		return React.createElement(
-         			"div",
-         			{ className: "svg-container" },
-         			React.createElement(
-         				"div",
-         				{
-         					className: "svg-content"
-         				},
-         				React.createElement(
-         					"svg",
-         					{
-         						viewBox: "0 0 500 500",
-         						preserveAspectRatio: "xMinYMin meet"
-         					},
-         					React.createElement(
-         						"filter",
-         						{ id: "shadow" },
-         						React.createElement("feGaussianBlur", { "in": "SourceGraphic", stdDeviation: "15" }),
-         						React.createElement("feOffset", { dx: "-5", dy: "-4" })
-         					),
-         					React.createElement("circle", {
-         
-         						className: "animated",
-         						cx: "250",
-         						cy: "250",
-         						r: "200",
-         						stroke: "",
-         						fillOpacity: "0",
-         						strokeWidth: width + 10,
-         						strokeDasharray: [realProgress, c],
-         						strokeDashoffset: c * progress
-         					}),
-         					React.createElement("circle", {
-         						filter: "url(#shadow)",
-         						className: "animated shadow",
-         						cx: "250",
-         						cy: "250",
-         						r: "200",
-         						stroke: color,
-         						fillOpacity: "0",
-         						strokeWidth: width,
-         						strokeDasharray: [realProgress, c],
-         						strokeDashoffset: c * progress
-         					}),
-         					React.createElement("circle", {
-         						className: "animated fill",
-         						cx: "250",
-         						cy: "250",
-         						r: "200",
-         						stroke: color,
-         						fillOpacity: "0",
-         						strokeWidth: width,
-         						strokeDasharray: [realProgress, c],
-         						strokeDashoffset: c * progress
-         					}),
-         					React.createElement("circle", {
-         						cx: "250",
-         						cy: "250",
-         						r: "200",
-         						stroke: color,
-         						fillOpacity: "0",
-         						strokeWidth: "5",
-         						strokeDasharray: [c, c],
-         						strokeOpacity: "0.1"
-         					})
-         				)
-         			)
-         		);
-         	};
-         
-         	return Pie;
-         }(React.Component);
-         
-         var Application = function (_React$Component2) {
-         	_inherits(Application, _React$Component2);
-         
-         	function Application() {
-         		_classCallCheck(this, Application);
-         
-         		return _possibleConstructorReturn(this, _React$Component2.apply(this, arguments));
-         	}
-         
-         	Application.prototype.render = function render() {
-         		var percent = this.props.percent;
-         		var colorChart = this.props.colorChart;
-         		return React.createElement(
-         			"div",
-         			null,
-         			React.createElement(
-         				"div",
-         				{ className: "box" },
-         				React.createElement(Pie, {
-         					color: colorChart,
-         					width: 15,
-         					progress: percent
-         
-         				})
-         			)
-         		);
-         	};
-         
-         	return Application;
-         }(React.Component);
-         
-         var progressUpdate;
-         var goals = [{
-         	category: 'teste',
-         	name: 'Car',
-         	amount: 20000,
-         	progress: 6593,
-         	flipped: false,
-         	dragStatus: true
-         }, {
-         	category: 'plane',
-         	name: 'Vacation',
-         	amount: 3500,
-         	progress: 2984,
-         	flipped: false,
-         	dragStatus: true
-         }];
-         
-         var dragStatus = true;
-         
-				 var GoalCard = function (_React$Component3) 
-				 {
-						_inherits(GoalCard, _React$Component3);
-					
-						function GoalCard(props) {
-							_classCallCheck(this, GoalCard);
-					
-							var _this3 = _possibleConstructorReturn(this, _React$Component3.call(this, props));
-					
-							_this3.state = { condition: false,
-								progress: _this3.props.item.progress,
-								input1: _this3.props.item.name,
-								input2: _this3.props.item.amount,
-								input3: _this3.props.item.progress,
-								selectValue: _this3.props.item.category
-							};
-							return _this3;
-						}
-					
-						GoalCard.prototype.addMoney = function addMoney() {
-							var addFunds = prompt('Add funds for: ' + this.props.item.name, "0");
-							this.props.item.progress += Number(addFunds);
-							this.setState({
-								item: this.props.item
-							});
-						};
-					
-						GoalCard.prototype.onSave = function onSave() {
-							this.props.item.progress = progressUpdate;
-							this.setState({
-								item: this.props.item
-							});
-						};
-					
-						GoalCard.prototype.editGoal = function editGoal(index) {
-							this.props.onFlip(index);
-							this.setState({
-								condition: !this.state.condition,
-								input1: this.props.item.name,
-								input2: this.props.item.amount,
-								input3: this.props.item.progress,
-								selectValue: this.props.item.category
-							});
-						};
-					
-						GoalCard.prototype.deleteGoal = function deleteGoal(index) {
-							this.props.onDelete(index);
-							this.setState({ condition: !this.state.condition,
-								input1: this.props.item.name,
-								input2: this.props.item.amount,
-								input3: this.props.item.progress,
-								selectValue: this.props.item.category,
-								flipped: false,
-								dragStatus: true
-							});
-						};
-					
-						GoalCard.prototype.cancelEdit = function cancelEdit(index) {
-							this.props.onFlip(index);
-							this.setState({ condition: !this.state.condition,
-								input1: this.props.item.name,
-								input2: this.props.item.amount,
-								input3: this.props.item.progress,
-								selectValue: this.props.item.category });
-						};
-					
-						GoalCard.prototype.saveGoal = function saveGoal(index) {
-							this.props.onFlip(index);
-							this.setState({ condition: !this.state.condition });
-							this.props.item.name = this.state.input1;
-							this.props.item.amount = Number(this.state.input2);
-							this.props.item.progress = Number(this.state.input3);
-							this.props.item.category = this.state.selectValue;
-						};
-					
-						GoalCard.prototype.handleChange = function handleChange(name, e) {
-							var change = {};
-							change[name] = e.target.value;
-							this.setState(change);
-						};
-					
-						GoalCard.prototype.handleDropdown = function handleDropdown(e) {
-							this.setState({ selectValue: e.target.value });
-						};
-					
-						GoalCard.prototype.render = function render() {
-							var message;
-							var strokeColor;
-							var status;
-							var remaining;
-							var percentRemaining;
-							if (this.props.item.progress / this.props.item.amount < 1) {
-								strokeColor = "#01579B";
-								status = "Remaining";
-								remaining = (this.props.item.amount - this.props.item.progress).toLocaleString();
-								percentRemaining = "(" + ((this.props.item.amount - this.props.item.progress) / this.props.item.amount * 100).toFixed(0) + "%)";
-							} else {
-								strokeColor = "#7dbf69";
-								status = "Exceeded";
-								remaining = Math.abs(this.props.item.amount - this.props.item.progress).toLocaleString();
-								percentRemaining = "(" + Math.abs((this.props.item.amount - this.props.item.progress) / this.props.item.amount * 100).toFixed(0) + "%)";
-							}
-					
-							return React.createElement(
-								"div",
-								{ className: this.state.condition ? "flipped card-container" : "card-container" },
-								React.createElement(
-									"figure",
-									{ className: "front" },
-									React.createElement(
-										"div",
-										{ className: "goal--top" },
-										React.createElement(
-											"a",
-											{ href: "#", className: "edit", onClick: this.editGoal.bind(this, this.props.item.index) },
-											React.createElement("i", { className: "fa fa-pencil-square-o" })
-										),
-										React.createElement(
-											"div",
-											{ className: "goal__name" },
-											this.props.item.name
-										),
-										React.createElement(Application, { percent: this.props.item.progress / this.props.item.amount, colorChart: strokeColor }),
-										React.createElement(
-											"div",
-											{ className: "goal--top__container" },
-											React.createElement("i", { className: 'category fa fa-' + this.props.item.category, "aria-hidden": "true" }),
-											React.createElement(
-												"div",
-												{ className: "goal--progress" },
-												React.createElement(
-													"span",
-													{ className: "money" },
-													this.props.item.progress.toLocaleString()
-												)
-											),
-											React.createElement(
-												"div",
-												{ className: "goal--amount" },
-												"of ",
-												React.createElement(
-													"span",
-													{ className: "money" },
-													this.props.item.amount.toLocaleString()
-												)
-											)
-										)
-									),
-									React.createElement(
-										"div",
-										{ className: "goal--bottom" },
-										React.createElement(
-											"div",
-											{ className: "descriptor" },
-											status,
-											React.createElement(
-												"span",
-												{ className: "money right goal--remain" },
-												remaining
-											),
-											React.createElement(
-												"span",
-												{ className: "percent right" },
-												percentRemaining
-											)
-										),
-										React.createElement(Example, {
-											name: this.props.item.name,
-											progress: this.props.item.progress,
-											amount: this.props.item.amount,
-											onSave: this.onSave.bind(this)
-					
-										})
-									)
-								),
-								React.createElement(
-									"figure",
-									{ className: "back" },
-									React.createElement(
-										"a",
-										{ href: "#", className: "back-arrow", onClick: this.cancelEdit.bind(this, this.props.item.index) },
-										React.createElement("i", { className: "fa fa-angle-left" })
-									),
-									React.createElement(
-										"h3",
-										{ className: "card-title" },
-										"Goal Details"
-									),
-									React.createElement(
-										"div",
-										{ className: "input-container" },
-										React.createElement(
-											"label",
-											{ name: "name", className: "descriptor" },
-											"Name"
-										),
-										React.createElement("input", { type: "text", placeholder: "Goal Name", value: this.state.input1, onChange: this.handleChange.bind(this, 'input1') }),
-										React.createElement(
-											"label",
-											{ name: "amount", className: "descriptor" },
-											"Goal"
-										),
-										React.createElement(
-											"span",
-											{ className: "edit-money" },
-											"$"
-										),
-										React.createElement("input", { type: "number", placeholder: "Amount", value: this.state.input2, onChange: this.handleChange.bind(this, 'input2') }),
-										React.createElement(
-											"label",
-											{ name: "progress", className: "descriptor" },
-											"Progress"
-										),
-										React.createElement(
-											"span",
-											{ className: "edit-money" },
-											"$"
-										),
-										" ",
-										React.createElement("input", { type: "number", placeholder: "Progress", value: this.state.input3, onChange: this.handleChange.bind(this, 'input3') }),
-										"         ",
-										React.createElement(
-											"label",
-											{ name: "icon", className: "descriptor" },
-											"Icon"
-										),
-										React.createElement(
-											"div",
-											{ className: "dropdown-wrapper" },
-											React.createElement(
-												"select",
-												{ value: this.state.selectValue,
-													onChange: this.handleDropdown.bind(this)
-												},
-												React.createElement(
-													"option",
-													{ value: "car" },
-													"Car"
-												),
-												React.createElement(
-													"option",
-													{ value: "plane" },
-													"Plane"
-												),
-												React.createElement(
-													"option",
-													{ value: "" },
-													"None"
-												)
-											)
-										)
-									),
-									React.createElement("input", { type: "button", className: "button", value: "Save Changes", onClick: this.saveGoal.bind(this, this.props.item.index) }),
-									React.createElement(
-										"a",
-										{ href: "#", className: "delete", onClick: this.deleteGoal.bind(this, this.props.item.index) },
-										"Delete Goal"
-									)
-								)
-							);
-						};
-					
-						return GoalCard;
-         }(React.Component);
-         
-         var Example = React.createClass({
-         	displayName: "Example",
-         	getInitialState: function getInitialState() {
-         		return { showModal: false,
-         			progress: this.props.progress,
-         			input1: "",
-         			sum: ""
-         		};
-         	},
-         	close: function close() {
-         		this.setState({ showModal: false });
-         	},
-         	submit: function submit(e) {
-         		if (e.key === 'Enter') {
-         			progressUpdate = this.state.sum;
-         			this.props.onSave();
-         			this.setState({
-         				showModal: false
-         			});
-         		}
-         	},
-         	save: function save() {
-         		progressUpdate = this.state.sum;
-         		this.props.onSave();
-         		this.setState({
-         			showModal: false
-         		});
-         	},
-         	open: function open() {
-         		this.setState({ showModal: true,
-         			sum: this.props.progress,
-         			input1: "" });
-         	},
-         	handleChange: function handleChange(name, e) {
-         		var change = {};
-         		change[name] = e.target.value;
-         
-         		this.setState(change);
-         		this.setState({
-         			sum: Number(this.props.progress) + Number(change[name])
-         
-         		});
-         	},
-         	render: function render() {
-         
-         		return React.createElement(
-         			"div",
-         			null,
-         			React.createElement(
-         				Button,
-         				{
-         					bsStyle: "primary",
-         					bsSize: "large",
-         					onClick: this.open,
-         					className: "button"
-         				},
-         				"Add funds"
-         			),
-         			React.createElement(
-         				Modal,
-         				{ show: this.state.showModal, onHide: this.close },
-         				React.createElement(
-         					Modal.Header,
-         					{ closeButton: true },
-         					React.createElement(
-         						Modal.Title,
-         						null,
-         						"Add Funds for ",
-         						this.props.name
-         					)
-         				),
-         				React.createElement(
-         					Modal.Body,
-         					null,
-         					React.createElement(
-         						"label",
-         						null,
-         						"Current progress:"
-         					),
-         					React.createElement(
-         						"div",
-         						{ className: "data" },
-         						"$",
-         						this.props.progress.toLocaleString()
-         					),
-         					React.createElement(
-         						"label",
-         						null,
-         						"Add amount:"
-         					),
-         					React.createElement(
-         						"div",
-         						{ className: "data" },
-         						React.createElement(
-         							"span",
-         							{ className: "pre-money" },
-         							"$"
-         						),
-         						" ",
-         						React.createElement("input", { type: "number", className: "fund-container", defaultValue: "", onKeyPress: this.submit.bind(this), onChange: this.handleChange.bind(this, 'input1'), autoFocus: true })
-         					),
-         					React.createElement(
-         						"p",
-         						{ className: "smallprint" },
-         						" Total Progress: ",
-         						React.createElement(
-         							"span",
-         							{ className: "pre-money" },
-         							"$"
-         						),
-         						this.state.sum.toLocaleString()
-         					)
-         				),
-         				React.createElement(
-         					Modal.Footer,
-         					null,
-         					React.createElement(
-         						Button,
-         						{ onClick: this.close },
-         						"Close"
-         					),
-         					React.createElement(
-         						Button,
-         						{ type: "button", className: "btn-primary", onClick: this.save.bind(this, this.props) },
-         						"Update Progress"
-         					)
-         				)
-         			)
-         		);
-         	}
-         });
-         
-         var GoalList = React.createClass({
-         	displayName: "GoalList",
-         
-         	getInitialState: function getInitialState() {
-         		return {
-         			data: this.props.data
-         		};
-         	},
-         	dragStart: function dragStart(e) {
-         		//this.refs['update'].updateGoal();
-         		this.dragged = e.currentTarget;
-         		e.dataTransfer.effectAllowed = 'move';
-         		e.dataTransfer.setData("text/html", e.currentTarget);
-         	},
-         	dragEnd: function dragEnd(e) {
-         		this.dragged.style.display = "block";
-         		placeholder.remove();
-         		// Update data
-         		var data = this.state.data;
-         		var from = Number(this.dragged.dataset.id);
-         		var to = Number(this.over.dataset.id);
-         		if (from < to) to--;
-         		if (this.nodePlacement == "after") to++;
-         		data.splice(to, 0, data.splice(from, 1)[0]);
-         		this.setState({
-         			data: data
-         		});
-         	},
-         	dragOver: function dragOver(e) {
-         
-         		e.preventDefault();
-         		this.dragged.style.display = "none";
-         		if (e.target.className == "placeholder") return;
-         		this.over = e.target;
-         		// Inside the dragOver method
-         		var relY = e.pageY - this.over.offsetTop;
-         		var height = this.over.offsetHeight / 2;
-         		var relX = e.pageX - this.over.offsetLeft;
-         		var width = this.over.offsetWidth / 2;
-         		var parent = e.target.parentNode;
-         
-         		if (relX >= width) {
-         			this.nodePlacement = "after";
-         			parent.insertBefore(placeholder, e.target.nextElementSibling);
-         		} else {
-         			this.nodePlacement = "before";
-         			parent.insertBefore(placeholder, e.target);
-         		}
-         		this.setState({
-         			data: this.props.data
-         		});
-         	},
-         	onFlip: function onFlip(i) {
-         		var data = this.state.data;
-         		data[i].flipped = !data[i].flipped;
-         
-         		this.setState({
-         			data: data });
-         
-         		if (data[i].flipped) {
-         			var data = this.props.data;
-         			//	data[i].dragStatus = false;
-         			dragStatus = false;
-         		} else {
-         			//	data[i].dragStatus= true;
-         			dragStatus = true;
-         		}
-         	},
-         	onDelete: function onDelete(i) {
-         		var data = this.props.data;
-         		var newData = this.state.data.slice(); //copy array
-         		newData.splice(i, 1); //remove element
-         		this.setState({ data: newData }); //update state
-         		this.props = newData;
-         		//var data = this.props.data;
-         		data[i].flipped = !data[i].flipped;
-         		if (data[i].flipped) {
-         
-         			//	data[i].dragStatus = false;
-         			dragStatus = false;
-         		} else {
-         			//	data[i].dragStatus= true;
-         			dragStatus = true;
-         		}
-         		data = newData;
-         		//data.splice(i, 1);
-         
-         		//	this.setState({ data: data});
-         	},
-         	render: function render() {
-         
-         		return React.createElement(
-         			"ul",
-         			{ className: "goal__list", onDragOver: this.dragOver },
-         			this.state.data.map(function (item, i) {
-         
-         				return React.createElement(
-         					"li",
-         					{ "data-id": i,
-         						key: i
-         						// draggable={goals[i].dragStatus}
-         						, draggable: dragStatus,
-         						onDragEnd: this.dragEnd.bind(this),
-         						onDragStart: this.dragStart.bind(this)
-         
-         					},
-         					React.createElement(GoalCard, { item: item,
-         						onFlip: this.onFlip.bind(this, i),
-         						cancelEdit: this.onFlip.bind(this, i),
-         						saveGoal: this.onFlip.bind(this, i),
-         						onDelete: this.onDelete.bind(this, i)
-         
-         					})
-         				);
-         			}, this)
-         		);
-         	}
-         
-         });
-         
-         ReactDOM.render(React.createElement(GoalList, { data: goals }), document.getElementById('app'));
-         //# sourceURL=pen.js
-      </script>
-   </body>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>MTeixeira - Tarefas</title>
+
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/CodeIgniter/images/favicon.png">
+    <!-- Custom Stylesheet -->
+    <link href="/CodeIgniter/css/master.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template-->
+    <link href="/CodeIgniter/includes/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <link href=" /CodeIgniter/plugins/nestable/css/nestable.css" rel="stylesheet">
+
+    <link href="/CodeIgniter/plugins/summernote/dist/summernote.css" rel="stylesheet">
+    <link href="/CodeIgniter/plugins/toastr/css/toastr.min.css" rel="stylesheet">
+    <style>
+        .task_tp_1 {
+            border-left: .25rem solid #003366!important;
+        }
+        
+        .task_tp_2 {
+            border-left: .25rem solid #d7c813!important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Bootstrap core JavaScript-->
+    <script src="/CodeIgniter/includes/jquery/jquery.min.js" type="text/javascript"></script>
+    <script src="/CodeIgniter/includes/bootstrap/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="/CodeIgniter/includes/jquery-easing/jquery.easing.min.js" type="text/javascript"></script>
+
+    <!--*******************
+        Preloader start
+    ********************-->
+    <div id="preloader">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
+            </svg>
+        </div>
+    </div>
+    <!--*******************
+        Preloader end
+    ********************-->
+
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+
+        <!--**********************************
+            Nav header start
+        ***********************************-->
+        <div class="nav-header">
+            <div class="brand-logo">
+                <a href="/">
+                    <b class="logo-abbr"><img src="/CodeIgniter/images/logo.png" alt=""> </b>
+                    <span class="logo-compact"><img src="/CodeIgniter/images/logo-compact.png" alt=""></span>
+                    <span class="brand-title">
+                        <img src="/CodeIgniter/images/logo Tech2_mini.png" alt="">
+                    </span>
+                </a>
+            </div>
+        </div>
+        <!--**********************************
+            Nav header end
+        ***********************************-->
+
+        <!--**********************************
+            Header start
+        ***********************************-->
+        <div class="header">
+            <div class="header-content clearfix">
+
+                <div class="nav-control">
+                    <div class="hamburger">
+                        <span class="toggle-icon"><i class="icon-menu"></i></span>
+                    </div>
+                </div>
+                <div class="header-left">
+                    <div class="input-group icons">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-transparent border-0 pr-2 pr-sm-3" id="basic-addon1"><i class="mdi mdi-magnify"></i></span>
+                        </div>
+                        <input type="search" class="form-control" placeholder="Search Dashboard" aria-label="Search Dashboard">
+                        <div class="drop-down animated flipInX d-md-none">
+                            <form action="#">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <ul class="clearfix">
+                        <li class="icons dropdown">
+                            <a href="javascript:void(0)" data-toggle="dropdown">
+                                <i class="mdi mdi-email-outline"></i>
+                                <span class="badge badge-pill gradient-1">3</span>
+                            </a>
+                            <div class="drop-down animated fadeIn dropdown-menu">
+                                <div class="dropdown-content-heading d-flex justify-content-between">
+                                    <span class="">3 New Messages</span>
+                                    <a href="javascript:void()" class="d-inline-block">
+                                        <span class="badge badge-pill gradient-1">3</span>
+                                    </a>
+                                </div>
+                                <div class="dropdown-content-body">
+                                    <ul>
+                                        <li class="notification-unread">
+                                            <a href="javascript:void()">
+                                                <img class="float-left mr-3 avatar-img" src="/CodeIgniter/images/avatar/1.jpg" alt="">
+                                                <div class="notification-content">
+                                                    <div class="notification-heading">Saiful Islam</div>
+                                                    <div class="notification-timestamp">08 Hours ago</div>
+                                                    <div class="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="notification-unread">
+                                            <a href="javascript:void()">
+                                                <img class="float-left mr-3 avatar-img" src="/CodeIgniter/images/avatar/2.jpg" alt="">
+                                                <div class="notification-content">
+                                                    <div class="notification-heading">Adam Smith</div>
+                                                    <div class="notification-timestamp">08 Hours ago</div>
+                                                    <div class="notification-text">Can you do me a favour?</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <img class="float-left mr-3 avatar-img" src="/CodeIgniter/images/avatar/3.jpg" alt="">
+                                                <div class="notification-content">
+                                                    <div class="notification-heading">Barak Obama</div>
+                                                    <div class="notification-timestamp">08 Hours ago</div>
+                                                    <div class="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <img class="float-left mr-3 avatar-img" src="/CodeIgniter/images/avatar/4.jpg" alt="">
+                                                <div class="notification-content">
+                                                    <div class="notification-heading">Hilari Clinton</div>
+                                                    <div class="notification-timestamp">08 Hours ago</div>
+                                                    <div class="notification-text">Hello</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </li>
+                        <li class="icons dropdown">
+                            <a href="javascript:void(0)" data-toggle="dropdown">
+                                <i class="mdi mdi-bell-outline"></i>
+                                <span class="badge badge-pill gradient-2">3</span>
+                            </a>
+                            <div class="drop-down animated fadeIn dropdown-menu dropdown-notfication">
+                                <div class="dropdown-content-heading d-flex justify-content-between">
+                                    <span class="">2 New Notifications</span>
+                                    <a href="javascript:void()" class="d-inline-block">
+                                        <span class="badge badge-pill gradient-2">5</span>
+                                    </a>
+                                </div>
+                                <div class="dropdown-content-body">
+                                    <ul>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <span class="mr-3 avatar-icon bg-success-lighten-2"><i class="icon-present"></i></span>
+                                                <div class="notification-content">
+                                                    <h6 class="notification-heading">Events near you</h6>
+                                                    <span class="notification-text">Within next 5 days</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <span class="mr-3 avatar-icon bg-danger-lighten-2"><i class="icon-present"></i></span>
+                                                <div class="notification-content">
+                                                    <h6 class="notification-heading">Event Started</h6>
+                                                    <span class="notification-text">One hour ago</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <span class="mr-3 avatar-icon bg-success-lighten-2"><i class="icon-present"></i></span>
+                                                <div class="notification-content">
+                                                    <h6 class="notification-heading">Event Ended Successfully</h6>
+                                                    <span class="notification-text">One hour ago</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <span class="mr-3 avatar-icon bg-danger-lighten-2"><i class="icon-present"></i></span>
+                                                <div class="notification-content">
+                                                    <h6 class="notification-heading">Events to Join</h6>
+                                                    <span class="notification-text">After two days</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                        </li>
+                        <li class="icons dropdown d-none d-md-flex">
+                            <a href="javascript:void(0)" class="log-user" data-toggle="dropdown">
+                                <span>English</span> <i class="fa fa-angle-down f-s-14" aria-hidden="true"></i>
+                            </a>
+                            <div class="drop-down dropdown-language animated fadeIn  dropdown-menu">
+                                <div class="dropdown-content-body">
+                                    <ul>
+                                        <li><a href="javascript:void()">English</a></li>
+                                        <li><a href="javascript:void()">Dutch</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="icons dropdown">
+                            <div class="user-img c-pointer position-relative" data-toggle="dropdown">
+                                <span class="activity active"></span>
+                                <img src="/CodeIgniter/images/user/1.png" height="40" width="40" alt="">
+                            </div>
+                            <div class="drop-down dropdown-profile animated fadeIn dropdown-menu">
+                                <div class="dropdown-content-body">
+                                    <ul>
+                                        <li>
+                                            <a href="app-profile.html"><i class="icon-user"></i> <span>Profile</span></a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <i class="icon-envelope-open"></i> <span>Inbox</span>
+                                                <div class="badge gradient-3 badge-pill gradient-1">3</div>
+                                            </a>
+                                        </li>
+
+                                        <hr class="my-2">
+                                        <li>
+                                            <a href="page-lock.html"><i class="icon-lock"></i> <span>Lock Screen</span></a>
+                                        </li>
+                                        <li><a href="page-login.html"><i class="icon-key"></i> <span>Logout</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!--**********************************
+            Header end ti-comment-alt
+        ***********************************-->
+
+        <!--**********************************
+            Sidebar start
+        ***********************************-->
+        <div class="nk-sidebar">
+            <div class="nk-nav-scroll">
+                <ul class="metismenu" id="menu">
+                    <li class="nav-label">Dashboard</li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-speedometer menu-icon"></i><span class="nav-text">Dashboard</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="./index.html">Home 1</a></li>
+                            <!-- <li><a href="./index-2.html">Home 2</a></li> -->
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/CodeIgniter/index.php/tarefas" aria-expanded="false">
+                            <i class="icon-task menu-icon"></i><span class="nav-text">Tarefas</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/CodeIgniter/index.php/Tipos_Tarefa" aria-expanded="false">
+                            <i class="icon-task menu-icon"></i><span class="nav-text">Tipos de Tarefa</span>
+                        </a>
+                    </li>
+
+                    <li class="mega-menu mega-menu-sm">
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-globe-alt menu-icon"></i><span class="nav-text">Layouts</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="./layout-blank.html">Blank</a></li>
+                            <li><a href="./layout-one-column.html">One Column</a></li>
+                            <li><a href="./layout-two-column.html">Two column</a></li>
+                            <li><a href="./layout-compact-nav.html">Compact Nav</a></li>
+                            <li><a href="./layout-vertical.html">Vertical</a></li>
+                            <li><a href="./layout-horizontal.html">Horizontal</a></li>
+                            <li><a href="./layout-boxed.html">Boxed</a></li>
+                            <li><a href="./layout-wide.html">Wide</a></li>
+
+                            <li><a href="./layout-fixed-header.html">Fixed Header</a></li>
+                            <li><a href="layout-fixed-sidebar.html">Fixed Sidebar</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-label">Apps</li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-envelope menu-icon"></i> <span class="nav-text">Email</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="./email-inbox.html">Inbox</a></li>
+                            <li><a href="./email-read.html">Read</a></li>
+                            <li><a href="./email-compose.html">Compose</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-screen-tablet menu-icon"></i><span class="nav-text">Apps</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="./app-profile.html">Profile</a></li>
+                            <li><a href="./app-calender.html">Calender</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-graph menu-icon"></i> <span class="nav-text">Charts</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="./chart-flot.html">Flot</a></li>
+                            <li><a href="./chart-morris.html">Morris</a></li>
+                            <li><a href="./chart-chartjs.html">Chartjs</a></li>
+                            <li><a href="./chart-chartist.html">Chartist</a></li>
+                            <li><a href="./chart-sparkline.html">Sparkline</a></li>
+                            <li><a href="./chart-peity.html">Peity</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-label">UI Components</li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-grid menu-icon"></i><span class="nav-text">UI Components</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="./ui-accordion.html">Accordion</a></li>
+                            <li><a href="./ui-alert.html">Alert</a></li>
+                            <li><a href="./ui-badge.html">Badge</a></li>
+                            <li><a href="./ui-button.html">Button</a></li>
+                            <li><a href="./ui-button-group.html">Button Group</a></li>
+                            <li><a href="./ui-cards.html">Cards</a></li>
+                            <li><a href="./ui-carousel.html">Carousel</a></li>
+                            <li><a href="./ui-dropdown.html">Dropdown</a></li>
+                            <li><a href="./ui-list-group.html">List Group</a></li>
+                            <li><a href="./ui-media-object.html">Media Object</a></li>
+                            <li><a href="./ui-modal.html">Modal</a></li>
+                            <li><a href="./ui-pagination.html">Pagination</a></li>
+                            <li><a href="./ui-popover.html">Popover</a></li>
+                            <li><a href="./ui-progressbar.html">Progressbar</a></li>
+                            <li><a href="./ui-tab.html">Tab</a></li>
+                            <li><a href="./ui-typography.html">Typography</a></li>
+                            <!-- </ul>
+                    </li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-layers menu-icon"></i><span class="nav-text">Components</span>
+                        </a>
+                        <ul aria-expanded="false"> -->
+                            <li><a href="./uc-nestedable.html">Nestedable</a></li>
+                            <li><a href="./uc-noui-slider.html">Noui Slider</a></li>
+                            <li><a href="./uc-sweetalert.html">Sweet Alert</a></li>
+                            <li><a href="./uc-toastr.html">Toastr</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="widgets.html" aria-expanded="false">
+                            <i class="icon-badge menu-icon"></i><span class="nav-text">Widget</span>
+                        </a>
+                    </li>
+                    <li class="nav-label">Forms</li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-note menu-icon"></i><span class="nav-text">Forms</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="./form-basic.html">Basic Form</a></li>
+                            <li><a href="./form-validation.html">Form Validation</a></li>
+                            <li><a href="./form-step.html">Step Form</a></li>
+                            <li><a href="./form-editor.html">Editor</a></li>
+                            <li><a href="./form-picker.html">Picker</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-label">Table</li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-menu menu-icon"></i><span class="nav-text">Table</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="./table-basic.html" aria-expanded="false">Basic Table</a></li>
+                            <li><a href="./table-datatable.html" aria-expanded="false">Data Table</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-label">Pages</li>
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-notebook menu-icon"></i><span class="nav-text">Pages</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="./page-login.html">Login</a></li>
+                            <li><a href="./page-register.html">Register</a></li>
+                            <li><a href="./page-lock.html">Lock Screen</a></li>
+                            <li><a class="has-arrow" href="javascript:void()" aria-expanded="false">Error</a>
+                                <ul aria-expanded="false">
+                                    <li><a href="./page-error-404.html">Error 404</a></li>
+                                    <li><a href="./page-error-403.html">Error 403</a></li>
+                                    <li><a href="./page-error-400.html">Error 400</a></li>
+                                    <li><a href="./page-error-500.html">Error 500</a></li>
+                                    <li><a href="./page-error-503.html">Error 503</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--**********************************
+            Sidebar end
+        ***********************************-->
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+
+            <div class="row page-titles mx-0">
+                <div class="col p-md-0">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Home</a></li>
+                    </ol>
+                </div>
+            </div>
+            <!-- row -->
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <div class="card-title">
+                                    <div class="justify-content-between">
+                                        <ul class="nav nav-tabs mb-3 " role="tablist">
+                                            <li class="nav-item"><a class="nav-link  " href="?status=all">Todas</a>
+                                            </li>
+                                            <li class="nav-item"><a class="nav-link active" href="?status=opened">Abertas</a>
+                                            </li>
+                                            <li class="nav-item"><a class="nav-link " href="?status=closed">Encerradas</a>
+                                            </li>
+                                            <li class="nav-item"><a class="nav-link " href="?status=canceled">Canceladas</a>
+                                            </li>
+                                            <form action="#" class="offset-3 pull-right position">
+                                                <div class="input-append inner-append">
+                                                    <input type="text" class="sr-input" placeholder="Search Mail">
+                                                    <button class="btn sr-btn append-btn" type="button"><i class="fa fa-search"></i></button>
+                                                </div>
+                                            </form>
+
+                                        </ul>
+                                    </div>
+                                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                                        <h1 class="h3 mb-4 text-gray-800">Tarefas</h1>
+                                        <a href="/CodeIgniter/index.php/tarefas/create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                                            <i class="fas fa-download fa-sm text-white-50"></i> Criar Tarefas
+                                        </a>
+                                    </div>
+
+                                </div>
+                                <!--Block Show Entries-->
+                                <!--Show Entries-->
+                                <!--html block-->
+
+                                <div id="accordion-two" class="accordion">
+
+                                    <!--for 1-->
+
+                                    <!--tempo 20-->
+                                    <!--tempo Estimado 00:03:04-->
+                                    <!--tempo Padrao Estimado 00:30:00-->
+                                    <!--tempo Estimado in sec 184-->
+                                    <div id="card_0" class="card Tarefa " data-id="0" data-user_id='2'>
+													<div class="border-left-primary card-header justify-content-between px-4 row mx-0 align-items-start">
+                                            <span class="Rank d-inline-block badge badge-pill gradient-1 float-left h-25 mt-2 ">1</span>
+                                            <div class="col d-inline-block m-1 h6  ">
+	                                            <span class="Titulo  h4 my-2"><a href="">1 - Titulo da Tarefa</a></span>
+	                                            <span class="Info d-block my-2"> Cliente > Projeto </span>
+	                                            <!-- Percentual -->
+																<div class="Progresso w-50 my-2 small align-self-center progress no-gutters" style="height: 10px">
+				                    							<div class="progress-bar gradient-1" style="width: 10%;" role="progressbar">	
+				                    								<span class="sr-only">10% Complete</span>
+																	</div>
+																</div> 
+	                                            <span class="Data my-2">Data Desejada: <a href="">Nenhuma</a></span>
+	                                            <span class="Estimado my-2">Esforço Estimado: <a href="">00:30</a></span>
+	                                            <span class="Entrega my-2">Est. Entrega: <a href="">10/03/2019</a></span>
+	                                            <span class="Tags my-2">Tags: <a href="">T1,T2,T3</a></span>
+	                                            <span class="Status my-2">Status: <a href="">Sem Status</a></span>
+                                            </div>
+                                            <div class="ButtonContainer align-self-center d-inline-block bordedrRed">
+	                                            <button class="Entregar px-4 p-2">Entregar</button>
+	                                            <button class="Trabalhar px-4 p-2">Trabalhar</button>
+	                                         </div>
+                                       </div>
+												</div>
+									
+                                    <div id="card_2" class="card Tarefa " data-id="2" data-user_id='2'>
+                                        <div class="border-left-primary card-header">
+                                            <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseTwo_2" aria-expanded="false" aria-controls="collapseTwo_2"><i class="fa" aria-hidden="true"></i>
+															<div class="row no-gutters">
+
+																<!-- Rank -->
+																<div class="col-1 small align-self-center rank" data-task_id="2" >
+																	<span class="badge badge-pill gradient-1 m_editable"
+																	data-field="rank" data-task_id="2" data-fieldname="Rank">1</span>
+																</div>
+
+																<!-- Titulo -->
+																<span class="col-4 small align-self-center">
+																		2 - Funcionalidade Tarefa
+																</span> 
+
+																<!-- Status -->
+																<span class="offset-1 col-1 small align-self-center badge badge-pill gradient-2 ">Em Andamento</span> 
+																<!-- Percentual -->
+																<div class="h6 col-1 small align-self-center progress no-gutters" style="height: 10px">
+																	<div class="progress-bar gradient-1" style="width: 10.869565217391%;" role="progressbar">	<span class="sr-only">10% Complete</span>
+																	</div>
+																</div> 
+
+																<!-- Tempo Estimado -->
+																<span class="col-1 small align-self-center m_editable _estimado" 
+																	data-field="tempo_estimado" data-tempo-in-sec="184" data-task_id="2" data-fieldname="Tempo Estimado">00:03:04</span> 
+
+																<div class="timer   col-12 col-sm-10 col-md-1 small align-self-center d-flex justify-content-around" data-time="20">00:00:20</div>
+
+																<!-- Tags -->
+																<div class="col-1 small align-self-center" >
+																	<h6>Tags</h6>
+																	<div>
+																	<!--<span class="badge badge-pill gradient-1 ">tag1</span>
+																	<span class="badge badge-pill gradient-1 ">tag2</span>-->
+																											<input type="text" name="tagentry"/>	
+
+																	</div>
+																</div>
+
+																<!-- Botao -->
+																<div class="offset-0 col-12 col-sm-1 col-md-1 small align-items-center text-center">
+																	<button id="start_2" class="start_work btn btn-primary btn-circle align-self-center" data-task_id="2" data-card_id="card_2">
+																	<i class="fas fa-play work_icon" id="icon_work_act_2"></i> </button>
+																</div>
+															</div>
+
+														</h5>
+                                        </div>
+                                        <div id="collapseTwo_2" class="collapse" data-parent="#accordion-two">
+                                            <div class="card-body">
+
+                                                <div class="email-right-box">
+                                                    <div class="toolbar" role="toolbar">
+                                                        <div class="btn-group m-b-20">
+                                                            <a href="/CodeIgniter/index.php/tarefas/2" class="btn btn-link"><i class="fa fa-edit "></i></a>
+                                                        </div>
+                                                        <div class="btn-group m-b-20">
+                                                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"><i class="fa fa-folder"></i> <b class="caret m-l-5"></b>
+                                                            </button>
+                                                            <div class="dropdown-menu"><span class="dropdown-header">Move to</span> <a class="dropdown-item" href="javascript: void(0);">Social</a> <a class="dropdown-item" href="javascript: void(0);">Promotions</a> <a class="dropdown-item" href="javascript: void(0);">Updates</a>
+                                                                <a class="dropdown-item" href="javascript: void(0);">Forums</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="btn-group m-b-20">
+                                                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"><i class="fa fa-tag"></i> <b class="caret m-l-5"></b>
+                                                            </button>
+                                                            <div class="dropdown-menu"><span class="dropdown-header">Label as:</span> <a class="dropdown-item" href="javascript: void(0);">Updates</a> <a class="dropdown-item" href="javascript: void(0);">Social</a> <a class="dropdown-item" href="javascript: void(0);">Promotions</a>
+                                                                <a class="dropdown-item" href="javascript: void(0);">Forums</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="btn-group m-b-20">
+                                                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown">More <span class="caret m-l-5"></span>
+                                                            </button>
+                                                            <div class="dropdown-menu"><span class="dropdown-header">More Option :</span> <a class="dropdown-item" href="javascript: void(0);">Mark as Unread</a> <a class="dropdown-item" href="javascript: void(0);">Add to Tasks</a> <a class="dropdown-item" href="javascript: void(0);">Add Star</a> <a class="dropdown-item" href="javascript: void(0);">Mute</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="compose-content mt-5">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div id="edit_sum_2" data-task_id="2" class=" m-b-40">
+                                                                    <p>Funcoes de Tarefas</p>
+                                                                    <ul>
+                                                                        <li>
+                                                                            <br>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+
+                                    									<span>
+                                    										<a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" class="edit_sm" data-edit="#edit_sum_2"  onclick="edit2(event)" ><i class="fa fa-pencil color-muted m-r-5" ></i> </a>
+													                        	<a data-toggle="tooltip" data-placement="top" title="" data-original-title="Close" 
+													                        	class="save_sm" data-edit="#edit_sum_2" onclick="save2(event)" ><i class="fa fa-close color-danger"></i></a>
+													                        </span>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-left m-t-15">
+                                                        <button class="btn btn-primary m-b-30 m-t-15 f-s-14 p-l-20 p-r-20 m-r-10" type="button"><i class="fa fa-paper-plane m-r-5"></i> Send</button>
+                                                        <button class="btn btn-dark m-b-30 m-t-15 f-s-14 p-l-20 p-r-20" type="button"><i class="ti-close m-r-5 f-s-12"></i> Discard</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end card_2-->
+                                    <!--for 1-->
+
+                                    <!--tempo 9642-->
+                                    <!--tempo Estimado 00:30:00-->
+                                    <!--tempo Padrao Estimado 00:30:00-->
+                                    <!--tempo Estimado in sec 1800-->
+
+                                    <div id="card_3" class="card Tarefa " data-id="3" data-user_id='2'>
+                                        <div class="border-left-primary card-header">
+                                            <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseTwo_3" aria-expanded="false" aria-controls="collapseTwo_3"><i class="fa" aria-hidden="true"></i>
+																<div class="row no-gutters">
+
+																	<!-- Rank -->
+																	<div class="col-1 small align-self-center rank" data-task_id="3" >
+																		<span class="badge badge-pill gradient-1 m_editable"
+																		data-field="rank" data-task_id="3" data-fieldname="Rank">2</span>
+																	</div>
+
+																	<!-- Titulo -->
+																	<span class="col-4 small align-self-center">
+																			3 - Teste com Leitura
+																	</span> 
+
+																	<!-- Status -->
+																	<span class="offset-1 col-1 small align-self-center badge badge-pill gradient-2 ">Iniciada</span> 
+																	<!-- Percentual -->
+																	<div class="h6 col-1 small align-self-center progress no-gutters" style="height: 10px">
+																		<div class="progress-bar gradient-1" style="width: 535.66666666667%;" role="progressbar">	<span class="sr-only">10% Complete</span>
+																		</div>
+																	</div> 
+
+																	<!-- Tempo Estimado -->
+																	<span class="col-1 small align-self-center m_editable _estimado" 
+																		data-field="tempo_estimado" data-tempo-in-sec="1800" data-task_id="3" data-fieldname="Tempo Estimado">00:30:00</span> 
+
+																	<div class="timer   col-12 col-sm-10 col-md-1 small align-self-center d-flex justify-content-around" data-time="9642">02:40:42</div>
+
+																	<!-- Tags -->
+																	<div class="col-1 small align-self-center" >
+																		<h6>Tags</h6>
+																		<div>
+																		<!--<span class="badge badge-pill gradient-1 ">tag1</span>
+																		<span class="badge badge-pill gradient-1 ">tag2</span>-->
+																												<input type="text" name="tagentry"/>	
+
+																		</div>
+																	</div>
+
+																	<!-- Botao -->
+																	<div class="offset-0 col-12 col-sm-1 col-md-1 small align-items-center text-center">
+																		<button id="start_3" class="start_work btn btn-primary btn-circle align-self-center" data-task_id="3" data-card_id="card_3">
+																		<i class="fas fa-play work_icon" id="icon_work_act_3"></i> </button>
+																	</div>
+																</div>
+
+															</h5>
+                                        </div>
+                                        <div id="collapseTwo_3" class="collapse" data-parent="#accordion-two">
+                                            <div class="card-body">
+
+                                                <div class="email-right-box">
+                                                    <div class="toolbar" role="toolbar">
+                                                        <div class="btn-group m-b-20">
+                                                            <a href="/CodeIgniter/index.php/tarefas/3" class="btn btn-link"><i class="fa fa-edit "></i></a>
+                                                        </div>
+                                                        <div class="btn-group m-b-20">
+                                                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"><i class="fa fa-folder"></i> <b class="caret m-l-5"></b>
+                                                            </button>
+                                                            <div class="dropdown-menu"><span class="dropdown-header">Move to</span> <a class="dropdown-item" href="javascript: void(0);">Social</a> <a class="dropdown-item" href="javascript: void(0);">Promotions</a> <a class="dropdown-item" href="javascript: void(0);">Updates</a>
+                                                                <a class="dropdown-item" href="javascript: void(0);">Forums</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="btn-group m-b-20">
+                                                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"><i class="fa fa-tag"></i> <b class="caret m-l-5"></b>
+                                                            </button>
+                                                            <div class="dropdown-menu"><span class="dropdown-header">Label as:</span> <a class="dropdown-item" href="javascript: void(0);">Updates</a> <a class="dropdown-item" href="javascript: void(0);">Social</a> <a class="dropdown-item" href="javascript: void(0);">Promotions</a>
+                                                                <a class="dropdown-item" href="javascript: void(0);">Forums</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="btn-group m-b-20">
+                                                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown">More <span class="caret m-l-5"></span>
+                                                            </button>
+                                                            <div class="dropdown-menu"><span class="dropdown-header">More Option :</span> <a class="dropdown-item" href="javascript: void(0);">Mark as Unread</a> <a class="dropdown-item" href="javascript: void(0);">Add to Tasks</a> <a class="dropdown-item" href="javascript: void(0);">Add Star</a> <a class="dropdown-item" href="javascript: void(0);">Mute</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="compose-content mt-5">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div id="edit_sum_3" data-task_id="3" class=" m-b-40">abdcd asdf....
+
+                                                                </div>
+
+                                                                <span>
+                                                                	<a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"
+			                        											class="edit_sm" data-edit="#edit_sum_3"  onclick="edit2(event)" ><i class="fa fa-pencil color-muted m-r-5" ></i> </a>
+			                        											<a data-toggle="tooltip" data-placement="top" title="" data-original-title="Close" 
+			                        												class="save_sm" data-edit="#edit_sum_3" onclick="save2(event)" ><i class="fa fa-close color-danger"></i></a>
+			                        										</span>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-left m-t-15">
+                                                        <button class="btn btn-primary m-b-30 m-t-15 f-s-14 p-l-20 p-r-20 m-r-10" type="button"><i class="fa fa-paper-plane m-r-5"></i> Send</button>
+                                                        <button class="btn btn-dark m-b-30 m-t-15 f-s-14 p-l-20 p-r-20" type="button"><i class="ti-close m-r-5 f-s-12"></i> Discard</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end card_3-->
+                                    <!--for 1-->
+
+                                    <!--tempo 4-->
+                                    <!--tempo Estimado 00:00:00-->
+                                    <!--tempo Padrao Estimado 00:30:00-->
+                                    <!--tempo Estimado in sec 1800-->
+
+                                    <div id="card_11" class="card Tarefa " data-id="11" data-user_id='2'>
+                                        <div class="border-left-primary card-header">
+                                            <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseTwo_11" aria-expanded="false" aria-controls="collapseTwo_11"><i class="fa" aria-hidden="true"></i>
+																<div class="row no-gutters">
+
+																	<!-- Rank -->
+																	<div class="col-1 small align-self-center rank" data-task_id="11" >
+																		<span class="badge badge-pill gradient-1 m_editable"
+																		data-field="rank" data-task_id="11" data-fieldname="Rank">3</span>
+																	</div>
+
+																	<!-- Titulo -->
+																	<span class="col-4 small align-self-center">
+																			11 - Tarefa 3
+																	</span> 
+
+																	<!-- Status -->
+																	<span class="offset-1 col-1 small align-self-center badge badge-pill gradient-2 ">Em Andamento</span> 
+																	<!-- Percentual -->
+																	<div class="h6 col-1 small align-self-center progress no-gutters" style="height: 10px">
+																		<div class="progress-bar gradient-1" style="width: 0.22222222222222%;" role="progressbar">	<span class="sr-only">10% Complete</span>
+																		</div>
+																	</div> 
+
+																	<!-- Tempo Estimado -->
+																	<span class="col-1 small align-self-center m_editable _estimado" 
+																		data-field="tempo_estimado" data-tempo-in-sec="1800" data-task_id="11" data-fieldname="Tempo Estimado">00:30:00</span> 
+
+																	<div class="timer   col-12 col-sm-10 col-md-1 small align-self-center d-flex justify-content-around" data-time="4">00:00:04</div>
+
+																	<!-- Tags -->
+																	<div class="col-1 small align-self-center" >
+																		<h6>Tags</h6>
+																		<div>
+																		<!--<span class="badge badge-pill gradient-1 ">tag1</span>
+																		<span class="badge badge-pill gradient-1 ">tag2</span>-->
+																												<input type="text" name="tagentry"/>	
+
+																		</div>
+																	</div>
+
+																	<!-- Botao -->
+																	<div class="offset-0 col-12 col-sm-1 col-md-1 small align-items-center text-center">
+																		<button id="start_11" class="start_work btn btn-primary btn-circle align-self-center" data-task_id="11" data-card_id="card_11">
+																		<i class="fas fa-play work_icon" id="icon_work_act_11"></i> </button>
+																	</div>
+																</div>
+
+															</h5>
+                                        </div>
+                                        <div id="collapseTwo_11" class="collapse" data-parent="#accordion-two">
+                                            <div class="card-body">
+
+                                                <div class="email-right-box">
+                                                    <div class="toolbar" role="toolbar">
+                                                        <div class="btn-group m-b-20">
+                                                            <a href="/CodeIgniter/index.php/tarefas/11" class="btn btn-link"><i class="fa fa-edit "></i></a>
+                                                        </div>
+                                                        <div class="btn-group m-b-20">
+                                                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"><i class="fa fa-folder"></i> <b class="caret m-l-5"></b>
+                                                            </button>
+                                                            <div class="dropdown-menu"><span class="dropdown-header">Move to</span> <a class="dropdown-item" href="javascript: void(0);">Social</a> <a class="dropdown-item" href="javascript: void(0);">Promotions</a> <a class="dropdown-item" href="javascript: void(0);">Updates</a>
+                                                                <a class="dropdown-item" href="javascript: void(0);">Forums</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="btn-group m-b-20">
+                                                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"><i class="fa fa-tag"></i> <b class="caret m-l-5"></b>
+                                                            </button>
+                                                            <div class="dropdown-menu"><span class="dropdown-header">Label as:</span> <a class="dropdown-item" href="javascript: void(0);">Updates</a> <a class="dropdown-item" href="javascript: void(0);">Social</a> <a class="dropdown-item" href="javascript: void(0);">Promotions</a>
+                                                                <a class="dropdown-item" href="javascript: void(0);">Forums</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="btn-group m-b-20">
+                                                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown">More <span class="caret m-l-5"></span>
+                                                            </button>
+                                                            <div class="dropdown-menu"><span class="dropdown-header">More Option :</span> <a class="dropdown-item" href="javascript: void(0);">Mark as Unread</a> <a class="dropdown-item" href="javascript: void(0);">Add to Tasks</a> <a class="dropdown-item" href="javascript: void(0);">Add Star</a> <a class="dropdown-item" href="javascript: void(0);">Mute</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="compose-content mt-5">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div id="edit_sum_11" data-task_id="11" class=" m-b-40">abcde left....
+
+                                                                </div>
+
+                                                                <span><a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"
+														                        	class="edit_sm" data-edit="#edit_sum_11"  onclick="edit2(event)" ><i class="fa fa-pencil color-muted m-r-5" ></i> </a>
+														                        	<a data-toggle="tooltip" data-placement="top" title="" data-original-title="Close" 
+														                        	class="save_sm" data-edit="#edit_sum_11" onclick="save2(event)" ><i class="fa fa-close color-danger"></i></a>
+														                      </span>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-left m-t-15">
+                                                        <button class="btn btn-primary m-b-30 m-t-15 f-s-14 p-l-20 p-r-20 m-r-10" type="button"><i class="fa fa-paper-plane m-r-5"></i> Send</button>
+                                                        <button class="btn btn-dark m-b-30 m-t-15 f-s-14 p-l-20 p-r-20" type="button"><i class="ti-close m-r-5 f-s-12"></i> Discard</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end card_11-->
+
+                                </div>
+                                <!--end accordion-two-->
+
+                                <script>
+                                    function edit2(e) {
+                                        $($(e.currentTarget).data("edit")).addClass("click2edit")
+                                        edit()
+                                    }
+
+                                    function save2(e) {
+                                        save()
+                                        editField = $($(e.currentTarget).data("edit"))
+                                        editField.removeClass("click2edit")
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/CodeIgniter/index.php/tarefas/update_fields/" + editField.data("task_id"),
+                                            data: {
+                                                'id': editField.data("task_id"),
+                                                'detalhes': editField.html()
+                                            },
+                                            dataType: "json",
+                                            success: function(data) {
+                                                toast("success", "Teste OK", "Sucesso")
+                                            },
+
+                                            fail: function() {
+                                                toast("error", "Erro ao Salvar", "Erro")
+                                            }
+                                        })
+
+                                    }
+
+                                    function toast(type, message, title) {
+                                        toastr[type](message, title, {
+                                            positionClass: "toast-top-center",
+                                            timeOut: 5e3,
+                                            closeButton: !0,
+                                            debug: !1,
+                                            newestOnTop: !0,
+                                            progressBar: !0,
+                                            preventDuplicates: !0,
+                                            onclick: null,
+                                            showDuration: "300",
+                                            hideDuration: "1000",
+                                            extendedTimeOut: "1000",
+                                            showEasing: "swing",
+                                            hideEasing: "linear",
+                                            showMethod: "fadeIn",
+                                            hideMethod: "fadeOut",
+                                            tapToDismiss: !1
+                                        })
+
+                                    }
+                                </script>
+
+                                <script type="text/javascript">
+                                    $(document).ready(function() {
+                                        $('.m_editabl_e[data-task_id][data-field]').on('click', function() {
+                                            var that = $(this);
+                                            if (that.find('input').length > 0) {
+                                                return;
+                                            }
+                                            var currentText = that.text();
+
+                                            var $input = $('<input>').val(currentText)
+                                                .css({
+                                                    'position': 'absolute',
+                                                    top: '0px',
+                                                    left: '0px',
+                                                    width: that.width(),
+                                                    height: that.height(),
+                                                    opacity: 0.9,
+                                                    padding: '10px'
+                                                });
+
+                                            $(this).append($input);
+
+                                            // Handle outside click
+                                            $(document).click(function(event) {
+                                                if (!$(event.target).closest('.m_editable').length) {
+                                                    if ($input.val()) {
+                                                        that.text($input.val());
+                                                        field = that.data("field")
+                                                        fieldname = that.data("fieldname") ? that.data("fieldname") : ""
+                                                        data = {
+                                                            'id': that.data("task_id")
+                                                        }
+                                                        data[field] = $input.val()
+                                                        $.ajax({
+                                                            type: "POST",
+                                                            url: "/CodeIgniter/index.php/tarefas/update_fields/" + that.data("task_id"),
+                                                            data: data,
+                                                            dataType: "json",
+                                                            success: function(data) {
+                                                                console.log("Sucesso")
+                                                                toast("success", "Atualizado " + fieldname, "Sucesso")
+                                                            },
+
+                                                            fail: function() {
+                                                                console.log("Erro")
+                                                                toast("error", "Erro ao Atualizar " + fieldname, "Erro")
+                                                            }
+                                                        })
+                                                    }
+                                                    that.find('input').remove();
+                                                }
+                                            });
+                                        });
+                                    });
+                                </script>
+                                <!--end html block-->
+
+                                <!-- js task -->
+                                <!-- abcd -->
+                                <!-- js class -->
+                                <script type="text/javascript">
+                                    window.timeload = new Date()
+
+                                    class Tarefa {
+                                        verbose = false
+                                        element
+                                        constructor(id) {
+                                            this.element = $(".Tarefa[data-id=" + id + "]")
+                                        }
+                                        foo() {
+                                            return 'bar';
+                                        }
+
+                                        static TarefaAtiva() {
+                                            var activeTask = $(".task_running")
+                                            if (activeTask.length) return new Tarefa(activeTask.data("id"))
+                                            return null
+                                        }
+
+                                        get ID() {
+                                            return this.element.data("id");
+                                        }
+                                        get UserID() {
+                                            return this.element.data("user_id");
+
+                                        }
+
+                                        get isRunning() {
+                                            //return this.element.find(".work_running").length == 1
+                                            return this.element.hasClass("task_running")
+                                        }
+
+                                        get TempoEstimado() {
+                                            return this.element.find("._estimado").text()
+                                        }
+                                        get TempoEstimadoInSeconds() {
+                                            return Timer.getStrTimeToSeconds(this.TempoEstimado)
+                                        }
+                                        refreshTimer() {
+                                            var t = this.TempoRunningInSeconds
+                                            if (this.verbose) console.log(t)
+                                            this.Timer.attr('data-time', t);
+                                            this.Timer.text(this.UpdatedTime);
+                                        }
+                                        get UpdatedTime() {
+                                            return Timer.getStrTime(this.TempoRunningInSeconds)
+                                        }
+
+                                        get TempoRunningInSeconds() {
+                                            //var diff = this.isRunning?	Timer.diffTimeLoadInSec()*1000 :0;
+                                            var diff = this.isRunning ? 1000 : 0;
+                                            var time = this.TempoDate.getTime()
+                                            if (this.verbose) console.log("diff=" + diff)
+                                            if (this.verbose) console.log("Time=" + time)
+                                            return new Date(time + diff).getTime() / 1000
+                                        }
+                                        get TempoDate() {
+                                            if (this.verbose) console.log("TempoString=" + this.TempoString)
+                                            return new Date('1970-01-01T' + this.TempoString + 'Z');
+                                        }
+
+                                        get TempoInSeconds() {
+                                            return Timer.getStrTimeToSeconds(this.TempoString)
+                                        }
+                                        get TempoString() {
+                                            return this.Timer.text()
+                                        }
+                                        get Timer() {
+                                            return this.element.find(".timer")
+                                        }
+                                        get time() {
+
+                                        }
+
+                                        clickRank() {
+                                            console.log(this.element.index())
+                                        }
+                                        clickPlay() {
+                                            if (this.isRunning) this.stop();
+                                            else this.start();
+                                            return;
+                                        }
+
+                                        stop() {
+                                            if (!this.isRunning) return;
+                                            var act = "stop";
+                                            console.log("Action " + act);
+
+                                            //if(!this.isRunning) window.timeload = new Date();
+
+                                            //alert(user_id);
+                                            //alert(task_id);
+
+                                            var icon = this.element.find(" .work_icon") // Extract info from data-* attributes
+                                            this.start_post("/CodeIgniter/index.php/tarefas/stop_work", {
+                                                success: function(e) {
+                                                    icon.removeClass('fa-pause').addClass('fa-play');
+                                                    toast("success", "Iniciado com sucesso", "Sucesso")
+                                                },
+                                                fail: function(e) {
+                                                    toast("error", "Erro ao Executar " + e, "Erro")
+                                                }
+                                            });
+                                        }
+                                        start() {
+                                            if (this.isRunning) return;
+                                            var act = "play";
+                                            console.log("Action " + act);
+
+                                            if (!this.isRunning) window.timeload = new Date();
+
+                                            //alert(user_id);
+                                            //alert(task_id);
+
+                                            var icon = this.element.find(" .work_icon") // Extract info from data-* attributes
+                                            var tarefa = this
+                                            this.start_post("/CodeIgniter/index.php/tarefas/start_work", {
+                                                success: function(e) {
+
+                                                    icon.removeClass('fa-play').addClass('fa-pause');
+                                                    tarefa.element.addClass('task_running');
+
+                                                    window.TarefaAtiva = Tarefa.TarefaAtiva();
+                                                    toast("success", "Iniciado com sucesso", "Sucesso")
+                                                },
+                                                fail: function(e) {
+                                                    toast("error", "Erro ao Executar " + e, "Erro")
+                                                }
+                                            });
+                                        }
+
+                                        start_post(path, callback) {
+                                            var tarefa = this;
+                                            console.log("Path " + path);
+                                            $.post(path, {
+                                                        'usuario_id': this.UserID,
+                                                        'task_id': this.ID
+                                                    },
+                                                    function(data) {
+
+                                                        // Remove todos os Plays
+                                                        tarefa.stopAll()
+
+                                                        callback.success(data)
+                                                            //alert("Sucesso");
+                                                            //alert(data);
+                                                    })
+                                                .done(function() {
+                                                    //alert( "second success" );
+                                                })
+                                                .fail(function(e) {
+                                                    console.log(e);
+                                                    callback.fail(e);
+
+                                                })
+                                                .always(function() {
+                                                    //alert( "finished" );
+                                                });
+                                        }
+
+                                        set Rank(rank = 0) {
+                                            if (rank == 0) rank = this.index + 1;
+                                            this.update_ajax("rank", rank, {
+                                                success: function(e) {
+                                                    toast("success", "Rank Atualizado", "Sucesso")
+                                                },
+                                                fail: function(e) {
+                                                    toast("error", "Erro ao Atualizar " + e, "Erro")
+                                                }
+                                            })
+                                        }
+
+                                        static getTarefa(e) {
+                                            return new Tarefa(e.data("id"));
+                                        }
+
+                                        get index() {
+                                            return this.element.index();
+                                        }
+
+                                        update_ajax(field, val, callback, dataType = "json") {
+                                            var id = this.ID
+                                            var data = {
+                                                'id': id
+                                            }
+                                            data[field] = val;
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "/CodeIgniter/index.php/tarefas/update_fields/" + id,
+                                                data: data,
+                                                dataType: dataType,
+                                                success: function(data) {
+                                                    console.log("Sucesso")
+                                                    callback.success(data)
+                                                        //toast("success", "Atualizado " + fieldname, "Sucesso")
+                                                },
+
+                                                fail: function(e) {
+                                                    console.log("Erro")
+                                                    callback.fail(e)
+                                                        //toast("error", "Erro ao Atualizar " + fieldname, "Erro")
+                                                }
+                                            });
+                                        }
+                                        stopAll() {
+                                            $(".work_icon").removeClass('fa-pause').addClass('fa-play');
+                                            $(".task_running .work_icon").removeClass('fa-pause').addClass('fa-play');
+                                            $(".task_running").removeClass('task_running');
+                                        }
+                                    }
+
+                                    class Timer {
+                                        static diffTimeLoadInSec() {
+                                            return this.timeInSec(this.diffTimeLoad)
+                                        }
+                                        static timeInSec(d) {
+                                            return (d - d % 1000) / 1000
+                                        }
+                                        static get diffTimeLoad() {
+                                            return this.diffTime(new Date(), this.TIMELOAD)
+                                        }
+
+                                        static get TIMELOAD() {
+                                            return timeload;
+                                        }
+
+                                        static diffTime(d1, d2) {
+                                            return d1 - d2
+                                        }
+
+                                        static getStrTime(timeInSeconds) {
+                                            var seconds = timeInSeconds % 60
+                                            var tms_ = (timeInSeconds - seconds)
+                                            var mtotal = (tms_) / 60
+                                            var minutes = (mtotal) % 60
+                                            var hours = (mtotal - minutes) / 60
+                                            if (hours < 10) {
+                                                hours = "0" + hours;
+                                            }
+                                            if (minutes < 10) {
+                                                minutes = "0" + minutes;
+                                            }
+                                            if (seconds < 10) {
+                                                seconds = "0" + seconds;
+                                            }
+                                            var strtime = hours + ":" + minutes + ":" + seconds
+                                            return strtime;
+                                        }
+                                        static getStrTimeToSeconds(timeString) {
+                                            return new Date('1970-01-01T' + timeString + 'Z').getTime() / 1000;
+                                        }
+                                    };
+
+                                    TarefaAtiva = Tarefa.TarefaAtiva();
+
+                                    function refreshAtiva() {
+                                        if (TarefaAtiva) TarefaAtiva.refreshTimer();
+                                    };
+                                    window.onload = function(e) {
+                                        setInterval(refreshAtiva, 1000);
+                                    };
+
+                                    $('.start_work').click(function(e) {
+                                        var button = $(e.currentTarget)
+                                        var task_id = button.data('task_id') // Extract info from data-* attributes
+                                        return new Tarefa(task_id).clickPlay();
+                                    })
+                                    $('.rank').click(function(e) {
+                                        var target = $(e.currentTarget)
+                                        var task_id = target.data('task_id') // Extract info from data-* attributes
+                                        return new Tarefa(task_id).clickRank();
+                                    });
+                                </script>
+                                <!-- js Class -->
+                                <!-- js time -->
+                                <script>
+                                    //window.onload = function(e){
+                                    //    setInterval(updateTime, 1000);
+                                    //};
+                                </script>
+
+                                <!-- end js time -->
+                                <!-- js drag -->
+                                <script>
+                                    function dragStart(e) {
+                                        //this.refs['update'].updateGoal();
+                                        console.log("drag start");
+                                        this.dragged = e.currentTarget;
+                                        e.dataTransfer.effectAllowed = 'move';
+                                        e.dataTransfer.setData("text/html", e.currentTarget);
+                                    };
+
+                                    function dragEnd(e) {
+                                        console.log("drag end");
+                                        this.dragged.style.display = "block";
+                                        //placeholder.remove();
+                                        // Update data
+                                        //var data = this.state.data;
+                                        var from = Number(this.dragged.dataset.id);
+                                        var to = Number(this.over.dataset.id);
+
+                                        console.log($(this.dragged).index());
+
+                                        if (from < to) to--;
+                                        if (this.nodePlacement == "after") to++;
+                                        /*data.splice(to, 0, data.splice(from, 1)[0]);
+                                        this.setState({
+                                            data: data
+                                        });
+                                        */
+                                    }
+
+                                    function dragOver(e) {
+                                        console.log(this.dragged);
+
+                                        //return;
+                                        e.preventDefault();
+                                        this.dragged.style.display = "none";
+                                        if (!$(event.target).hasClass("task")) return;
+                                        console.log("drag Over");
+                                        console.log(e.target.className);
+                                        this.over = e.target;
+                                        // Inside the dragOver method
+                                        var relY = e.pageY - this.over.offsetTop;
+                                        var height = this.over.offsetHeight / 2;
+                                        var relX = e.pageX - this.over.offsetLeft;
+                                        var width = this.over.offsetWidth / 2;
+                                        var parent = e.target.parentNode;
+
+                                        console.log(e);
+                                        console.log(relY);
+                                        console.log(height);
+                                        if (relY >= height) {
+                                            this.nodePlacement = "after";
+                                            parent.insertBefore(this.dragged, e.target.nextElementSibling);
+                                            console.log(this.nodePlacement);
+                                        } else {
+                                            this.nodePlacement = "before";
+                                            console.log(this.nodePlacement);
+                                            parent.insertBefore(this.dragged, e.target);
+                                        }
+                                        //jQuery("#card12").before(jQuery("#card20"));
+                                        //
+                                    };
+                                </script>
+
+                                <!-- end js drag -->
+
+                                <!-- js rank -->
+                                <script>
+                                    // Ordena os Cards de Acordo com a alteracao do Rank
+                                    function sortCards() {
+
+                                        var myArray = $(".SubTarefas_group .task");
+                                        var count = 0;
+                                        myArray.sort(function(a, b) {
+                                                //console.log($(a).index())
+                                                //return parseInt($(a).find('.rankelement').text()) > parseInt($(b).find('.rankelement').text());
+                                                // convert to integers from strings
+                                                a = parseInt($(a).find('.rankelement').text(), 10);
+                                                b = parseInt($(b).find('.rankelement').text(), 10);
+                                                console.log(a)
+                                                console.log(b)
+                                                count += 2;
+                                                // compare
+                                                if (a > b) {
+                                                    return 1;
+                                                } else if (a < b) {
+                                                    return -1;
+                                                } else {
+                                                    return 0;
+                                                }
+                                            }) //.appendTo('.SubTarefas_group');
+
+                                        $(".SubTarefas_group").append(myArray);
+                                    }
+
+                                    // Funcao de Controle do Rank
+                                    $(document).ready(function() {
+                                        console.log('cadastrando submit')
+                                        $(".rank_btn").click(function() {
+                                            console.log('submit')
+                                            form_id = $(this).data('form');
+                                            var form = $("#" + form_id) // Extract info from data-* attributes
+                                            element_id = $(this).data('element');
+                                            var element = $("#" + element_id) // Extract info from data-* attributes
+
+                                            // do the extra stuff here
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "/CodeIgniter/index.php/tarefas/update_rank",
+                                                data: $(form).serialize(),
+                                                dataType: "json",
+                                                success: function(data) {
+                                                    $('.simple-sucess').fadeIn(100).show();
+                                                    $('.contact_form').fadeOut(100).hide();
+                                                    $('.simple_error').fadeOut(100).hide();
+                                                    element.text(data.rank)
+                                                    sortCards()
+                                                },
+
+                                                fail: function() {
+                                                    alert("Erro");
+                                                }
+                                            })
+
+                                        })
+                                    });
+                                </script>
+                                <!-- end js rank -->
+
+                                <!-- end js task -->
+
+                                <!--END Show Entries-->
+                                <!--end Block Show Entries-->
+                            </div>
+                        </div>
+                        <!-- /# card -->
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- #/ container -->
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+        <!--**********************************
+            Footer start
+        ***********************************-->
+        <div class="footer">
+            <div class="copyright">
+                <p>Copyright &copy; Designed & Developed by <a href="https://themeforest.net/user/quixlab">Quixlab</a> 2018</p>
+            </div>
+        </div>
+        <!--**********************************
+            Footer end
+        ***********************************-->
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+    <!-- Tarefas Index -->
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <script src="/CodeIgniter/plugins/common/common.min.js"></script>
+    <script src="/CodeIgniter/js/custom.min.js"></script>
+    <script src="/CodeIgniter/js/settings.js"></script>
+    <script src="/CodeIgniter/js/gleek.js"></script>
+    <script src="/CodeIgniter/js/styleSwitcher.js"></script>
+
+    <script src="/CodeIgniter/plugins/nestable/js/jquery.nestable.js"></script>
+    <script src="/CodeIgniter/plugins/nestable/js/nestable.init.js"></script>
+
+    <script src="/CodeIgniter/plugins/summernote/dist/summernote.min.js"></script>
+    <script src="/CodeIgniter/plugins/summernote/dist/summernote-init.js"></script>
+
+    <!-- Toastr -->
+    <script src="/CodeIgniter/plugins/toastr/js/toastr.min.js"></script>
+    <script src="/CodeIgniter/plugins/toastr/js/toastr.init.js"></script>
+
+    <script>
+        $('#createSubmit1').click(function(e) {
+            e.preventDefault();
+            alert($('#task-title').val());
+            ser = $('#createForm').serialize();
+            alert(ser);
+            $.post("/CodeIgniter/index.php/create_tarefa",
+                $('#createForm').serialize(),
+                function(data, status, xhr) {
+                    // do something here with response;
+                    alert(data);
+                    alert(status);
+                    alert(xhr);
+                });
+
+        });
+    </script>
+
+</body>
+
 </html>

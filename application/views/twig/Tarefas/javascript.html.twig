@@ -1,0 +1,1165 @@
+{% block js_Class %}
+ <!-- js class -->
+ 	<script type="text/javascript" src="{{ asset("js/MVC.js") }}"></script>
+	<script type="text/javascript">
+
+		var GlobalEvents = new EventEmitter();
+		
+		function ma_toggle(selector){
+			$(selector).toggle()
+		};
+		window.timeload = new Date()
+
+		window.addEventListener('load', () => {
+			/*
+			  const model = new ListModel(['node.js', 'react']),
+			    view = new ListView(model, {
+			      'list' : document.getElementById('list'),
+			      'addButton' : document.getElementById('plusBtn'), 
+			      'delButton' : document.getElementById('minusBtn')
+			    }),
+			    controller = new ListController(model, view);
+
+			  view.show();
+			  */
+			data = {{entries | json_encode|raw}};
+			window.controllers = {}
+			$(".Tarefa").map((item,task) => {
+				tmodel = new TarefaModel(data[item]);
+				tView = new TarefaView(tmodel, 
+				{
+					'task' : $(task), 
+					'runButton': $(task).find(".Trabalhar"), 
+					'stopButton': $(task).find(".Entregar"), 
+					'tags': $(task).find(".Tags"),
+					'tags': $(task).find(".Tags"),
+				});
+				tController = new TarefaController(tmodel, tView)
+				window.controllers[$(task).data("id")] = tController;
+
+			});
+
+		});
+		class TarefaModel extends EventEmitter{
+			constructor(data) {
+				super();
+				this._data = data || [];
+				GlobalEvents.on('stop', () => this.stop())
+			}
+
+			get TaskData()
+			{
+				return this._data;
+			}
+			static activeID()
+			{
+				var activeTask = $(".task_running")
+			 	if(activeTask.length) return activeTask.data("id");
+			 	return -1;
+			}
+			get isRunning()
+			{
+	            //TODO Revisar tarefa ativa
+	            var actID = TarefaModel.activeID();
+	            console.log("Active ID="+actID)
+				return actID == this.ID;
+			}
+
+			set Tags(tags)
+			{
+
+				console.log("updating Tags " + tags);
+				console.log("id=" + this.ID);
+				this.call_ajax("{{ path('tarefas/set_tags/') }}"+ this.ID, "update.Tags", "tags", tags)//,  
+				return;
+				c = {
+	            	success: function(e)
+	            	{
+	            		//alert(e);
+						console.log("Success ");
+						console.log(e);
+		                toast("success", "Tags Atualizadas "+ e, "Sucesso")
+		                var tags = e.res.map(value => value.tag);
+
+		                var tagshtml = '<span class="badge badge-pill gradient-1 " aria-hidden="true">'+ 
+		                	tags.join('</span><span class="badge badge-pill gradient-1 " aria-hidden="true">') +
+		                	"</span>"         	;
+		                $(element).find(".Tags a").html(tagshtml)
+
+
+	            	},
+	            	fail: function (e)
+	            	{
+						console.log("Fail " + e);
+		                toast("error", "Erro ao Atualizar " + e, "Erro")
+	            	}
+	            }
+
+			}
+
+			set Data(data)
+			{
+				console.log("updating Data " + data);
+				console.log("id=" + this.ID);
+				this.update_ajax("data", data)
+			}
+
+			set Estimado(estimado)
+			{
+				console.log("updating Esforco Estimado " + estimado);
+				console.log("id=" + this.ID);
+				this.update_ajax("tempo_estimado", estimado)
+			}
+
+			set Titulo(titulo)
+			{
+				console.log("updating Titulo " + titulo);
+				console.log("id=" + this.ID);
+				this.update_ajax("titulo", titulo)
+			}
+
+			set Rank(rank)
+			{
+
+				console.log("updating Rank " + rank);
+				console.log("id=" + this.ID);
+				this.update_ajax("rank", rank)
+			}
+
+			get ID()
+			{
+				return this.TaskData.id;
+			}
+
+			get UserID()
+			{
+				return this.TaskData.cli_id;
+			}
+
+			start()
+			{
+				if(this.isRunning) return;
+				console.log("Model start " + this.ID)
+				GlobalEvents.emit("stop");
+				this.start_post("{{ path('tarefas/start_work') }}", "taskStarted"); 
+			}
+
+			stop()
+			{
+				if(!this.isRunning) return;
+				console.log("Model stop " + this.ID)
+				this.start_post("{{ path('tarefas/stop_work') }}", "taskPaused"); 
+			}
+
+			start_post(path, event, callback)
+			{
+				console.log("Model start_post ajax " + this.ID);
+				console.log("Path "+path);
+	            var model = this;
+				$.post(path, 
+	                {'usuario_id' : this.UserID, 'task_id':this.ID },
+	                function(data) {
+						console.log("Model start_post ajax success")
+	                	model.emit(event);
+		            	if(callback) callback.success(e);
+	            	})
+	            	.done(function() {
+						console.log("Model start_post ajax done")
+		                //alert( "second success" );
+		            })
+		            .fail(function(e) {
+						console.log("Model start_post ajax fail")
+		            	console.log(e);
+	                	model.emit('runButtonError');
+		            	if(callback) callback.fail(e);
+		                
+		            })
+		            .always(function() {
+						console.log("Model start_post ajax always")
+		                //alert( "finished" );
+		            });
+			}
+
+
+			update_ajax(field, val, callback, dataType="json")
+			{
+				return this.call_ajax("{{ path('tarefas/update_fields/') }}"+ this.ID, "update."+field, field, val, callback, dataType);
+			}
+
+			call_ajax(path_url, event,  field, val, callback, dataType="json")
+			{
+	            var model = this;
+				console.log("ajax " + path_url);
+				console.log("field " + field);
+				console.log("val " + val);
+				var id = this.ID
+                var data = {'id' : id}
+                data[field]= val;
+				$.ajax({
+				    type: "POST",
+				      url: path_url,
+				      data: data,
+				      dataType: dataType,
+				      success: function(data) {
+				      	console.log("Sucesso")
+	                	model.emit(event, {"data":data, "value": val});
+				      	if(callback) callback.success(data)
+				        //toast("success", "Atualizado " + fieldname, "Sucesso")
+				      },
+				      
+				      fail: function(e) {
+				      	console.log("Erro")
+				      	if(callback) callback.fail(e)
+	                	model.emit("AjaxError");
+				        //toast("error", "Erro ao Atualizar " + fieldname, "Erro")
+				      },
+				      always: function(e) {
+				      	console.log("Always")
+				        //toast("warning", "always Called" , "always")
+				      },
+				      done: function(e) {
+				      	console.log("Done")
+				        //toast("warning", "done Called" , "done")
+				      }
+				});
+			}
+		}
+
+		class EditView extends EventEmitter{
+			constructor(model, prop, event, elements, callback) {
+				super();
+				this._model = model;
+				this._prop = prop;
+				this._elements = elements;
+				this._callback = callback;
+
+
+				this.Root.find(".edit").on('click',
+					e => this.toggle());
+				this.Root.find("input").on('keypress',
+					e => this.key(e));
+				this.Root.find(".save").on('click',
+					e => this.save());
+				this.Root.find(".cancel").on('click',
+					e => this.toggle());
+
+				model.on(event, (data) => this.update(data));
+				return;
+			}
+			get Root()
+			{
+				return this._elements.root;
+			}
+			get Input()
+			{
+				return this.Root.find("input");
+			}
+			get SpanInput()
+			{
+				return this.Root.children("span");
+			}
+			toggle()
+			{
+				console.log("EditView.toggle")
+				var mcolapse = this.Root.find(".multi-collapse");
+	        	//var input = span.find("input");
+	        	console.log(mcolapse)
+
+		        $(mcolapse).toggle()
+			}
+			save(e)
+			{
+        		this._model[this._prop] = this.Input.val();
+        		this.toggle();
+			}
+			key(e)
+			{
+				console.log(e.which);
+				if(e.which == 13) {
+			       	this.save(e);
+				}
+			}
+
+			update(data)
+			{
+				var res = this._callback(data.data, data.value)
+
+				this.Root.children("a").html(res)
+                toast("success", "Atualizacao Concluida", "Sucesso")
+			}
+
+			updateTags(data)
+			{
+                var tags = data.res.map((value) => value.tag);
+
+                var tagshtml = '<span class="badge badge-pill gradient-1 " aria-hidden="true">'+ 
+                	tags.join('</span><span class="badge badge-pill gradient-1 " aria-hidden="true">') +
+                	"</span>"         	;
+                
+                this.Root.children("a").html(tagshtml)
+                toast("success", "Tags Atualizadas", "Sucesso")
+                
+			}
+
+			updateData(vData)
+			{
+				console.log("Edit.updateData");
+				this.Root.children("a").html(vData.res.data)
+				toast("success", "Data Atualizada", "Sucesso")
+			}
+			updateTitulo(vData)
+			{
+				console.log("Edit.updateTitulo");
+				this.Root.children("a").html(this._model.ID + " - " + vData.res.titulo)
+				toast("success", "Titulo Atualizado", "Sucesso")
+			}
+
+
+			updateEsforco(data)
+			{
+				this.Root.children("a").html(data.res.tempo_estimado)
+				toast("success", "Esforco Atualizado", "Sucesso")
+			}
+		}
+
+		class TarefaView extends EventEmitter{
+			constructor(model, elements) {
+				super();
+				this._model = model;
+				this._elements = elements;
+				this._tagsView = new EditView(model, "Tags", "update.Tags", 
+					{"root":elements.task.find(".Tags")},
+					(data) => {
+		                var tags = data.res.map((value) => value.tag);
+
+		                var tagshtml = '<span class="badge badge-pill gradient-1 " aria-hidden="true">'+ 
+		                	tags.join('</span><span class="badge badge-pill gradient-1 " aria-hidden="true">') +
+		                	"</span>";
+		                return tagshtml;
+					} );
+				this._dateView = new EditView(model, "Data", "update.data", 
+					{"root":elements.task.find(".Data")},
+					(data) => {var da = data.res.data.split("-"); return da[2]+"/"+da[1]+"/"+da[0];} );
+				this._estimadoView = new EditView(model, "Estimado", "update.tempo_estimado", 
+					{"root":elements.task.find(".Estimado")},
+					(data) => data.res.tempo_estimado );
+				this._rankView = new EditView(model, "Rank", "update.rank", 
+					{"root":elements.task.find(".Rank")},
+					(data) => data.res.rank );
+				this.titulo = new EditView(model, "Titulo", "update.titulo", 
+					{"root":elements.task.find(".Titulo")},
+					(data) => this._model.ID + " - " + data.res.titulo );
+
+				model.on("update.rank", (data)=> this.index = data.data.res.rank - 1);
+
+
+				// attach model listeners
+				model.on('taskStarted', () => this.rebuildTask("start"))
+					.on('taskPaused', () => this.rebuildTask("pause"))
+					.on('taskStopped', () => this.rebuildTask("stop"))
+					.on('taskChanged', () => this.rebuildTask("changed"))
+					.on('runButtonError', () => this.runError());
+
+				// attach listeners to HTML controls
+				elements.task.on('change',
+					e => this.emit('taskModified', e.target.selectedIndex));
+				elements.runButton.on('click',
+					() => this.emit('runButtonClicked'));
+				elements.stopButton.on('click',
+					() => this.emit('stopButtonClicked'));
+				elements.task.on('dragover',
+					(e) => this.emit('dragOver', e));
+				elements.task.on('dragstart',
+					(e) => this.emit('dragStart', e));
+				elements.task.on('dragend',
+					(e) => this.emit('dragEnd', e));
+
+				/*ondragOver="dragOver(event)"
+	        ondragStart="dragStart(event)"
+	        ondragEnd="dragEnd(event)"*/
+			}
+			rebuildTask(obj){
+				var icon = this._elements.task.find(" .work_icon") // Extract info from data-* attributes
+				
+				if(obj=="start"){
+	                icon.removeClass('fa-play').addClass('fa-pause'); 
+	                this._elements.task.addClass('task_running');
+	                //TODO Revisar tarefa ativa
+	                window.TarefaAtiva = Tarefa.TarefaAtiva();
+	                this._elements.runButton.find("span").html("Pausar")
+	            }
+	            if(obj=="pause")
+	            {
+					icon.removeClass('fa-pause').addClass('fa-play');
+	                this._elements.runButton.find("span").html("Trabalhar")
+	                this._elements.task.removeClass('task_running');
+
+
+	                //$(".work_icon").removeClass('fa-pause').addClass('fa-play');
+	                //$(".task_running .work_icon").removeClass('fa-pause').addClass('fa-play');
+	                //$(".task_running").removeClass('task_running');
+				}
+			}
+
+
+			runError(e){
+				toast("error", "Erro ao Executar ", "Erro")
+			}
+
+			get index()
+			{
+				return this._elements.task.index();
+			}
+
+			set index(index)
+			{
+				var task = this._elements.task[0];
+				var parent = task.parentElement;
+				var ppos = parent.children[index];
+				parent.insertBefore(task, ppos);
+			}
+		}
+
+		class TarefaController {
+			constructor(model, view) {
+				this._model = model;
+				this._view = view;
+
+				//view.on('listModified', idx => this.updateSelected(idx));
+				view.on('runButtonClicked', () => this.runPauseTask());
+				view.on('stopButtonClicked', () => this.stopTask());
+				view.on('dragOver', (e) => this.dragOver(e));
+				view.on('dragStart', (e) => this.dragStart(e));
+				view.on('dragEnd', (e) => this.dragEnd(e));
+			}
+			get isRunning()
+			{
+				return this._model.isRunning;
+			}
+			runPauseTask(){
+				console.log("---------------------------")
+				console.log("Controller.RunPause Click")
+	            if(this.isRunning) this.stop();
+	            else this.start();
+	            return;
+
+			}
+
+			get index()
+			{
+				return this._view.index;
+			}
+			set Rank(rank=0)
+			{
+				if(rank==0) rank = this.index + 1;
+
+				this._model.Rank = rank;
+			}
+
+			stop()
+			{
+				if(!this.isRunning) return;
+				console.log("Controller.stop")
+				this._model.stop();
+				return;
+	            var act = "stop";
+	            console.log("Action "+act);
+
+	            //if(!this.isRunning) window.timeload = new Date();
+	                
+	            //alert(user_id);
+	            //alert(task_id);
+
+	            this.start_post("{{ path('tarefas/stop_work') }}", 
+	            {
+	            	success: function(e)
+	            	{
+		                
+		                toast("success", "Iniciado com sucesso", "Sucesso")
+	            	},
+	            	fail: function (e)
+	            	{
+		                toast("error", "Erro ao Executar " + e, "Erro")
+	            	}
+	            });
+			}
+
+			start()
+			{
+				if(this.isRunning) return;
+				console.log("Controller.start")
+
+				this._model.start();
+				return;
+				// reset Timeload(model?)
+				// Atualiza Modelo(ajax?)
+				//  atualiza Visao(Classes e icones)
+				// Atualiza Tarefa Ativa
+				// 	            
+	            var act = "play";
+	            console.log("Action "+act);
+
+	            if(!this.isRunning) window.timeload = new Date();
+	                
+	            //alert(user_id);
+	            //alert(task_id);
+
+				var tarefa = this
+	            this.start_post("{{ path('tarefas/start_work') }}", 
+	            {
+	            	success: function(e)
+	            	{
+
+		                icon.removeClass('fa-play').addClass('fa-pause'); 
+		                tarefa.element.addClass('task_running');
+
+		                window.TarefaAtiva = Tarefa.TarefaAtiva();
+		                toast("success", "Iniciado com sucesso", "Sucesso")
+	            	},
+	            	fail: function (e)
+	            	{
+		                toast("error", "Erro ao Executar " + e, "Erro")
+	            	}
+	            });
+			}
+			stopTask(){
+				console.log("stopClicked Controller");
+			}
+			/*
+			static get dragged() { return TarefaController.dragged; }
+			static set dragged(e) { TarefaController.dragged = e; }
+			static get over() { return TarefaController.over; }
+			static set over(e) { TarefaController.over = e; }
+			*/
+
+			dragStart(event) {
+                console.log("Drag Start " + this._model.ID);
+                //this.refs['update'].updateGoal();
+                console.log("drag start");
+                TarefaController.dragged = event.currentTarget;
+                event.originalEvent.dataTransfer.effectAllowed = 'move';
+                event.originalEvent.dataTransfer.setData("text/html", event.currentTarget);
+            };
+            dragEnd(event) {
+                console.log("Drag End " + this._model.ID);
+                console.log("drag end");
+
+                if(!TarefaController.over) return;
+                TarefaController.dragged.style.display = "block";
+                //placeholder.remove();
+                // Update data
+                //var data = this.state.data;
+                var from = Number(TarefaController.dragged.dataset.id);
+                var to = Number(TarefaController.over.dataset.id);
+
+                console.log($(TarefaController.dragged).index());
+            
+                if (from < to) to--;
+                if (TarefaController.nodePlacement == "after") to++;
+                /*data.splice(to, 0, data.splice(from, 1)[0]);
+                this.setState({
+                    data: data
+                });
+                */
+            }
+            dragOver(e){
+                console.log("Drag Over " + this._model.ID);
+                console.log(TarefaController.dragged);
+
+                
+                //return;
+                e.preventDefault();
+                TarefaController.dragged.style.display = "none";
+                var tarefa = e.target;
+                if (!$(event.target).hasClass("Tarefa")){
+                	//return;
+                	tarefa = $(event.target).parents("div.Tarefa");
+                	if(tarefa == TarefaController.over) return;
+                } 
+                console.log("drag Over");
+                console.log(tarefa);
+                console.log(tarefa.className);
+                TarefaController.over = tarefa[0];
+                // Inside the dragOver method
+                var relY = event.pageY - TarefaController.over.offsetTop;
+                var height = TarefaController.over.offsetHeight / 2;
+                var relX = event.pageX - TarefaController.over.offsetLeft;
+                var width = TarefaController.over.offsetWidth / 2;
+                var parent = tarefa[0].parentNode;
+            
+                console.log(event);
+                console.log(relY);
+                console.log(height);
+                //return;
+                if (relY >= height) {
+                	console.log("relY>height");
+                	console.log(parent);
+                	console.log(TarefaController.dragged);
+                	console.log(tarefa);
+                	console.log(tarefa.nextElementSibling);
+                    TarefaController.nodePlacement = "after";
+
+                	if(TarefaController.dragged == tarefa[0]) return;
+
+                    if(true) parent.insertBefore(TarefaController.dragged, tarefa[0].nextElementSibling);
+                    console.log(TarefaController.nodePlacement);
+                } else {
+                	console.log("else");
+                	console.log(parent);
+                	console.log(TarefaController.dragged);
+                	console.log(tarefa);
+                	console.log(tarefa[0]);
+                	console.log($(tarefa).nextElementSibling);
+
+                	if(TarefaController.dragged == tarefa[0]) return;
+
+                    TarefaController.nodePlacement = "before";
+                    console.log(TarefaController.nodePlacement);
+                    if(true)parent.insertBefore(TarefaController.dragged, tarefa[0]);
+                }
+                //jQuery("#card12").before(jQuery("#card20"));
+                    //
+            };
+
+		}
+
+		class Tarefa{
+			verbose = false
+			element
+			constructor(id) {
+			  	this.element = $(".Tarefa[data-id="+id+"]")
+				console.log("Tarefa id " + id);
+			}
+			foo() {
+				return 'bar';
+			 }
+
+			static TarefaAtiva()
+			{
+			 	var activeTask = $(".task_running")
+			 	if(activeTask.length) return new Tarefa(activeTask.data("id"))
+			 	return null
+			}
+
+			static bind(e)			 {
+				console.log("bind" );
+	        	var tarefa = $(e).parents("div.Tarefa")
+	        	var task_id = tarefa.data('id');
+	        	console.log("task_id " +task_id )
+	        	return new Tarefa(task_id);
+			}
+
+			get ID()
+			{
+				return this.element.data("id");
+			}
+			get UserID()
+			{
+				return this.element.data("user_id");
+			}
+
+			get isRunning()
+			{
+				//return this.element.find(".work_running").length == 1
+				return this.element.hasClass("task_running")
+			}
+
+			get TempoEstimado()
+			{
+				return this.element.find("._estimado").text()
+			}
+			
+			get TempoEstimadoInSeconds()
+			{
+				return Timer.getStrTimeToSeconds(this.TempoEstimado)
+			}
+			
+			refreshTimer()
+			{
+				var t = this.TempoRunningInSeconds
+				if(this.verbose) console.log(t)
+				this.Timer.attr('data-time', t);
+				this.Timer.text(this.UpdatedTime);
+			}
+			 get UpdatedTime()
+			 {
+			 	return Timer.getStrTime(this.TempoRunningInSeconds)
+			 }
+
+			 get TempoRunningInSeconds()
+			 {
+			 	//var diff = this.isRunning?	Timer.diffTimeLoadInSec()*1000 :0;
+			 	var diff = this.isRunning?	1000 :0;
+			 	var time = this.TempoDate.getTime()
+			 	if(this.verbose) console.log("diff="+diff)
+			 	if(this.verbose) console.log("Time=" + time)
+			 	return new Date(time + diff).getTime()/1000
+			 }
+			 get TempoDate()
+			 {
+			 	if(this.verbose) console.log("TempoString=" + this.TempoString)
+			 	return new Date('1970-01-01T' + this.TempoString + 'Z');
+			 }
+
+			 get TempoInSeconds()
+			 {
+			 	return Timer.getStrTimeToSeconds(this.TempoString)
+			 }
+			 get TempoString()
+			 {
+			 	return this.Timer.text()
+			 }
+			 get Timer()
+			 {
+			 	return this.element.find(".timer")
+			 }
+			
+			get time()
+			{
+
+			}
+
+			clickRank(){
+				console.log(this.element.index())
+			}
+
+			clickPlay()
+			{
+	            if(this.isRunning) this.stop();
+	            else this.start();
+	            return;
+			}
+
+			stop()
+			{
+				if(!this.isRunning) return;
+	            var act = "stop";
+	            console.log("Action "+act);
+
+	            //if(!this.isRunning) window.timeload = new Date();
+	                
+	            //alert(user_id);
+	            //alert(task_id);
+
+				var icon = this.element.find(" .work_icon") // Extract info from data-* attributes
+	            this.start_post("{{ path('tarefas/stop_work') }}", 
+	            {
+	            	success: function(e)
+	            	{
+		                icon.removeClass('fa-pause').addClass('fa-play');
+		                toast("success", "Iniciado com sucesso", "Sucesso")
+	            	},
+	            	fail: function (e)
+	            	{
+		                toast("error", "Erro ao Executar " + e, "Erro")
+	            	}
+	            });
+			}
+
+			start()
+			{
+				if(this.isRunning) return;	            
+	            var act = "play";
+	            console.log("Action "+act);
+
+	            if(!this.isRunning) window.timeload = new Date();
+	                
+	            //alert(user_id);
+	            //alert(task_id);
+
+				var icon = this.element.find(" .work_icon") // Extract info from data-* attributes
+				var tarefa = this
+	            this.start_post("{{ path('tarefas/start_work') }}", 
+	            {
+	            	success: function(e)
+	            	{
+
+		                icon.removeClass('fa-play').addClass('fa-pause'); 
+		                tarefa.element.addClass('task_running');
+
+		                window.TarefaAtiva = Tarefa.TarefaAtiva();
+		                toast("success", "Iniciado com sucesso", "Sucesso")
+	            	},
+	            	fail: function (e)
+	            	{
+		                toast("error", "Erro ao Executar " + e, "Erro")
+	            	}
+	            });
+			}
+
+			start_post(path, callback)
+			{
+				var tarefa = this;
+	            console.log("Path "+path);
+				$.post(path, 
+	                {'usuario_id' : this.UserID, 'task_id':this.ID },
+	                function(data) {
+	                
+		                // Remove todos os Plays
+		                tarefa.stopAll()
+
+		            	callback.success(data)
+		                //alert("Sucesso");
+		                //alert(data);
+	            	})
+	            	.done(function() {
+		                //alert( "second success" );
+		            })
+		            .fail(function(e) {
+		            	console.log(e);
+		            	callback.fail(e);
+		                
+		            })
+		            .always(function() {
+		                //alert( "finished" );
+		            });
+			}
+
+			set Rank(rank=0)
+			{
+				if(rank==0) rank = this.index + 1;
+				this.update_ajax("rank", rank, 
+					{
+		            	success: function(e)
+		            	{
+			                toast("success", "Rank Atualizado", "Sucesso")
+		            	},
+		            	fail: function (e)
+		            	{
+			                toast("error", "Erro ao Atualizar " + e, "Erro")
+		            	}
+		            }
+	            	)
+			}
+
+			get T_Tags()
+			{
+				var tarefa = this;
+				return {
+					root: function(){
+						var tag = tarefa.element.find(".Tags");
+						return tag;
+					},
+					input: function(){
+						var tag = this.root().find("input");
+						return tag;
+					},
+					spanInput: function(){
+						var tag = this.root().children("span");
+						return tag;
+					},
+					toggle: function()
+					{
+						//tarefa.toggleTags();
+						var mcolapse = this.root().find(".multi-collapse");
+			        	//var input = span.find("input");
+			        	console.log(mcolapse)
+
+				        ma_toggle(mcolapse)
+					},
+					save: function(e)
+					{
+		        		tarefa.Tags = this.input().val();
+		        		this.toggle();
+					},
+					key: function(e)
+					{
+					    if(e.which == 13) {
+				        	this.save(e);
+					    }
+					}
+				};
+			}
+
+			set Tags(tags)
+			{
+				var element = this.element;
+				console.log("updating Tags " + tags);
+				console.log("id=" + this.ID);
+				this.call_ajax("{{ path('tarefas/set_tags/') }}"+ this.ID, "tags", tags,  
+					{
+		            	success: function(e)
+		            	{
+		            		//alert(e);
+							console.log("Success ");
+							console.log(e);
+			                toast("success", "Tags Atualizadas "+ e, "Sucesso")
+			                var tags = e.res.map(value => value.tag);
+
+			                var tagshtml = '<span class="badge badge-pill gradient-1 " aria-hidden="true">'+ 
+			                	tags.join('</span><span class="badge badge-pill gradient-1 " aria-hidden="true">') +
+			                	"</span>"         	;
+			                $(element).find(".Tags a").html(tagshtml)
+
+
+		            	},
+		            	fail: function (e)
+		            	{
+							console.log("Fail " + e);
+			                toast("error", "Erro ao Atualizar " + e, "Erro")
+		            	}
+		            })
+			}
+
+
+			toggleTags(e)
+			{
+				alert("Deprecated")
+				return;
+				var span = this.element.find(".Tags .input_span");
+	        	//var input = span.find("input");
+	        	console.log(span)
+
+		        ma_toggle($(span).data('target'))
+			}
+
+
+			tagsKey(e)
+			{
+				alert("Deprecated")
+				return;
+			    if(e.which == 13) {
+			        //alert('You pressed enter!');
+		        	var target = $(e.currentTarget)
+		        	target.parent().find(".save").click()
+			    }
+
+			}
+
+
+			get DataInput()
+			{
+				var tag = this.element.find(".Data input");
+				return tag;
+			}
+
+			set Data(data)
+			{
+				var element = this.element;
+				console.log("updating Data " + data);
+				console.log("id=" + this.ID);
+				this.update_ajax("data", data,  
+					{
+		            	success: function(e)
+		            	{
+		            		//alert(e);
+							console.log("Success ");
+							console.log(e);
+			                toast("success", "Data Atualizada "+ e, "Sucesso")
+			                var data = e.res;
+
+			                var datahtml = data ;
+			                $(element).find(".Data a").html(datahtml)
+
+
+		            	},
+		            	fail: function (e)
+		            	{
+							console.log("Fail " + e);
+			                toast("error", "Erro ao Atualizar DAta " + e, "Erro")
+		            	}
+		            })
+			}
+
+
+			dataSave()
+			{
+        		this.Data = this.DataInput.val();
+        		this.toggleData();
+			}
+
+
+			toggleData(e)
+			{
+				var mcolapse = this.element.find(".Data .multi-collapse");
+	        	//var input = span.find("input");
+	        	console.log(mcolapse)
+
+		        ma_toggle(mcolapse)
+			}
+
+
+
+			dataKey(e)
+			{
+		   		if(e.which == 13) {
+		        	var target = $(e.currentTarget)
+		        	target.parent().find(".save").click()
+				}
+			}
+
+			static getTarefa(e)
+			{
+				return new Tarefa(e.data("id"));
+			}
+
+			get index()
+			{
+				return this.element.index() ;
+			}
+
+			update_ajax(field, val, callback, dataType="json")
+			{
+				return this.call_ajax("{{ path('tarefas/update_fields/') }}"+ this.ID, field, val, callback, dataType);
+			}
+
+			call_ajax(path_url, field, val, callback, dataType="json")
+			{
+				console.log("ajax " + path_url);
+				console.log("field " + field);
+				console.log("val " + val);
+				var id = this.ID
+                var data = {'id' : id}
+                data[field]= val;
+				$.ajax({
+				    type: "POST",
+				      url: path_url,
+				      data: data,
+				      dataType: dataType,
+				      success: function(data) {
+				      	console.log("Sucesso")
+				      	callback.success(data)
+				        //toast("success", "Atualizado " + fieldname, "Sucesso")
+				      },
+				      
+				      fail: function(e) {
+				      	console.log("Erro")
+				      	callback.fail(e)
+				        //toast("error", "Erro ao Atualizar " + fieldname, "Erro")
+				      },
+				      always: function(e) {
+				      	console.log("Always")
+				        toast("warning", "always Called" , "always")
+				      },
+				      done: function(e) {
+				      	console.log("Done")
+				        toast("warning", "done Called" , "done")
+				      }
+				});
+			}
+
+			stopAll()
+			{
+                $(".work_icon").removeClass('fa-pause').addClass('fa-play');
+                $(".task_running .work_icon").removeClass('fa-pause').addClass('fa-play');
+                $(".task_running").removeClass('task_running');
+			}
+		}
+
+		class Timer{
+			static diffTimeLoadInSec()
+			{
+				return this.timeInSec(this.diffTimeLoad)
+			}
+			static timeInSec(d)
+			{
+				return (d-d%1000)/1000
+			}
+			static get diffTimeLoad()
+			{
+				return this.diffTime(new Date(), this.TIMELOAD)
+			}
+
+			static get TIMELOAD()
+			{
+				return timeload;
+			}
+
+			static diffTime(d1, d2)
+			{
+				return d1 - d2
+			}
+
+			static getStrTime(timeInSeconds)
+			{
+				var seconds = timeInSeconds%60
+				var tms_= (timeInSeconds - seconds)
+				var mtotal = (tms_)/60
+				var minutes = (mtotal)%60
+				var hours  = (mtotal-minutes)/60
+				if (hours   < 10) {hours   = "0"+hours;}
+				if (minutes < 10) {minutes = "0"+minutes;}
+				if (seconds < 10) {seconds = "0"+seconds;}
+					var strtime = hours+":"+minutes+":"+seconds
+					return strtime;
+			}
+			static getStrTimeToSeconds(timeString)
+			{
+				return new Date('1970-01-01T' + timeString + 'Z').getTime()/1000;
+			}
+		};
+
+		TarefaAtiva = Tarefa.TarefaAtiva();
+
+		function refreshAtiva()
+		{
+			if(TarefaAtiva) TarefaAtiva.refreshTimer();
+		};
+		window.onload = function(e){
+            setInterval(refreshAtiva, 1000);
+        };
+
+        $('.start_works').click(function(e){
+        	return;
+        	var button = $(e.currentTarget)
+        	var task_id = button.data('task_id') // Extract info from data-* attributes
+        	return new Tarefa(task_id).clickPlay();
+        })
+        $('.rank').click(function(e){
+        	var target = $(e.currentTarget)
+        	var task_id = target.data('task_id') // Extract info from data-* attributes
+        	return new Tarefa(task_id).clickRank();
+        });
+
+        $('*[data-clicks]').on('click',function(e){
+	        /*var tarefa = $(e.currentTarget).parents("div.Tarefa")
+	        var task_id = tarefa.data('id');
+	        console.log("task_id " +task_id )
+        	var t = new Tarefa(task_id);
+        	*/
+        	var t = Tarefa.bind(e.currentTarget)
+        	var action = $(e.currentTarget).data("click")
+        	var actArray = action.split(".");
+        	if(actArray.length==1) t[actArray[0]](e);
+        	if(actArray.length==2) t[actArray[0]][actArray[1]](e);
+        });
+
+        $('*[data-keypresss]').on('keypress',function(e){
+	        /*var tarefa = $(e.currentTarget).parents("div.Tarefa")
+	        var task_id = tarefa.data('id');
+	        console.log("task_id " +task_id )
+        	var t = new Tarefa(task_id);
+        	*/
+        	var t = Tarefa.bind(e.currentTarget)
+        	var action = $(e.currentTarget).data("keypress")
+        	var actArray = action.split(".");
+        	if(actArray.length==1) t[actArray[0]](e);
+        	if(actArray.length==2) t[actArray[0]][actArray[1]](e);
+        });
+
+		$('.input_span i.ssave').on('click',function(e) {
+		        //alert('You pressed enter!');
+	        	console.log("click save" )
+	        	var tarefa = $(e.currentTarget).parents("div.Tarefa")
+	        	var task_id = tarefa.data('id');
+	        	console.log("task_id " +task_id )
+	        	//console.log(target.data('input_id'))
+	        	//var input = $(target.data('input_id')) // Extract info from data-* attributes
+	        	//var task_id = input.data('task_id') // Extract info from data-* attributes
+
+        		var t = new Tarefa(task_id);
+        		t.tagsSave(e);
+        		//alert($(e.currentTarget).val());
+
+		});
+		$('.Tag_isnput').on('keypress',function(e) {
+		    if(e.which == 13) {
+		        //alert('You pressed enter!');
+	        	var target = $(e.currentTarget)
+	        	target.parent().find(".save").click()
+		    }
+		});
+        
+	</script>
+ <!-- js Class -->
+{% endblock %}

@@ -1,0 +1,156 @@
+
+@import url("reset.css");
+/*@import url("global.css");
+@import url("flash.css");
+@import url("structure.css");
+*/
+@import url("style.css");
+
+/* -----------------------------------*/
+/* ---------->>> GLOBAL <<<-----------*/
+/* -----------------------------------*/
+h2 { }
+  #snapshot_box h2 {
+  padding: 0 0 6px 0;
+  font: bold 14px/14px "Verdana", sans-serif; }
+  #main_side h2 {
+  color: #444;
+  font: bold 14px/14px "Verdana", sans-serif; }
+  .sidetagselection h2 {
+  color: #fff;
+  font: bold 14px/14px "Verdana", sans-serif; }
+
+h3{}
+
+/* -----------------------------------*/
+/* ------->>> CARD TAREFAS <<<--------*/
+/* -----------------------------------*/
+
+/* -----------------------------------*/
+/* ------->>>  Structure   <<<--------*/
+/* -----------------------------------*/
+._Tarefa > div > * {
+	position:relative;
+  	left: 30px;
+  	padding: 1em 1em;
+}
+._Tarefa .Rank {
+  	left: 0px;
+}
+._Tarefa .Titulo {
+  	left: 10px;
+}
+._Tarefa .Info {
+  	/*position: absolute;
+  	left: 40px;
+  	top: 40px;
+  	*/
+  	display:block;
+}
+
+.Tarefa button{ 
+	background-color: white;
+	color:#49baec;
+	border:1px solid #49baec;
+}
+.borderRed{
+	border: 5px solid red;	
+}
+.Tarefa .ButtonContainer{
+
+	/*position:relative;
+	top:-50px;
+	left:-8px;
+	float:right;
+	*/
+	@include float-right;
+
+}
+
+._Tags
+{
+	position: relative;
+}
+._Tags input
+{
+	position: absolute;
+    /* top: 1PX; */
+    /*left: -55px;*/
+}
+._Tarefa .Progresso{
+	padding: 0;
+}
+
+
+/* -----------------------------------*/
+/* ------->>>  Typography   <<<--------*/
+/* -----------------------------------*/
+._Tarefa span
+{
+	font-sidse: 0.9em;
+}
+
+.Tarefa .Titulo a
+{
+	font-size: 0.7em;
+}
+._Tarefa .Info
+{
+	font-size: 0.7em;
+}
+
+.Tarefa .Entregar{
+	visibility: hidden;
+}
+.Tarefa:hover .Entregar
+{
+	visibility: visible;
+	/*background-color:White;*/
+}
+.Tarefa *
+{
+	font-size: 11px;
+}
+.Tarefa .Titulo
+{
+	font-size: 25px;
+}
+
+.Tarefa .Data a, 
+.Tarefa .Estimado a, 
+.Tarefa .Entrega a, 
+.Tarefa .Tags a, 
+.Tarefa .Status a
+{
+	color:#49baec;
+	border-bottom: 1px dashed #49baec;	 
+}
+._Tarefa a:link {
+  color: red;
+  text-decoration: underline;
+}
+
+/* visited link */
+._Tarefa a:visited {
+  color: blue;
+  text-decoration: underline;
+}
+
+/* mouse over link */
+._Tarefa a:hover {
+  color: #64c1f5;
+}
+
+/* selected link */
+._Tarefa a:active {
+  color: blue;
+}
+
+
+._Tarefa .Titulo a {
+  color: black;
+  text-decoration: none;
+}
+._Tarefa .Titulo a:hover {
+  text-decoration: underline;
+}

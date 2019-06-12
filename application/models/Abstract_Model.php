@@ -18,7 +18,8 @@ abstract class Abstract_model extends CI_Model {
 		return $this->get_by("id", $id);
 	}
 	
-	public function get_by_uuid($uuid) {
+	public function get_by_uuid($uuid) 
+	{
 		return $this->get_by("uuid", $uuid);
 	}
 	
@@ -35,7 +36,7 @@ abstract class Abstract_model extends CI_Model {
 
 
 	
-	public function get_all_by($field, $value, $_o = ["rank"=> "ASC"]) {
+	public function get_all_by($field, $value, $_o = []) {
 		
 		log_message('debug', __METHOD__);
 		log_message('debug', $field);
@@ -80,6 +81,43 @@ abstract class Abstract_model extends CI_Model {
 		$res = $query->result();
 		log_message('debug', $res);
 		return $res;
+	}
+	public function get_entries_array_in($condition = [], $order_by = [])
+	{
+
+		log_message('debug', __METHOD__);
+		log_message('debug', $condition);
+		foreach ($condition as $key => $value) {
+			if($value) $this->db->where_in($key, $value);
+		}
+		foreach($order_by as $a => $b)
+		{
+			$this->db->order_by($a, $b);
+		}
+		$query = $this->db->get($this->getDatabase());
+		$res = $query->result_array();
+		log_message('debug', $res);
+		return $res;
+
+	}
+
+	public function get_entries_array_not_in($condition = [], $order_by = [])
+	{
+
+		log_message('debug', __METHOD__);
+		log_message('debug', $condition);
+		foreach ($condition as $key => $value) {
+			if($value) $this->db->where_not_in($key, $value);
+		}
+		foreach($order_by as $a => $b)
+		{
+			$this->db->order_by($a, $b);
+		}
+		$query = $this->db->get($this->getDatabase());
+		$res = $query->result_array();
+		log_message('debug', $res);
+		return $res;
+
 	}
 	public function get_entries_array($condition = [], $order_by = []) {
 		//"parent_task" => null

@@ -41,6 +41,9 @@ abstract class CRUD_Controller extends base_controller {
 
 	protected function getCreateForm($data)
 	{
+		log_message('debug', __METHOD__);
+		log_message('debug', $data);
+
 		return $this->form($this->getName()+"/create", $data["entry"])
 			->submit("btn-submit", "Salvar")
 			->build();
@@ -161,7 +164,11 @@ abstract class CRUD_Controller extends base_controller {
 			]
 		];
 		*/
-		$file = $this->getTwigDefDir().'/create.html.twig';
+		//$file = $this->getTwigDefDir().'/create.html.twig';
+
+		$file = 'twig/default/edit.html.twig';
+		log_message('info', "Carregando Pagina $file");
+		log_message('debug', $data);
 		$this->twig->display($file, $data);
 	}
 	
@@ -195,10 +202,20 @@ abstract class CRUD_Controller extends base_controller {
 		
 		log_message('info', 'Carregando Objetos');
 		$notes = $this->getDefaultEntries();
+		//echo json_encode($notes);
+		//	return;
 		log_message('info', 'Resultado Obtido');
 		log_message('info', $notes);
 
 		$data['entries'] = $notes;
+
+		/*
+		$notesArray = [];
+		foreach ($arr as $value) {
+    		$notesArray[$value["id"]] = $value;
+    	}
+		$data['entriesMap'] = $notesArray;
+		*/
 		
 		log_message('debug', $data);
 		log_message('info', 'Preparando Dados de Controle');

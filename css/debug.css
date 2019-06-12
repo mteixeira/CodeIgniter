@@ -1,0 +1,19 @@
+.width100 { width: 100%; }
+  .width75 { width: 75%; }
+  .width50 { width: 50%; }
+  .floatLeft { float: left; }
+  .floatRight { float: right; }
+  .alignLeft { text-align: left; }
+  .alignRight { text-align: right; }
+.pad6{ padding:6px; }
+.padH6{ padding-top:6px; padding-bottom:6px; }
+.padH12{ padding-top:12px; padding-bottom:12px; }
+.padH24{ padding-top:24px; padding-bottom:24px; }
+
+.__align-items-center {
+  display: flex; 
+  align-items: center;  /*Aligns vertically center */
+  justify-content: center; /*Aligns horizontally center */
+}
+
+.marH10{ margin-top:10px; padding-bottom:10px; }

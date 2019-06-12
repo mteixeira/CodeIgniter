@@ -8,6 +8,7 @@ class Tarefas_Model extends Abstract_Model {
 	public $rank;
 	public $titulo;
 	public $detalhes;
+	public $project_id;
 	public $parent_task;
 	public $tipo_tarefa_id;
 	public $tempo_estimado;
@@ -30,7 +31,7 @@ class Tarefas_Model extends Abstract_Model {
 	}
 	
 
-	protected function getStatusList()
+	public function getStatusList()
 	{
 		return array(
 			'all' => array('Iniciada', 'Em Andamento', 'Concluida', "Cancelada"),
@@ -145,8 +146,9 @@ class Tarefas_Model extends Abstract_Model {
         $this->titulo  	= $data['titulo'];
         $this->rank  	= $data['rank'];
 		$this->detalhes = $data['detalhes'];
-		$this->tempo_estimado = $data['tempo_estimado'];
+		if(isset($data['tempo_estimado'])) $this->tempo_estimado = $data['tempo_estimado'];
 		$this->tipo_tarefa_id = $data['tipo_tarefa_id'];		
+		$this->project_id = $data['project_id'];		
         $this->parent_task = !empty($data['parent_task']) ? $data['parent_task'] : null;
 
         $this->cli_id  	= $data['cli_id'];
@@ -161,7 +163,7 @@ class Tarefas_Model extends Abstract_Model {
 		return $this->db->count_all_results($this->getDatabase());
 	}
 	
-	public function get_entries_by_status($status) {
+	public function get_entries_by_status($status, $order = ["rank"=> "ASC"]) {
 		$list = $this->getStatusList();
 		switch ($status) {
 			case "all":
@@ -182,8 +184,14 @@ class Tarefas_Model extends Abstract_Model {
 		}
 
 		if($statuses) $this->db->where_in('status', $statuses);
+		if($order) {
+			foreach($order as $a => $b)
+			{
+				$this->db->order_by($a, $b);
+			}
+		}
 		$query = $this->db->get($this->getDatabase());
-		return $query->result();
+		return $query->result_array();
 	}
 }
 ?>

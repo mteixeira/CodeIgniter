@@ -1,468 +1,598 @@
-{% block abc %}
+<!--Show Entries-->
+{% block html %}
+	<!--html block-->
+
+	<style>
+		.bb_t99{border-left: 5px solid #49baec;}
+		.bb_t98{border-left: 5px solid #99baec;}
+		{% for  Tipo in TiposTarefas_ids %}
+		.bb_t{{Tipo.id}}{border-left: 5px solid #{{Tipo.color}};}
+		{% endfor %}
+	</style>
+	<div id="accordion-two" class="accordion">
+		{#
+		    <div class="card">
+		        <div class="card-header">
+		            <h5 class="mb-0" data-toggle="collapse" data-target="#collapseOne1" aria-expanded="true" aria-controls="collapseOne1"><i class="fa" aria-hidden="true"></i> Accordion Header One</h5>
+		        </div>
+		        <div id="collapseOne1" class="collapse show" data-parent="#accordion-two">
+		            <div class="card-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.</div>
+		        </div>
+		    </div>
+		    <div class="card">
+		        <div class="card-header">
+		            <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseTwo2" aria-expanded="false" aria-controls="collapseTwo2"><i class="fa" aria-hidden="true"></i> Accordion Header Two</h5>
+		        </div>
+		        <div id="collapseTwo2" class="collapse" data-parent="#accordion-two">
+		            <div class="card-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.</div>
+		        </div>
+		    </div>
+		    <div class="card">
+		        <div class="card-header">
+		            <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseThree3" aria-expanded="false" aria-controls="collapseThree3"><i class="fa" aria-hidden="true"></i> Accordion Header Tne</h5>
+		        </div>
+		        <div id="collapseThree3" class="collapse" data-parent="#accordion-two">
+		            <div class="card-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.</div>
+		        </div>
+		    </div>
+	    #}
 
 
-<div id="accordion-two" class="accordion">
-	{#
-	    <div class="card">
-	        <div class="card-header">
-	            <h5 class="mb-0" data-toggle="collapse" data-target="#collapseOne1" aria-expanded="true" aria-controls="collapseOne1"><i class="fa" aria-hidden="true"></i> Accordion Header One</h5>
-	        </div>
-	        <div id="collapseOne1" class="collapse show" data-parent="#accordion-two">
-	            <div class="card-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.</div>
-	        </div>
-	    </div>
-	    <div class="card">
-	        <div class="card-header">
-	            <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseTwo2" aria-expanded="false" aria-controls="collapseTwo2"><i class="fa" aria-hidden="true"></i> Accordion Header Two</h5>
-	        </div>
-	        <div id="collapseTwo2" class="collapse" data-parent="#accordion-two">
-	            <div class="card-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.</div>
-	        </div>
-	    </div>
-	    <div class="card">
-	        <div class="card-header">
-	            <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseThree3" aria-expanded="false" aria-controls="collapseThree3"><i class="fa" aria-hidden="true"></i> Accordion Header Tne</h5>
-	        </div>
-	        <div id="collapseThree3" class="collapse" data-parent="#accordion-two">
-	            <div class="card-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.</div>
-	        </div>
-	    </div>
-    #}
-	{% for entry in entries  %}<!--for 1-->
-		{% set active_time = '' %}
-		{% set icon = 'fa-play' %}
-		{% set task = '' %}
-		{% if active_task_id == entry.id %}
-		    {% set active_time = 'active_time' %}
-		    {% set icon = 'fa-pause work_running' %}
-		    {% set task = 'task_running' %}
-		{% endif %}
+		{% for entry in entries|filter(v=>active_task_id == v.id)|merge(entries|filter(v=>active_task_id != v.id))  %}<!--for 1-->
+			{% set active_time = '' %}
+			{% set icon = 'fa-play' %}
+			{% set play_text = 'Trabalhar' %}
+			{% set task = '' %}
+			{% set is_active = (active_task_id == entry.id) %}
+			{% if is_active %}
+			    {% set active_time = 'active_time' %}
+			    {% set icon = 'fa-pause work_running' %}
+			    {% set task = 'task_running' %}
+				{% set play_text = 'Pausar' %}
+			{% endif %}
 
-		{% set time = "00:00:00" %}
-		{% if times[entry.id][1] %}
-		    {% set timeinSec = times[entry.id][0] %}
-		    {% set time = times[entry.id][1] %}
-		{% endif %}
-	    <div id="card_{{entry.id}}" class="card">
-	        <div class="border-left-primary card-header">
-	            <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseTwo_{{entry.id}}" aria-expanded="false" aria-controls="collapseTwo_{{entry.id}}"><i class="fa" aria-hidden="true"></i>
-	            <div class="row no-gutters">
-	            	<div class="h6 col-1">
-	            	 	<span class="badge badge-pill gradient-1 ">{{entry.rank}}</span>
-	            	</div>
-	            	<span class="h6 col-4">
-	            		 {{entry.id}} - {{ entry.titulo }}
-	            	</span> 
-	            	<div class="h6 col-1 progress no-gutters" style="height: 10px">
-	                    <div class="progress-bar gradient-1" style="width: 100%;" role="progressbar">	<span class="sr-only">10% Complete</span>
-	                    </div>
-	                </div> 
-	            	<span class="offset-1 col-1">
-	                	{{entry.tempo_estimado}}
-	            	</span> 
 
-	            	<div class="timer {{active_time}}  col-12 col-sm-10 col-md-2 align-self-center d-flex justify-content-around" data-time="{{time}}">{{ time }}</div>
+			{% set time = "00:00:00" %}
+			{% if times[entry.id][1] %}
+			    {% set time = times[entry.id][1] %}
+			{% endif %}
+			{% set timeInSec = getTimeInSeconds(time) %}
 
-	            	<div class="col-12 col-sm-1 col-md-1  align-items-center text-center">
-		                <button id="start_{{entry.id}}" class="start_work btn btn-primary btn-circle align-self-center" data-user_id='2' data-task_id="{{entry.id}}" data-card_id="card_{{entry.id}}">
-		                <i class="fas {{icon}} work_icon" id="icon_work_act_{{entry.id}}"></i> </button>
+			{% set tempo_estimado = entry.tempo_estimado=="00:00:00"? TiposTarefas_ids[entry.tipo_tarefa_id].esforco_estimado: entry.tempo_estimado %}
+			{% set tempoEstimadoInSeconds = getTimeInSeconds(tempo_estimado) %}
+			{% set perc = tempoEstimadoInSeconds? (timeInSec/tempoEstimadoInSeconds)*100 : 100 %}
+				<!--tempo {{timeInSec}}-->
+				<!--tempo Estimado {{entry.tempo_estimado}}-->
+				<!--tempo Padrao Estimado {{TiposTarefas_ids[entry.tipo_tarefa_id].esforco_estimado}}-->
+				<!--tempo Estimado in sec {{tempoEstimadoInSeconds}}-->
+			{#
+		    <div id="card_{{entry.id}}" class="card Tarefa {{task}}" data-id="{{ entry.id }}" data-user_id='2' >
+		        <div class="border-left-primary card-header">
+		            <h5 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseTwo_{{entry.id}}" aria-expanded="false" aria-controls="collapseTwo_{{entry.id}}"><i class="fa" aria-hidden="true"></i>
+			            <div class="row no-gutters">
+
+			            	<!-- Rank -->
+			            	<div class="col-1 small align-self-center rank" data-task_id="{{ entry.id }}" >
+			            	 	<span class="badge badge-pill gradient-1 m_editable"
+			            	 	data-field="rank" data-task_id="{{ entry.id }}" data-fieldname="Rank">{{entry.rank}}</span>
+			            	</div>
+
+			            	<!-- Titulo -->
+			            	<span class="col-4 small align-self-center">
+			            		 	{{entry.id}} - {{ entry.titulo }}
+			            	</span> 
+
+			            	<!-- Status -->
+			            	<span class="offset-1 col-1 small align-self-center badge badge-pill gradient-2 ">{{ entry.status }}</span> 
+			            	<!-- Percentual -->
+			            	<div class="h6 col-1 small align-self-center progress no-gutters" style="height: 10px">
+			                    <div class="progress-bar gradient-1" style="width: {{perc}}%;" role="progressbar">	<span class="sr-only">10% Complete</span>
+			                    </div>
+			                </div> 
+
+			            	<!-- Tempo Estimado -->
+			            	<span class="col-1 small align-self-center m_editable _estimado" 
+			            		data-field="tempo_estimado" data-tempo-in-sec="{{ tempoEstimadoInSeconds }}" data-task_id="{{ entry.id }}" data-fieldname="Tempo Estimado">{{tempo_estimado}}</span> 
+							
+			            	<div class="timer {{active_time}}  col-12 col-sm-10 col-md-1 small align-self-center d-flex justify-content-around" data-time="{{timeInSec}}">{{ time }}</div>
+			            	
+
+			            	<!-- Tags -->
+			            	<div class="col-1 small align-self-center" >
+			            		<h6>Tags</h6>
+			            		<div>
+			            	 	<!--<span class="badge badge-pill gradient-1 ">tag1</span>
+			            	 	<span class="badge badge-pill gradient-1 ">tag2</span>-->
+				            	 	{% for tag in Tags if tag.task_id == entry.id %}
+					            	 	<span class="components-form-token-field__token">
+					            	 		<span class="components-form-token-field__token-text" id="components-form-token-field__token-text-22">
+					            	 			<!--<span class="screen-reader-text">{{ tag.tag }} ()</span>-->
+					            	 			<span aria-hidden="true">{{ tag.tag }}</span>
+					            	 		</span>
+					            	 		<button type="button" aria-label="Remover Tag" aria-describedby="components-form-token-field__token-text-{{entry.id}}" class="components-button components-icon-button components-form-token-field__remove-token">
+					            	 			<svg aria-hidden="true" role="img" focusable="false" class="dashicon dashicons-dismiss" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+					            	 				<path d="M10 2c4.42 0 8 3.58 8 8s-3.58 8-8 8-8-3.58-8-8 3.58-8 8-8zm5 11l-3-3 3-3-2-2-3 3-3-3-2 2 3 3-3 3 2 2 3-3 3 3z"></path>
+					            	 			</svg>
+					            	 		</button>
+					            	 	</span>
+				            	 	{% endfor %}
+				            	 	<input type="text" name="tagentry"/>	
+
+
+			            	 	</div>
+			            	</div>
+
+
+
+
+			            	<!-- Botao -->
+			            	<div class="offset-0 col-12 col-sm-1 col-md-1 small align-items-center text-center">
+				                <button id="start_{{entry.id}}" class="start_work btn btn-primary btn-circle align-self-center" data-task_id="{{entry.id}}" data-card_id="card_{{entry.id}}">
+				                <i class="fas {{icon}} work_icon" id="icon_work_act_{{entry.id}}"></i> </button>
+				            </div>
+				        </div>
+		            	
+		            </h5>
+		        </div>
+		        <div id="collapseTwo_{{entry.id}}" class="collapse" data-parent="#accordion-two">
+		            <div class="card-body">
+
+		            	<div class="email-right-box">
+			                <div class="toolbar" role="toolbar">
+			                    <div class="btn-group m-b-20">
+			                    	<a href="{{ path('tarefas/{id}', { id:entry.id} )}}" class="btn btn-link"><i class="fa fa-edit "></i></a>
+			                    	{#
+				                        <button type="button" class="btn btn-light"><i class="fa fa-archive"></i>
+				                        </button>
+				                        <button type="button" class="btn btn-light"><i class="fa fa-exclamation-circle"></i>
+				                        </button>
+				                        <button type="button" class="btn btn-light"><i class="fa fa-trash"></i>
+				                        </button>
+				                    #_}
+			                    </div>
+			                    <div class="btn-group m-b-20">
+			                        <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"><i class="fa fa-folder"></i>  <b class="caret m-l-5"></b>
+			                        </button>
+			                        <div class="dropdown-menu"><span class="dropdown-header">Move to</span>  <a class="dropdown-item" href="javascript: void(0);">Social</a>  <a class="dropdown-item" href="javascript: void(0);">Promotions</a>  <a class="dropdown-item" href="javascript: void(0);">Updates</a> 
+			                            <a class="dropdown-item" href="javascript: void(0);">Forums</a>
+			                        </div>
+			                    </div>
+			                    <div class="btn-group m-b-20">
+			                        <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"><i class="fa fa-tag"></i>  <b class="caret m-l-5"></b>
+			                        </button>
+			                        <div class="dropdown-menu"><span class="dropdown-header">Label as:</span>  <a class="dropdown-item" href="javascript: void(0);">Updates</a>  <a class="dropdown-item" href="javascript: void(0);">Social</a>  <a class="dropdown-item" href="javascript: void(0);">Promotions</a> 
+			                            <a class="dropdown-item" href="javascript: void(0);">Forums</a>
+			                        </div>
+			                    </div>
+			                    <div class="btn-group m-b-20">
+			                        <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown">More <span class="caret m-l-5"></span>
+			                        </button>
+			                        <div class="dropdown-menu"><span class="dropdown-header">More Option :</span>  <a class="dropdown-item" href="javascript: void(0);">Mark as Unread</a>  <a class="dropdown-item" href="javascript: void(0);">Add to Tasks</a>  <a class="dropdown-item"
+			                            href="javascript: void(0);">Add Star</a>  <a class="dropdown-item" href="javascript: void(0);">Mute</a>
+			                        </div>
+			                    </div>
+			                </div>
+			                <div class="compose-content mt-5">
+			                	{#
+			                    <form action="#">
+			                        <div class="form-group">
+			                            <input type="text" class="form-control bg-transparent" placeholder=" To">
+			                        </div>
+			                        <div class="form-group">
+			                            <input type="text" class="form-control bg-transparent" placeholder=" Subject">
+			                        </div>
+			                        <div class="form-group">
+			                            <textarea class="textarea_editor form-control bg-light" rows="15" placeholder="Enter text ..."></textarea>
+			                        </div>
+			                    </form>
+			                    <h5 class="m-b-20"><i class="fa fa-paperclip m-r-5 f-s-18"></i> Attatchment</h5>
+			                    <form action="#" class="dropzone">
+			                        <div class="form-group">
+			                            <div class="fallback">
+			                                <input class="l-border-1" name="file" type="file" multiple="multiple">
+			                            </div>
+			                        </div>
+			                    </form>
+			                    #_}
+								<div class="card">
+									<div class="card-body">
+				                    <div id="edit_sum_{{ entry.id }}" data-task_id="{{ entry.id }}" class="{{ false and loop.first ? 'click2edit'}} m-b-40">{{ entry.detalhes|raw }}</div>
+			                        
+			                        <span><a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"
+			                        	class="edit_sm" data-edit="#edit_sum_{{ entry.id }}"  onclick="edit2(event)" ><i class="fa fa-pencil color-muted m-r-5" ></i> </a>
+			                        	<a data-toggle="tooltip" data-placement="top" title="" data-original-title="Close" 
+			                        	class="save_sm" data-edit="#edit_sum_{{ entry.id }}" onclick="save2(event)" ><i class="fa fa-close color-danger"></i></a></span>
+
+			                    </div>
+			                    </div>
+			                </div>
+			                <div class="text-left m-t-15">
+			                    <button class="btn btn-primary m-b-30 m-t-15 f-s-14 p-l-20 p-r-20 m-r-10" type="button"><i class="fa fa-paper-plane m-r-5"></i> Send</button>
+			                    <button class="btn btn-dark m-b-30 m-t-15 f-s-14 p-l-20 p-r-20" type="button"><i class="ti-close m-r-5 f-s-12"></i> Discard</button>
+			                </div>
+			            </div>
 		            </div>
-	            	
-	             </h5>
-	        </div>
-	        <div id="collapseTwo_{{entry.id}}" class="collapse" data-parent="#accordion-two">
-	            <div class="card-body">
+		        </div>
+		    </div>
+		    #}
+		    <div id="card_{{entry.id}}" class="card Tarefa bb_t{{entry.tipo_tarefa_id}}" data-id="{{entry.id}}" data-user_id='2' draggable="true">
+				<div class="border-left-primary card-header justify-content-between px-4 row mx-0 align-items-start">
+						
 
-	            	<div class="email-right-box">
-		                <div class="toolbar" role="toolbar">
-		                    <div class="btn-group m-b-20">
-		                    	<a href="{{ path('tarefas/{id}', { id:entry.id} )}}" class="btn btn-link"><i class="fa fa-edit "></i></a>
-		                        <button type="button" class="btn btn-light"><i class="fa fa-archive"></i>
-		                        </button>
-		                        <button type="button" class="btn btn-light"><i class="fa fa-exclamation-circle"></i>
-		                        </button>
-		                        <button type="button" class="btn btn-light"><i class="fa fa-trash"></i>
-		                        </button>
-		                    </div>
-		                    <div class="btn-group m-b-20">
-		                        <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"><i class="fa fa-folder"></i>  <b class="caret m-l-5"></b>
-		                        </button>
-		                        <div class="dropdown-menu"><span class="dropdown-header">Move to</span>  <a class="dropdown-item" href="javascript: void(0);">Social</a>  <a class="dropdown-item" href="javascript: void(0);">Promotions</a>  <a class="dropdown-item" href="javascript: void(0);">Updates</a> 
-		                            <a class="dropdown-item" href="javascript: void(0);">Forums</a>
-		                        </div>
-		                    </div>
-		                    <div class="btn-group m-b-20">
-		                        <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown"><i class="fa fa-tag"></i>  <b class="caret m-l-5"></b>
-		                        </button>
-		                        <div class="dropdown-menu"><span class="dropdown-header">Label as:</span>  <a class="dropdown-item" href="javascript: void(0);">Updates</a>  <a class="dropdown-item" href="javascript: void(0);">Social</a>  <a class="dropdown-item" href="javascript: void(0);">Promotions</a> 
-		                            <a class="dropdown-item" href="javascript: void(0);">Forums</a>
-		                        </div>
-		                    </div>
-		                    <div class="btn-group m-b-20">
-		                        <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown">More <span class="caret m-l-5"></span>
-		                        </button>
-		                        <div class="dropdown-menu"><span class="dropdown-header">More Option :</span>  <a class="dropdown-item" href="javascript: void(0);">Mark as Unread</a>  <a class="dropdown-item" href="javascript: void(0);">Add to Tasks</a>  <a class="dropdown-item"
-		                            href="javascript: void(0);">Add Star</a>  <a class="dropdown-item" href="javascript: void(0);">Mute</a>
-		                        </div>
-		                    </div>
-		                </div>
-		                <div class="compose-content mt-5">
-		                	{#
-		                    <form action="#">
-		                        <div class="form-group">
-		                            <input type="text" class="form-control bg-transparent" placeholder=" To">
-		                        </div>
-		                        <div class="form-group">
-		                            <input type="text" class="form-control bg-transparent" placeholder=" Subject">
-		                        </div>
-		                        <div class="form-group">
-		                            <textarea class="textarea_editor form-control bg-light" rows="15" placeholder="Enter text ..."></textarea>
-		                        </div>
-		                    </form>
-		                    <h5 class="m-b-20"><i class="fa fa-paperclip m-r-5 f-s-18"></i> Attatchment</h5>
-		                    <form action="#" class="dropzone">
-		                        <div class="form-group">
-		                            <div class="fallback">
-		                                <input class="l-border-1" name="file" type="file" multiple="multiple">
-		                            </div>
-		                        </div>
-		                    </form>
-		                    #}
-							<div class="card">
-								<div class="card-body">
-			                    <div id="edit_sum_{{ entry.id }}" data-task_id="{{ entry.id }}" class="{{ false and loop.first ? 'click2edit'}} m-b-40">{{ entry.detalhes|raw }}</div>
-		                        
-		                        <span><a data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"
-		                        	class="edit_sm" data-edit="#edit_sum_{{ entry.id }}"  onclick="edit2(event)" ><i class="fa fa-pencil color-muted m-r-5" ></i> </a>
-		                        	<a data-toggle="tooltip" data-placement="top" title="" data-original-title="Close" 
-		                        	class="save_sm" data-edit="#edit_sum_{{ entry.id }}" onclick="save2(event)" ><i class="fa fa-close color-danger"></i></a></span>
+					<!--**********************************************
+					** 					Rank 				
+					**************************************************-->
+                    <span class="Rank d-inline-block badge badge-pill gradient-1 float-left h-25 mt-2 ">
+                    	<a class="edit collapse show multi-collapse" aria-expanded="true" >{{entry.rank}}</a>
+						<span class="collapse multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="false" >
+	                    	<input type="text" value="{{entry.rank}}" />
+	                    	<i class="cancel fas fa-times-circle text-warning"></i>
+	                       	<i class="save fas fa-check text-success"  ></i>
+	                    </span>
+                    </span>
 
-		                    </div>
-		                    </div>
-		                </div>
-		                <div class="text-left m-t-15">
-		                    <button class="btn btn-primary m-b-30 m-t-15 f-s-14 p-l-20 p-r-20 m-r-10" type="button"><i class="fa fa-paper-plane m-r-5"></i> Send</button>
-		                    <button class="btn btn-dark m-b-30 m-t-15 f-s-14 p-l-20 p-r-20" type="button"><i class="ti-close m-r-5 f-s-12"></i> Discard</button>
-		                </div>
-		            </div>
-	            </div>
-	        </div>
-	    </div>
-	{% endfor %}    
-</div>
+                    <div class="col m-1">
+                    	<div class="row {{is_active? 'd-block' : 'd-flex'}} justify-content-around">
+	                    	<!--**********************************************
+							** 					Titulo 				
+							**************************************************-->
+	                        <span class="Titulo   my-2 col-6"><a href="{{ path('tarefas/{id}', { id:entry.id} )}}" class="multi-collapse">{{entry.id}} - {{ entry.titulo }}</a><i class="edit fas fa-pencil-alt text-success p-2"  ></i>
+	                        	<span class="collapse multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="false" >
+	                        		<input type="text" value="{{entry.titulo}}" data-keypress="dataKey"/>
+	                        		<i class="cancel fas fa-times-circle text-warning"></i>
+	                        		<i class="save fas fa-check text-success"  ></i>
+	                        	</span>
+	                        </span>
 
-<script>
-	function edit2(e)
-	{
-		$($(e.currentTarget).data("edit")).addClass("click2edit")
-		edit()
-	}
-	function save2(e)
-	{
-		save()
-		editField = $($(e.currentTarget).data("edit"))
-		editField.removeClass("click2edit")
-		
-		 $.ajax({
-		    type: "POST",
-		      url: "{{ path('tarefas/update_fields/') }}"+ editField.data("task_id"),
-		      data: {'id' : editField.data("task_id"), 'detalhes': editField.html() },
-		      dataType: "json",
-		      success: function(data) {
-		        toast("success", "Teste OK", "Sucesso")
-		      },
-		      
-		      fail: function() {
-		        toast("error", "Erro ao Salvar", "Erro")
-		      }
+							{% if is_active %}
+		                        <!--**********************************************
+								** 					Info(Cliente>Projeto) 				
+								**************************************************-->
+		                        <span class="Info d-block my-2"> Cliente > {{ Projetos_ids[entry.project_id].title }} </span>
+		                        <!--**********************************************
+								** 					Progresso 				
+								**************************************************-->
+								<div class="Progresso w-50 my-2 small align-self-center progress no-gutters" style="height: 10px">
+									<div class="progress-bar gradient-1" style="width: {{perc}}%;" role="progressbar">	
+										<span class="sr-only">10% Complete</span>
+									</div>
+								</div> 
+								<!--**********************************************
+								** 					Date 				
+								**************************************************-->
+		                        <span class="Data my-2">Data Desejada: <a class="edit collapse show multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="true" data-click="toggleData"  >{{entry.data|date('d/m/Y')}}</a>
+		                        	<span class="collapse multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="false" >
+		                        		<input type="date" value="{{entry.data|date('Y-m-d')}}" data-keypress="dataKey"/>
+		                        		<i class="cancel fas fa-times-circle text-warning" data-click="toggleData"></i>
+		                        		<i class="save fas fa-check text-success" data-click="dataSave" ></i>
+		                        	</span>
+		                        </span>
+
+		                        <!--**********************************************
+								** 					Esforco Estimado				
+								**************************************************-->
+		                        <span class="Estimado my-2">Esforço Estimado: <a class="edit multi-collapse">{{tempo_estimado}}</a>
+		                        <!--<a class="collapse show multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="true" data-click="toggleData"  >{{entry.data|date('d/m/Y')}}</a>-->
+		                        	<span class="collapse multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="false" >
+		                        		<input type="time" max="72:00" value="{{tempo_estimado}}" data-keypress="dataKey"/>
+		                        		<i class="cancel fas fa-times-circle text-warning"></i>
+		                        		<i class="save fas fa-check text-success"  ></i>
+		                        	</span>
+		                        </span>
+		                        <!--**********************************************
+								** 					Entrega Estimada 				
+								**************************************************-->
+		                        <span class="Entrega my-2">Est. Entrega: <a href="">10/03/2019</a></span>
+
+							{% endif %}
+	                        <!--**********************************************
+							** 					Tags				
+							**************************************************-->
+	                        <span class="Tags my-2 col-1">{{ is_active ? 'Tags: '}}
+	                        	<a id="Tags_a_{{entry.id}}" role="button"  class="edit colapse show collapsed multi-collapse " data-toggle="collapse" data-click="T_Tags.toggle"  aria-expanded="true" aria-controls="Tag_input_{{entry.id}} Tags_a_{{entry.id}}" data-target=".multi-collapse_{{entry.id}}" >
+	                        	{% set tagsVal = [] %}
+					            {% for tag in Tags if tag.task_id == entry.id %}
+		                        	<span class="badge badge-pill gradient-1 " aria-hidden="true">{{ tag.tag }}</span>
+		                        	{% set tagsVal = tagsVal|merge([tag.tag|e]) %}
+		                        {#	<span class="badge badge-pill gradient-1 "aria-hidden="true">T2</span>,
+		                        	<span class="badge badge-pill gradient-1 "aria-hidden="true">T3</span>
+		                        #}
+		                    	{% else %}
+		                    		Sem Tags
+					            {% endfor %}
+
+		                        </a>
+					            <span class="input_span collapse multi-collapse " aria-expanded="false" >
+					            	<input id="Tag_input_{{entry.id}}" class="Tag_input" value="{{tagsVal|join(',')}}" data-keypress="T_Tags.key"/>
+					            	<i data-input_id="#Tag_input_{{entry.id}}" class="cancel fas fa-times-circle text-warning" data-click="T_Tags.toggle"  ></i>
+					            	<i data-input_id="#Tag_input_{{entry.id}}" data-click="T_Tags.save" class="save fas fa-check text-success"></i>
+					            </span>
+		                   	</span>
+
+		                   	<!--**********************************************
+							** 					Status 				
+							**************************************************-->
+	                        <span class="Status my-2">{{ is_active?'Status: ' }}<a class="collapsed abc" _data-toggle="collapse" _aria-expanded="false" _href=".multi-collapse_{{entry.id}}">{{ entry.status }}</a></span>
+
+                    	</div>
+                    </div>
+
+                    <div class="ButtonContainer align-self-center d-inline-block bordedrRed">
+                        <button class="Entregar btn btn-primary px-lg-5 p-2 mx-2 "><i class="fas fa-stop work_icon {{is_active ? 'pr-lg-4'}}" id="icon_stop_act_{{entry.id}}"></i><span class="d-none {{is_active ? 'd-lg-inline'}}">Entregar</span></button>
+                        <button class="Trabalhar start_work btn btn-primary btn-circle px-lg-4 p-2 mx-2 " data-task_id="{{entry.id}}" data-card_id="card_{{entry.id}}"><i class="fas {{icon}} work_icon {{is_active ? 'pr-lg-4'}}" id="icon_work_act_{{entry.id}}"></i> <span class="d-none {{is_active ? 'd-lg-inline'}}">{{play_text}}</span></button>
+                     </div>
+
+               </div>
+			</div>
+		    <!--end card_{{entry.id}}-->
+		{% endfor %}    
+	</div>
+	<!--end accordion-two-->
+
+	<script>
+		function edit2(e)
+		{
+			$($(e.currentTarget).data("edit")).addClass("click2edit")
+			edit()
+		}
+		function save2(e)
+		{
+			save()
+			editField = $($(e.currentTarget).data("edit"))
+			editField.removeClass("click2edit")
+			
+			 $.ajax({
+			    type: "POST",
+			      url: "{{ path('tarefas/update_fields/') }}"+ editField.data("task_id"),
+			      data: {'id' : editField.data("task_id"), 'detalhes': editField.html() },
+			      dataType: "json",
+			      success: function(data) {
+			        toast("success", "Teste OK", "Sucesso")
+			      },
+			      
+			      fail: function() {
+			        toast("error", "Erro ao Salvar", "Erro")
+			      }
+			    })
+			
+		}
+
+
+		function toast(type, message, title)
+		{
+		    toastr[type](message, title, {
+		        positionClass: "toast-top-center",
+		        timeOut: 5e3,
+		        closeButton: !0,
+		        debug: !1,
+		        newestOnTop: !0,
+		        progressBar: !0,
+		        preventDuplicates: !0,
+		        onclick: null,
+		        showDuration: "300",
+		        hideDuration: "1000",
+		        extendedTimeOut: "1000",
+		        showEasing: "swing",
+		        hideEasing: "linear",
+		        showMethod: "fadeIn",
+		        hideMethod: "fadeOut",
+		        tapToDismiss: !1
 		    })
-		
-	}
 
+		}
+	</script>
 
-	function toast(type, message, title)
-	{
-	    toastr[type](message, title, {
-	        positionClass: "toast-top-center",
-	        timeOut: 5e3,
-	        closeButton: !0,
-	        debug: !1,
-	        newestOnTop: !0,
-	        progressBar: !0,
-	        preventDuplicates: !0,
-	        onclick: null,
-	        showDuration: "300",
-	        hideDuration: "1000",
-	        extendedTimeOut: "1000",
-	        showEasing: "swing",
-	        hideEasing: "linear",
-	        showMethod: "fadeIn",
-	        hideMethod: "fadeOut",
-	        tapToDismiss: !1
-	    })
+	<script type="text/javascript">
+		$(document).ready(function() {
+		    $('.m_editabl_e[data-task_id][data-field]').on('click', function() {
+		        var that = $(this);
+		        if (that.find('input').length > 0) {
+		            return;
+		        }
+		        var currentText = that.text();
+		        
+		        var $input = $('<input>').val(currentText)
+		        .css({
+		            'position': 'absolute',
+		            top: '0px',
+		            left: '0px',
+		            width: that.width(),
+		            height: that.height(),
+		            opacity: 0.9,
+		            padding: '10px'
+		        });
+		        
+		        $(this).append($input);
+		        
+		        // Handle outside click
+		        $(document).click(function(event) {
+		            if(!$(event.target).closest('.m_editable').length) {
+		                if ($input.val()) {
+		                    that.text($input.val());
+		                    field = that.data("field")
+		                    fieldname = that.data("fieldname")?that.data("fieldname"):""
+		                    data = {'id' : that.data("task_id")}
+		                    data[field]= $input.val()
+		                    $.ajax({
+							    type: "POST",
+							      url: "{{ path('tarefas/update_fields/') }}"+ that.data("task_id"),
+							      data: data,
+							      dataType: "json",
+							      success: function(data) {
+							      	console.log("Sucesso")
+							        toast("success", "Atualizado " + fieldname, "Sucesso")
+							      },
+							      
+							      fail: function() {
+							      	console.log("Erro")
+							        toast("error", "Erro ao Atualizar " + fieldname, "Erro")
+							      }
+							})
+		                }
+		                that.find('input').remove();
+		            }
+		        });
+		    });
+		});
 
-	}
-</script>
-
+	</script>
+	<!--end html block-->
 {% endblock %}
 
 
 {% block js %}
-<!-- js task -->
-    {{block('js_drag')}}
-    {{block('js_time')}}
-    {{block('js_rank')}}    
-<!-- end js task -->
+	<!-- js task -->
+	<!-- abcd -->
+		{% include 'twig/Tarefas/javascript.html.twig' %}
+		{% block js_time %}
+		    <!-- js time -->
+		        <script>
+		            
+		            //window.onload = function(e){
+		            //    setInterval(updateTime, 1000);
+		            //};
+		        </script>
+
+		    <!-- end js time -->
+		{% endblock %}
+		{% block js_drag %}
+		    <!-- js drag -->
+		        <script>
+		        
+		            function dragStart(e) {
+		                //this.refs['update'].updateGoal();
+		                console.log("drag start");
+		                this.dragged = e.currentTarget;
+		                e.dataTransfer.effectAllowed = 'move';
+		                e.dataTransfer.setData("text/html", e.currentTarget);
+		            };
+		            function dragEnd(e) {
+		                console.log("drag end");
+		                this.dragged.style.display = "block";
+		                //placeholder.remove();
+		                // Update data
+		                //var data = this.state.data;
+		                var from = Number(this.dragged.dataset.id);
+		                var to = Number(this.over.dataset.id);
+
+		                console.log($(this.dragged).index());
+		            
+		                if (from < to) to--;
+		                if (this.nodePlacement == "after") to++;
+		                /*data.splice(to, 0, data.splice(from, 1)[0]);
+		                this.setState({
+		                    data: data
+		                });
+		                */
+		            }
+
+		            function dragOver(e){
+		                console.log(this.dragged);
+		                
+		                //return;
+		                e.preventDefault();
+		                this.dragged.style.display = "none";
+		                if (!$(event.target).hasClass("task")) return;
+		                console.log("drag Over");
+		                console.log(e.target.className);
+		                this.over = e.target;
+		                // Inside the dragOver method
+		                var relY = e.pageY - this.over.offsetTop;
+		                var height = this.over.offsetHeight / 2;
+		                var relX = e.pageX - this.over.offsetLeft;
+		                var width = this.over.offsetWidth / 2;
+		                var parent = e.target.parentNode;
+		            
+		                console.log(e);
+		                console.log(relY);
+		                console.log(height);
+		                if (relY >= height) {
+		                    this.nodePlacement = "after";
+		                    parent.insertBefore(this.dragged, e.target.nextElementSibling);
+		                    console.log(this.nodePlacement);
+		                } else {
+		                    this.nodePlacement = "before";
+		                    console.log(this.nodePlacement);
+		                    parent.insertBefore(this.dragged, e.target);
+		                }
+		                //jQuery("#card12").before(jQuery("#card20"));
+		                    //
+		            };
+		        
+		        </script>
+
+		    <!-- end js drag -->
+		{% endblock %}
+
+
+		{% block js_rank %}
+		<!-- js rank -->
+		    <script>
+			     // Ordena os Cards de Acordo com a alteracao do Rank
+			    function sortCards()
+			    {
+
+			      var myArray = $(".SubTarefas_group .task");
+			      var count = 0;
+			      myArray.sort(function(a,b) {
+			          //console.log($(a).index())
+			          //return parseInt($(a).find('.rankelement').text()) > parseInt($(b).find('.rankelement').text());
+			          // convert to integers from strings
+			          a = parseInt($(a).find('.rankelement').text(), 10);
+			          b = parseInt($(b).find('.rankelement').text(), 10);
+			          console.log(a)
+			          console.log(b)
+			          count += 2;
+			          // compare
+			          if(a > b) {
+			              return 1;
+			          } else if(a < b) {
+			              return -1;
+			          } else {
+			              return 0;
+			          }
+			      })//.appendTo('.SubTarefas_group');
+			      
+			      $(".SubTarefas_group").append(myArray);
+			    }
+
+			    // Funcao de Controle do Rank
+			    $(document).ready(function() {
+			      console.log('cadastrando submit')
+			      $(".rank_btn").click(function() {
+				        console.log('submit')
+				        form_id = $(this).data('form');
+				        var form = $("#" + form_id) // Extract info from data-* attributes
+				        element_id = $(this).data('element');
+				        var element = $("#" + element_id) // Extract info from data-* attributes
+
+				        // do the extra stuff here
+				        $.ajax({
+				        type: "POST",
+				          url: "{{ path('tarefas/update_rank')}}",
+				          data: $(form).serialize(),
+				          dataType: "json",
+				          success: function(data) {
+				            $('.simple-sucess').fadeIn(100).show();
+				            $('.contact_form').fadeOut(100).hide();
+				            $('.simple_error').fadeOut(100).hide();
+				            element.text(data.rank)
+				            sortCards()
+				          },
+				          
+				          fail: function() {
+				            alert("Erro");
+				          }
+				        })
+
+			      })
+			    });
+			    
+		    </script>
+		    <!-- end js rank -->
+		{% endblock %}  
+
+	<!-- end js task -->
 {% endblock %}
 
-
-{% block js_time %}
-    <!-- js time -->
-        <script>
-
-            var timeload = new Date()
-            // Funcao de Atualizacao do tempo do 
-            function updateTime()
-            {
-                //console.log("update");
-                var active_timer = $(".task_running  .timer")
-                if ( active_timer.length == 0) return; 
-
-                var tempoCalculado_ate_load = active_timer.data('time') // Extract info from data-* attributes
-                d = new Date()
-                d1 = d - timeload
-                
-                //console.log(d);
-                //console.log(timeload);
-                //console.log(d1);
-                console.log(tempoCalculado_ate_load);
-                diff = (d1 - d1%1000)/1000
-                var tr = new Date('1970-01-01T00:00:00');
-                var datetime = new Date('1970-01-01T' + tempoCalculado_ate_load + 'Z');
-
-                console.log(tr);
-                console.log(datetime);
-                time = new Date(datetime.getTime() + diff*1000).getTime()/1000;
-                console.log(time);
-
-                seconds = time%60
-                tms_= (time - seconds)
-                mtotal = (tms_)/60
-                minutes = (mtotal)%60
-                hours  = (mtotal-minutes)/60
-                if (hours   < 10) {hours   = "0"+hours;}
-                if (minutes < 10) {minutes = "0"+minutes;}
-                if (seconds < 10) {seconds = "0"+seconds;}
-                strtime = hours+":"+minutes+":"+seconds
-                //console.log('time');
-                //console.log(time);
-                //console.log(seconds);
-                //console.log(tms_);
-                //console.log(minutes);
-                //console.log(strtime);
-                active_timer.attr('data-time', time);
-                active_timer.text(strtime);
-                //$.now()
-            };
-
-            // Controle do Botao de Start da Tarefa
-            $('.start_work').click(function (e){
-                e.preventDefault();
-                    var button = $(e.currentTarget) // Button that triggered the modal
-                console.log(e);
-                //alert(e.currentTarget.id);
-                var user_id = button.data('user_id') // Extract info from data-* attributes
-                var task_id = button.data('task_id') // Extract info from data-* attributes
-                var card_id = button.data('card_id') // Extract info from data-* attributes
-                var icon = $("#" + card_id+" .work_icon") // Extract info from data-* attributes
-                var icon_id = $(icon).attr("id")
-
-                var act = "stop";
-                if($(icon).hasClass('fa-play'))
-                {
-                    act = "play";
-                }
-
-                console.log("Action "+act);
-
-                if(act == "play") timeload = new Date();
-                    
-                //alert(user_id);
-                //alert(task_id);
-                var path = "{{ path('tarefas/stop_work') }}";
-                if(act == "play") path = "{{ path('tarefas/start_work') }}";
-
-                
-                console.log("Path "+path);
-
-                $.post(path, 
-                    {'usuario_id' : user_id, 'task_id':task_id },
-                    function(data) {
-                    
-                    $(".task_running .work_icon").removeClass('fa-pause').addClass('fa-play');
-                    $(".task_running").removeClass('task_running');
-                    if(act == "play") $(icon).removeClass('fa-play').addClass('fa-pause'); else $(icon).removeClass('fa-pause').addClass('fa-play');
-                    if(act == "play") $("#"+card_id).addClass('task_running');
-                    //alert("Sucesso");
-                    //alert(data);
-                })
-                .done(function() {
-                    //alert( "second success" );
-                })
-                .fail(function(e) {
-                console.log(e);
-                    alert( "error" );
-                    
-                    alert( e );
-                })
-                .always(function() {
-                    //alert( "finished" );
-                });
-                
-        
-            });
-            
-            
-            window.onload = function(e){
-                setInterval(updateTime, 1000);
-            };
-        </script>
-
-    <!-- end js time -->
-{% endblock %}
-{% block js_drag %}
-    <!-- js drag -->
-        <script>
-        
-            function dragStart(e) {
-                //this.refs['update'].updateGoal();
-                console.log("drag start");
-                this.dragged = e.currentTarget;
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData("text/html", e.currentTarget);
-            };
-            function dragEnd(e) {
-                console.log("drag end");
-                this.dragged.style.display = "block";
-                //placeholder.remove();
-                // Update data
-                //var data = this.state.data;
-                var from = Number(this.dragged.dataset.id);
-                var to = Number(this.over.dataset.id);
-
-                console.log($(this.dragged).index());
-            
-                if (from < to) to--;
-                if (this.nodePlacement == "after") to++;
-                /*data.splice(to, 0, data.splice(from, 1)[0]);
-                this.setState({
-                    data: data
-                });
-                */
-            }
-
-            function dragOver(e){
-                console.log(this.dragged);
-                
-                //return;
-                e.preventDefault();
-                this.dragged.style.display = "none";
-                if (!$(event.target).hasClass("task")) return;
-                console.log("drag Over");
-                console.log(e.target.className);
-                this.over = e.target;
-                // Inside the dragOver method
-                var relY = e.pageY - this.over.offsetTop;
-                var height = this.over.offsetHeight / 2;
-                var relX = e.pageX - this.over.offsetLeft;
-                var width = this.over.offsetWidth / 2;
-                var parent = e.target.parentNode;
-            
-                console.log(e);
-                console.log(relY);
-                console.log(height);
-                if (relY >= height) {
-                    this.nodePlacement = "after";
-                    parent.insertBefore(this.dragged, e.target.nextElementSibling);
-                    console.log(this.nodePlacement);
-                } else {
-                    this.nodePlacement = "before";
-                    console.log(this.nodePlacement);
-                    parent.insertBefore(this.dragged, e.target);
-                }
-                //jQuery("#card12").before(jQuery("#card20"));
-                    /**/
-            };
-        
-        </script>
-
-    <!-- end js drag -->
-{% endblock %}
-
-
-{% block js_rank %}
-<!-- js rank -->
-    <script>
-	     // Ordena os Cards de Acordo com a alteracao do Rank
-	    function sortCards()
-	    {
-
-	      var myArray = $(".SubTarefas_group .task");
-	      var count = 0;
-	      myArray.sort(function(a,b) {
-	          //console.log($(a).index())
-	          //return parseInt($(a).find('.rankelement').text()) > parseInt($(b).find('.rankelement').text());
-	          // convert to integers from strings
-	          a = parseInt($(a).find('.rankelement').text(), 10);
-	          b = parseInt($(b).find('.rankelement').text(), 10);
-	          console.log(a)
-	          console.log(b)
-	          count += 2;
-	          // compare
-	          if(a > b) {
-	              return 1;
-	          } else if(a < b) {
-	              return -1;
-	          } else {
-	              return 0;
-	          }
-	      })//.appendTo('.SubTarefas_group');
-	      
-	      $(".SubTarefas_group").append(myArray);
-	    }
-
-	    // Funcao de Controle do Rank
-	    $(document).ready(function() {
-	      console.log('cadastrando submit')
-	      $(".rank_btn").click(function() {
-		        console.log('submit')
-		        form_id = $(this).data('form');
-		        var form = $("#" + form_id) // Extract info from data-* attributes
-		        element_id = $(this).data('element');
-		        var element = $("#" + element_id) // Extract info from data-* attributes
-
-		        // do the extra stuff here
-		        $.ajax({
-		        type: "POST",
-		          url: "{{ path('tarefas/update_rank')}}",
-		          data: $(form).serialize(),
-		          dataType: "json",
-		          success: function(data) {
-		            $('.simple-sucess').fadeIn(100).show();
-		            $('.contact_form').fadeOut(100).hide();
-		            $('.simple_error').fadeOut(100).hide();
-		            element.text(data.rank)
-		            sortCards()
-		          },
-		          
-		          fail: function() {
-		            alert("Erro");
-		          }
-		        })
-
-	      })
-	    });
-	    
-    </script>
-    <!-- end js rank -->
-{% endblock %}
+<!--END Show Entries-->

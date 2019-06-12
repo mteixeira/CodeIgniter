@@ -1,229 +1,279 @@
-{% extends 'twig/default/index-default.html.twig' %}
+{#{% include  'twig/default/index-default.html.twig' %}#}
 
-{% set __currentPath = _current_url() %} 
-{% block title %}MTeixeira - Tarefas{% endblock %}
+  
+{% embed 'twig/default/index-default.html.twig'%}
+    
 
-{% block table_row_column %}
-  {% if loop.first %}
-    <th scope="col"><a href="{{ path(app.controller~'/edit/{id}', {id:value})}}">{{value}}</a></th>
-  {% else %}
-      <td>{{value}}</th>
-  {% endif %}
-{% endblock %}
-
-{% block page_content %}
-    <ul class="nav nav-tabs mb-3" role="tablist">
-        <li class="nav-item"><a class="nav-link "  href="?status=all">Todas</a>
-        </li>
-        <li class="nav-item"><a class="nav-link active" href="?">Abertas</a>
-        </li>
-        <li class="nav-item"><a class="nav-link" href="?status=closed">Encerradas</a>
-        </li>
-        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="?status=canceled">Canceladas</a>
-        </li>
-        <form action="#" class="pull-right position">
-          <div class="input-append inner-append">
-            <input type="text" class="sr-input" placeholder="Search Mail">
-            <button class="btn sr-btn append-btn" type="button"><i class="fa fa-search"></i></button>
-          </div>
-        </form>
-    </ul>
-    {{ parent() }}
-{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-    <link href="{{ asset('plugins/summernote/dist/summernote.css') }}" rel="stylesheet">
-    <link href="{{ asset('plugins/toastr/css/toastr.min.css') }}" rel="stylesheet">
-    <style>
-      {% for tipo in TiposTarefas %}
-        .task_tp_{{tipo.id}} {
-          border-left: .25rem solid #{{tipo.color}}!important;
-        }
-      {% endfor %}
-    </style>
-{% endblock %}
+  {% set __currentPath = _current_url() %} 
+  {% block title %}MTeixeira - Tarefas{% endblock %}
 
 
-{% block page_content2 %}
 
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-      <h1 class="h3 mb-4 text-gray-800">Tarefas</h1>
-      <a href="{{ path('tarefas/create')}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" {#data-toggle="modal" data-target="#novaTarefa"#}>
-          <i class="fas fa-download fa-sm text-white-50"></i> Nova Tarefa
-      </a>
-    </div>
+  {% block stylesheets %}
+      {{ parent() }}
+      <link href="{{ asset('plugins/summernote/dist/summernote.css') }}" rel="stylesheet">
+      <link href="{{ asset('plugins/toastr/css/toastr.min.css') }}" rel="stylesheet">
+      <style>
+        {% for tipo in TiposTarefas %}
+          .task_tp_{{tipo.id}} {
+            border-left: .25rem solid #{{tipo.color}}!important;
+          }
+        {% endfor %}
+      </style>
+  {% endblock %}
 
-    <div class="card text-center">
-      <div class="card-header">
-        <ul class="nav nav-tabs card-header-tabs">
-          <li class="nav-item">
-            <a class="nav-link {{ path('tarefas/status/all')  == currentPath ? 'active'}}"  href="{{ path('tarefas/status/all') }}" >All</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {{ path('tarefas/status/opened')  == currentPath ? 'active'}}" href="{{ path('tarefas/status/opened') }}" >opened</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {{ path('tarefas/status/closed')  == currentPath ? 'active'}}" href="{{ path('tarefas/status/closed') }}" >Closed</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-          </li>
+
+
+  {% block cart_title %}
+      <div class="justify-content-between">
+        <ul class="nav nav-tabs mb-3 " role="tablist">
+            <li class="nav-item"><a class="nav-link {{ status=="all"? 'active'}} "  href="?status=all">Todas</a>
+            </li>
+            <li class="nav-item"><a class="nav-link {{ status=="opened"? 'active'}}" href="?status=opened">Abertas</a>
+            </li>
+            <li class="nav-item"><a class="nav-link {{ status=="closed"? 'active'}}" href="?status=closed">Encerradas</a>
+            </li>
+            <li class="nav-item"><a class="nav-link {{ status=="canceled"? 'active'}}" href="?status=canceled">Canceladas</a>
+            <li class="nav-item"><a class="nav-link {{ status=="all"? 'active'}}" href="?tag=Pessoal">Pessoais</a>
+            <li class="nav-item"><a class="nav-link {{ status=="all"? 'active'}}" href="?tag=Pneuscar">Pneuscar</a>
+            <li class="nav-item"><a class="nav-link {{ status=="all"? 'active'}}" href="?tag=Task">Task</a>
+            </li>
+            <select class="Filter_Tags" onchange="location = this.value;"{#id="task-parent" name="parent_task" class="form-control"#}>
+              <option value="?status=all">Todos</option>
+              <option value="?tag=-">Vazio</option>
+              {% for tag in array_unique2(Tags|map(v => v.tag))  %}
+                <option value="?tag={{ tag }}" {#selected#}>{{ tag }}</option>
+              {% endfor %}
+            </select>
+
+            <a class="btn btn-primary" click="$('.Filter_Tags').val()" role="button">Link</a>
+
+            <form action="#" class="offset-2 pull-right position">
+              <div class="input-append inner-append">
+                <input type="text" class="sr-input" placeholder="Search Mail">
+                <button class="btn sr-btn append-btn" type="button"><i class="fa fa-search"></i></button>
+              </div>
+           </form>
+            
         </ul>
       </div>
-      <div id="accordion" class="SubTarefas_group accordion" ondragOver="dragOver(event)">
-        {% for entry in entries %}
-           {{ block('html', 'twig/Tarefas/task.html.twig') }}
-          {#
-          <div class="card  py-1 border-left-primary" id="card_{{entry.id}}">
-            <!--<a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" # } >-->
-            <div  class="card-header" id="heading{{entry.id}}">
-              <h5 class="mb-0">
-              
-                  <div class="btn-group">
-                    <button class="btn btn-link" >
-                        <a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" # } >
-                          {{entry.titulo }}
-                        </a>
-                    </button>
-                      <button class="btn colapse-toggle" type="button" data-toggle="collapse" data-target="#collapse{{entry.id}}" aria-expanded="true" aria-controls="collapse{{entry.id}}">
-                        <i class="fas fa-angle-down"></i>
-                          <span class="sr-only">Toggle Dropdown</span>
-                      </button>
-                  </div>
-              </h5>
+      {{ parent() }}
+  {% endblock %}
+
+
+  {% block show_entries %}
+    <!--Block Show Entries-->
+    {% embed 'twig/tarefas/show_entries.html.twig' %}
+    {% endembed %}
+    <!--end Block Show Entries-->
+  {% endblock %}
+
+
+  {% block modals %}
+ 
+     {{ parent() }}
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
-              
-            <div id="collapse{{entry.id}}" class="collapse" aria-labelledby="heading{{entry.id}}" data-parent="#accordion">
-        
-                <div class="card-body">
-                  <h6 class="card-subtitle mb-2 text-muted">  - {{entry.status}}</h6>
-                  <p class="card-text">{{entry.detalhes}}</p>
+            <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="recipient-name" class="col-form-label">Recipient:</label>
+                  <input type="text" class="form-control" id="recipient-name">
+                </div>
+                <div class="form-group">
+                  <label for="message-text" class="col-form-label">Message:</label>
+                  <textarea class="form-control" id="message-text"></textarea>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Send message</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="novaTarefa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+          
+            <form  method="POST" id="createForm" action="{{ path('create_tarefa') }}">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Criar uma Tarefa</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                  <label for="task-title" class="col-form-label">Titulo da tarefa:</label>
+                  <input type="text" class="form-control" id="task-title" name="titulo">
+                </div>
+                <div class="form-group">
+                  <label for="task-description" class="col-form-label">Descrição:</label>
+                  <textarea class="form-control" id="task-description" name="detalhes"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="task-status" class="col-form-label">Status:</label>
+                  <!--<input type="text"  class="form-control" id="message-text">{#{ entry.status }#}</input>-->
+                  <select class="form-control" name="status" id="task-status">
+                  
+                            {% for status_entry in status_entries %}
+                                {% set selected = '' %}
+                                {#{% if status_entry.status  == entry.status %}
+                                {% set selected = 'selected' %}
+                                {% endif %}#}
+                                        <option {{ selected }}>{{ status_entry }}</option>
+                            {% endfor %}
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="task-cli" class="col-form-label">Cliente:</label>
+                  <input type="text" class="form-control" id="task-cli" name="titulo">
                 </div>
             </div>
-          </div>
-          #}
-        {% endfor %}
-      </div>
-            
-      
-    </div>
-
-{% endblock %}
-
-
-
- {% block modals %}
- 
-   {{ parent() }}
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">New message</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form>
-              <div class="form-group">
-                <label for="recipient-name" class="col-form-label">Recipient:</label>
-                <input type="text" class="form-control" id="recipient-name">
-              </div>
-              <div class="form-group">
-                <label for="message-text" class="col-form-label">Message:</label>
-                <textarea class="form-control" id="message-text"></textarea>
-              </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+              <button type="submit" class="btn btn-primary" id="createSubmit">Salvar</button>
+            </div>
             </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Send message</button>
+            
           </div>
         </div>
       </div>
-    </div>
+  {% endblock %}
 
-    <div class="modal fade" id="novaTarefa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        
-          <form  method="POST" id="createForm" action="{{ path('create_tarefa') }}">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Criar uma Tarefa</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-              <div class="form-group">
-                <label for="task-title" class="col-form-label">Titulo da tarefa:</label>
-                <input type="text" class="form-control" id="task-title" name="titulo">
-              </div>
-              <div class="form-group">
-                <label for="task-description" class="col-form-label">Descrição:</label>
-                <textarea class="form-control" id="task-description" name="detalhes"></textarea>
-              </div>
-              <div class="form-group">
-                <label for="task-status" class="col-form-label">Status:</label>
-                <!--<input type="text"  class="form-control" id="message-text">{#{ entry.status }#}</input>-->
-                <select class="form-control" name="status" id="task-status">
+
+  {% block javascripts %}
+      <!-- Tarefas Index -->
+      {{ parent() }}
+      <script src="{{ asset('plugins/summernote/dist/summernote.min.js') }}"></script>
+      <script src="{{ asset('plugins/summernote/dist/summernote-init.js') }}"></script>
+
+
+      <!-- Toastr -->
+      <script src="{{ asset('plugins/toastr/js/toastr.min.js') }}"></script>
+      <script src="{{ asset('plugins/toastr/js/toastr.init.js') }}"></script>
+
+      <script>
+          $('#createSubmit1').click(function(e){
+                e.preventDefault();
+                alert($('#task-title').val());
+                ser = $('#createForm').serialize();
+                alert(ser);
+                $.post("{{ path('create_tarefa') }}", 
+                   $('#createForm').serialize(), 
+                   function(data, status, xhr){
+                     // do something here with response;
+                     alert(data);
+                     alert(status);
+                     alert(xhr);
+                   });
                 
-                          {% for status_entry in status_entries %}
-                              {% set selected = '' %}
-                              {#{% if status_entry.status  == entry.status %}
-                              {% set selected = 'selected' %}
-                              {% endif %}#}
-                                      <option {{ selected }}>{{ status_entry }}</option>
-                          {% endfor %}
-                </select>
-    		      </div>
-              
-              <div class="form-group">
-                <label for="task-cli" class="col-form-label">Cliente:</label>
-                <input type="text" class="form-control" id="task-cli" name="titulo">
-              </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-            <button type="submit" class="btn btn-primary" id="createSubmit">Salvar</button>
-          </div>
-          </form>
-          
-        </div>
+          });
+      </script>
+
+      {#{ block('js', 'twig/Tarefas/task.html.twig') }#}
+   {% endblock %}
+
+
+  {% block table_row_column %}
+    <!-- table_row_Column -->
+    {% if loop.first %}
+      <th scope="col"><a href="{{ path(app.controller~'/edit/{id}', {id:value})}}">{{value}}</a></th>
+    {% else %}
+        <td>{{value}}</th>
+    {% endif %}
+  {% endblock %}
+
+  {% block page_content2 %}
+
+      <!-- Page Heading -->
+      <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-4 text-gray-800">Tarefas</h1>
+        <a href="{{ path('tarefas/create')}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" {#data-toggle="modal" data-target="#novaTarefa"#}>
+            <i class="fas fa-download fa-sm text-white-50"></i> Nova Tarefa
+        </a>
       </div>
-    </div>
-{% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('plugins/summernote/dist/summernote.min.js') }}"></script>
-    <script src="{{ asset('plugins/summernote/dist/summernote-init.js') }}"></script>
+      <div class="card text-center">
+        <div class="card-header">
+          <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+              <a class="nav-link {{ path('tarefas/status/all')  == currentPath ? 'active'}}"  href="{{ path('tarefas/status/all') }}" >All</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{ path('tarefas/status/opened')  == currentPath ? 'active'}}" href="{{ path('tarefas/status/opened') }}" >opened</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{ path('tarefas/status/closed')  == currentPath ? 'active'}}" href="{{ path('tarefas/status/closed') }}" >Closed</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+            </li>
+          </ul>
+        </div>
+        <div id="accordion" class="SubTarefas_group accordion" ondragOver="dragOver(event)">
+          {% for entry in entries %}
+             {{ block('html', 'twig/Tarefas/task.html.twig') }}
+            {#
+            <div class="card  py-1 border-left-primary" id="card_{{entry.id}}">
+              <!--<a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" #} >-->
+              <div  class="card-header" id="heading{{entry.id}}">
+                <h5 class="mb-0">
+                
+                    <div class="btn-group">
+                      <button class="btn btn-link" >
+                          <a href="{{ path('tarefas/{id}', { id:entry.id} )}}" {# data-toggle="modal" data-target="#exampleModal" #} >
+                            {{entry.titulo }}
+                          </a>
+                      </button>
+                        <button class="btn colapse-toggle" type="button" data-toggle="collapse" data-target="#collapse{{entry.id}}" aria-expanded="true" aria-controls="collapse{{entry.id}}">
+                          <i class="fas fa-angle-down"></i>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                    </div>
+                </h5>
+              </div>
+                
+              <div id="collapse{{entry.id}}" class="collapse" aria-labelledby="heading{{entry.id}}" data-parent="#accordion">
+          
+                  <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">  - {{entry.status}}</h6>
+                    <p class="card-text">{{entry.detalhes}}</p>
+                  </div>
+              </div>
+            </div>
+            # }
+          {% endfor %}
+        </div>
+              
+        
+      </div>
+
+  {% endblock %}
+
+{% endembed %}
 
 
-    <!-- Toastr -->
-    <script src="{{ asset('plugins/toastr/js/toastr.min.js') }}"></script>
-    <script src="{{ asset('plugins/toastr/js/toastr.init.js') }}"></script>
 
-    <script>
-        $('#createSubmit1').click(function(e){
-              e.preventDefault();
-              alert($('#task-title').val());
-              ser = $('#createForm').serialize();
-              alert(ser);
-              $.post("{{ path('create_tarefa') }}", 
-                 $('#createForm').serialize(), 
-                 function(data, status, xhr){
-                   // do something here with response;
-                   alert(data);
-                   alert(status);
-                   alert(xhr);
-                 });
-              /**/
-        });
-    </script>
+{#
+  {% extends 'twig/default/index-default.html.twig' %}
+#}
 
-    {{ block('js', 'twig/Tarefas/task.html.twig') }}
- {% endblock %}
+
+
+
+
+
+{#
+ #}

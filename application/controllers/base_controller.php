@@ -47,6 +47,14 @@ abstract class base_controller extends CI_Controller {
 			}
 			return site_url($txtpath);
 		});
+		
+		$this->twig->add_function2('getTimeInSeconds', function($time){
+			return getTimeInSeconds($time);
+		});
+		
+		$this->twig->add_function2('array_unique2', function($array){
+			return array_unique($array);
+		});
 		$this->twig->add_function2('_site_url', function($url = ""){
 			return site_url($url);
 		});
@@ -68,14 +76,14 @@ abstract class base_controller extends CI_Controller {
 		});
 		$this->twig->add_function2('form_widget', function($form){
 			
-		$file = 'twig/form/form_widget.html.twig';
-		$this->twig->display($file, ["form" =>$form]);
-		return ;
-			foreach ($form as $key => $value)
-			{
-				if($key[0]=="_")continue;
-				base_controller::form_row($this->twig, $value);
-			}
+			$file = 'twig/form/form_widget.html.twig';
+			$this->twig->display($file, ["form" =>$form]);
+			return ;
+				foreach ($form as $key => $value)
+				{
+					if($key[0]=="_")continue;
+					base_controller::form_row($this->twig, $value);
+				}
 		});
 		$this->twig->add_function2('form_row', function($form){
 			return base_controller::form_row($this->twig, $form);
@@ -260,6 +268,17 @@ abstract class base_controller extends CI_Controller {
 		
 		}
 	}
+}
+
+function getTimeInSeconds($str_time)
+{
+
+	$str_time = preg_replace("/^([\d]{1,2})\:([\d]{2})$/", "00:$1:$2", $str_time);
+
+	sscanf($str_time, "%d:%d:%d", $hours, $minutes, $seconds);
+
+	$time_seconds = $hours * 3600 + $minutes * 60 + $seconds;
+	return $time_seconds;
 }
 
 class FormCreator{
