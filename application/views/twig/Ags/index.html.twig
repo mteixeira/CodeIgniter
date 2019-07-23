@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+	{% set env = true ? "production.min" : "development" %}
+    <head>
+        <title>AGS</title>
+
+        <!-- data-main attribute tells require.js to load
+             scripts/main.js after require.js loads. -->
+
+		
+	 	<link 
+	      rel="stylesheet"
+	      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+	      crossorigin="anonymous" />
+
+		<link href="{{asset('includes/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+
+    </head>
+    <body>
+		<div id="app"></div>
+	    <!-- Scripts -->
+			
+		<script src="https://unpkg.com/react@16/umd/react.{{env}}.js" ></script>
+		<script src="https://unpkg.com/react-dom@16/umd/react-dom.{{env}}.js" ></script>
+
+		<script src="https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.6.0/redux.min.js"></script>
+   	    <script src="https://unpkg.com/react-redux@7.1.0/dist/react-redux.js"></script>
+		<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+		{% if false %}
+			
+		    <script src="{{ asset('js/AGS/Redux/action.js') }}"></script>
+			<script src="{{ asset('js/AGS/Redux/reducer.js') }}"></script>
+		    <script src="{{ asset('js/AGS/Redux/store.js') }}"></script>
+		    
+		    <script type="text/babel" src="{{ asset('js/AGS/App.js') }}"></script>
+
+		{% else %}
+			
+		    <script src="{{ asset('js/Message/Redux/action.js') }}"></script>
+		    <script src="{{ asset('js/Message/Redux/reducer.js') }}"></script>
+		    <script src="{{ asset('js/Message/Redux/store.js') }}"></script>
+
+	 		<script type="text/babel" src="{{ asset('js/Message/components/imports.js') }}"></script>
+	 		<script type="text/babel" src="{{ asset('js/Message/components/components.js') }}"></script>
+	 		
+	 		<script type="text/babel" src="{{ asset('js/Message/App.js') }}"></script>
+		{% endif %}
+
+
+    </body>
+
+
+</html>

@@ -29,7 +29,7 @@ class Tags_Model extends Abstract_Model {
 
 		log_message('debug', "Deletando Elementos");
 		$this->db->where('task_id', $task_id);
-		$this->db->where_not_in('tag', $tagsArr);
+		if($tagsArr) $this->db->where_not_in('tag', $tagsArr);
 		$this->db->delete($this->getDatabase());
 
 		$this->db->reset_query();

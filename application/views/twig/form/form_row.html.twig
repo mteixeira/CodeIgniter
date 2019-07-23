@@ -25,7 +25,7 @@
 				  {% endfor %}
 		</select>
 		*#}
-        
+    <!--form_row {{field.label}}-->    
     {% if field._form_label %}
     <div class='form-group' {{ field.vars.hidden is defined ? 'hidden'}} >
 		<label for="{{field.vars.id}}" class='col-form-label'>{{field.label}}:</label>
@@ -48,7 +48,7 @@
             {% if id  == field.value %}
                 {% set selected = 'selected' %}
             {% endif %}
-            <option value='{{id}}' {{selected}}>{{val}}</option>".PHP_EOL;
+            <option value='{{id}}' {{selected}}>{{val}}</option>
         {% endfor 
         
         %}</{{field._form_type}}>

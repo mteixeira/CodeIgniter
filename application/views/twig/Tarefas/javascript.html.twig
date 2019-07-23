@@ -10,6 +10,10 @@
 		};
 		window.timeload = new Date()
 
+		tags = {{Tags | json_encode|raw}};
+		projetos = {{Projetos_ids | json_encode|raw}};
+		data = {{entries | json_encode|raw}};
+
 		window.addEventListener('load', () => {
 			/*
 			  const model = new ListModel(['node.js', 'react']),
@@ -22,15 +26,20 @@
 
 			  view.show();
 			  */
-			data = {{entries | json_encode|raw}};
 			window.controllers = {}
 			$(".Tarefa").map((item,task) => {
-				tmodel = new TarefaModel(data[item]);
+				tmodel = new TarefaModel(
+							Object.assign(
+								data[item], 
+								{ tags: tags.filter((v)=>v.task_id == data[item].id) } 
+							)
+						);
 				tView = new TarefaView(tmodel, 
 				{
 					'task' : $(task), 
 					'runButton': $(task).find(".Trabalhar"), 
 					'stopButton': $(task).find(".Entregar"), 
+					'tituloLink': $(task).find(".Titulo a"), 
 					'tags': $(task).find(".Tags"),
 					'tags': $(task).find(".Tags"),
 				});
@@ -38,6 +47,8 @@
 				window.controllers[$(task).data("id")] = tController;
 
 			});
+
+			window.pageController = new PageController();
 
 		});
 		class TarefaModel extends EventEmitter{
@@ -65,12 +76,24 @@
 				return actID == this.ID;
 			}
 
+			get Tags()
+			{
+				return this._data.tags.map(v => v.tag).join(",");
+			}
 			set Tags(tags)
 			{
 
 				console.log("updating Tags " + tags);
 				console.log("id=" + this.ID);
-				this.call_ajax("{{ path('tarefas/set_tags/') }}"+ this.ID, "update.Tags", "tags", tags)//,  
+				var model = this;
+				this.call_ajax("{{ path('tarefas/set_tags/') }}"+ this.ID, "update.Tags", "tags", tags, 
+					{success: (ajaxData) => 
+						{
+							model._data.tags = ajaxData.res;
+						}
+					})//, 
+
+
 				return;
 				c = {
 	            	success: function(e)
@@ -126,9 +149,48 @@
 				this.update_ajax("rank", rank)
 			}
 
+			set Status(status)
+			{
+
+				console.log("updating Status " + status);
+				console.log("id=" + this.ID);
+				this.update_ajax("status", status)
+				this.TaskData.status = status
+			}
+
+			set Projeto(projeto)
+			{
+				console.log("updating Projeto " + projeto);
+				console.log("id=" + this.ID);
+				var model = this;
+				this.update_ajax("project_id", projeto, 
+					{success: (ajaxData) => 
+						{
+							model._data.project_id = projeto;
+							model._data.__projeto = projetos[projeto];
+						}
+					})
+			}
+
 			get ID()
 			{
 				return this.TaskData.id;
+			}
+
+			get Status()
+			{
+
+				return this.TaskData.status;
+			}
+
+			get Titulo()
+			{
+				return this.TaskData.titulo;
+			}
+
+			get Detalhes()
+			{
+				return this.TaskData.detalhes;
 			}
 
 			get UserID()
@@ -195,6 +257,7 @@
 				var id = this.ID
                 var data = {'id' : id}
                 data[field]= val;
+				/*
 				$.ajax({
 				    type: "POST",
 				      url: path_url,
@@ -222,29 +285,99 @@
 				        //toast("warning", "done Called" , "done")
 				      }
 				});
+				*/
+				TarefaModel.s_Call_ajax(path_url, event,  data, val, callback, model, dataType)
+			}
+
+			static s_Call_ajax(path_url, event,  data, val, callback, emitter, dataType="json", type="POST", processData = true)
+			{
+				console.log("ajax " + path_url);
+				console.log("data " + data);
+				console.log("val " + val);
+				/*
+				var id = this.ID
+                var data = {'id' : id}
+                data[field]= val;
+                */
+				$.ajax({
+				    type: type,
+				      url: path_url,
+				      data: data,
+				      dataType: dataType,
+				      processData: processData,
+				      success: function(data) {
+				      	console.log("Sucesso")
+	                	emitter.emit(event, {"data":data, "value": val});
+				      	if(callback) callback.success(data)
+				        //toast("success", "Atualizado " + fieldname, "Sucesso")
+				      },
+				      
+				      fail: function(e) {
+				      	console.log("Erro")
+				      	if(callback) callback.fail(e);
+	                	emitter.emit("AjaxError");
+				        //toast("error", "Erro ao Atualizar " + fieldname, "Erro")
+				      },
+				      always: function(e) {
+				      	console.log("Always")
+				        //toast("warning", "always Called" , "always")
+				      },
+				      done: function(e) {
+				      	console.log("Done")
+				        //toast("warning", "done Called" , "done")
+				      }
+				});
 			}
 		}
 
 		class EditView extends EventEmitter{
 			constructor(model, prop, event, elements, callback) {
 				super();
-				this._model = model;
 				this._prop = prop;
 				this._elements = elements;
 				this._callback = callback;
+				this._event = event;
+				this.Model = model;
 
+				if(false && ! this.Root.find(".save").length)
+				{
+					this.Root.find(".edit").addClass("multi-collapse");
+					this.Root.append("<span class='collapse multi-collapse' aria-expanded='false' >  	<input type='text' class='text-dark' value='"+ (this._model? this._model[prop] : "")+"' />    	<i class='cancel fas fa-times-circle text-warning'></i>	<i class='save fas fa-check text-success'  ></i>  </span>");
+				} 
 
-				this.Root.find(".edit").on('click',
-					e => this.toggle());
-				this.Root.find("input").on('keypress',
-					e => this.key(e));
-				this.Root.find(".save").on('click',
-					e => this.save());
-				this.Root.find(".cancel").on('click',
-					e => this.toggle());
+				this._editFunc = e => this.toggle();
+				this._keyFunc = e => this.key(e);
+				this._saveFunc = e => this.save();
+				this._cancelFunc = e => this.toggle();
+				this.refreshFunctions()
 
-				model.on(event, (data) => this.update(data));
 				return;
+			}
+			refreshFunctions()
+			{
+				this.Root.find(".edit").off('click', this._editFunc);
+				this.Root.find(".edit").on('click', this._editFunc);
+
+				this.Root.find("input").off('keypress', this._keyFunc);
+				this.Root.find("input").on('keypress', this._keyFunc);
+				
+				this.Root.find(".save").off('click', this._saveFunc);
+				this.Root.find(".save").on('click', this._saveFunc);
+
+				this.Root.find(".cancel").off('click', this._cancelFunc);
+				this.Root.find(".cancel").on('click', this._cancelFunc);
+			}
+
+			set Model(model)
+			{
+				if(! model) return;
+				if(this._model)
+				{
+					this._model.remove(this._event, this._function)
+				}
+				this._model = model;
+				this._function = ((data) => this.modelUpdated(data));
+				this._model.on(this._event, this._function);
 			}
 			get Root()
 			{
@@ -253,6 +386,20 @@
 			get Input()
 			{
 				return this.Root.find("input");
+			}
+			get Select()
+			{
+				return this.Root.find("select");
+			}
+
+			get Anchor()
+			{
+				return this.Root.children("a")
+			}
+
+			get InputElement()
+			{
+				return this.Input.length ? this.Input : this.Select;
 			}
 			get SpanInput()
 			{
@@ -269,7 +416,7 @@
 			}
 			save(e)
 			{
-        		this._model[this._prop] = this.Input.val();
+        		this._model[this._prop] = this.InputElement.val();
         		this.toggle();
 			}
 			key(e)
@@ -279,13 +426,19 @@
 			       	this.save(e);
 				}
 			}
+			modelUpdated(data)
+			{
+				this.update(data);
+                toast("success", "Atualizacao Concluida", "Sucesso")				
+			}
 
 			update(data)
 			{
-				var res = this._callback(data.data, data.value)
+				var res = this._callback.getAnchorData(data.data.res, data.value)
 
-				this.Root.children("a").html(res)
-                toast("success", "Atualizacao Concluida", "Sucesso")
+				this.Anchor.html(res)
+
+				this.InputElement.val(this._callback.getInputData(data.data.res, data.value))
 			}
 
 			updateTags(data)
@@ -296,7 +449,7 @@
                 	tags.join('</span><span class="badge badge-pill gradient-1 " aria-hidden="true">') +
                 	"</span>"         	;
                 
-                this.Root.children("a").html(tagshtml)
+                this.Anchor.html(tagshtml)
                 toast("success", "Tags Atualizadas", "Sucesso")
                 
 			}
@@ -329,26 +482,67 @@
 				this._elements = elements;
 				this._tagsView = new EditView(model, "Tags", "update.Tags", 
 					{"root":elements.task.find(".Tags")},
-					(data) => {
-		                var tags = data.res.map((value) => value.tag);
+					{
+						getAnchorData: (data) => {
+			                var tags = data.map((value) => value.tag);
 
-		                var tagshtml = '<span class="badge badge-pill gradient-1 " aria-hidden="true">'+ 
-		                	tags.join('</span><span class="badge badge-pill gradient-1 " aria-hidden="true">') +
-		                	"</span>";
-		                return tagshtml;
-					} );
+			                var tagshtml = '<span class="badge badge-pill gradient-1 " aria-hidden="true">'+ 
+			                	tags.join('</span><span class="badge badge-pill gradient-1 " aria-hidden="true">') +
+			                	"</span>";
+			                return tagshtml;
+						} ,
+						getInputData:(data) =>  {
+			                var tags = data.map((value) => value.tag);
+			                return tags.join(",");
+			            }
+					});
 				this._dateView = new EditView(model, "Data", "update.data", 
 					{"root":elements.task.find(".Data")},
-					(data) => {var da = data.res.data.split("-"); return da[2]+"/"+da[1]+"/"+da[0];} );
+					{
+						getAnchorData: (data) => {
+							var da = data.data.split("-"); return da[2]+"/"+da[1]+"/"+da[0];
+						},
+						getInputData:(data) => data.data
+					});
 				this._estimadoView = new EditView(model, "Estimado", "update.tempo_estimado", 
 					{"root":elements.task.find(".Estimado")},
-					(data) => data.res.tempo_estimado );
+					{
+						getAnchorData: (data) => data.tempo_estimado ,
+						getInputData:(data) => data.tempo_estimado
+					}
+					);
 				this._rankView = new EditView(model, "Rank", "update.rank", 
 					{"root":elements.task.find(".Rank")},
-					(data) => data.res.rank );
+					{
+						getAnchorData: (data) => data.rank,
+						getInputData:(data) => data.rank 
+					});
 				this.titulo = new EditView(model, "Titulo", "update.titulo", 
 					{"root":elements.task.find(".Titulo")},
-					(data) => this._model.ID + " - " + data.res.titulo );
+					{
+						getAnchorData: (data) => 
+							this._model.ID + " - " + data.titulo,
+						getInputData:(data) => data.titulo
+					});
+				var projeto = new EditView(model, "Projeto", "update.project_id", 
+					{"root":elements.task.find(".Info")},
+					{
+						getAnchorData: (data) => 
+							"Cliente > " + 
+							$(projeto.InputElement[0])
+								.find("option[value='"+data.project_id+"']")[0]
+								.text,
+
+						getInputData:(data) => data.project_id
+					} );
+				this.projeto = projeto;
+
+				this.status = new EditView(model, "Status", "update.status", 
+					{"root":elements.task.find(".Status")},
+					{
+						getAnchorData: (data) =>  data.status,
+						getInputData:(data) => data.status
+					});
 
 				model.on("update.rank", (data)=> this.index = data.data.res.rank - 1);
 
@@ -358,7 +552,8 @@
 					.on('taskPaused', () => this.rebuildTask("pause"))
 					.on('taskStopped', () => this.rebuildTask("stop"))
 					.on('taskChanged', () => this.rebuildTask("changed"))
-					.on('runButtonError', () => this.runError());
+					.on('runButtonError', () => this.runError())
+					.on('update.status', (e) => this.rebuildTask("changed"));
 
 				// attach listeners to HTML controls
 				elements.task.on('change',
@@ -367,6 +562,8 @@
 					() => this.emit('runButtonClicked'));
 				elements.stopButton.on('click',
 					() => this.emit('stopButtonClicked'));
+				elements.tituloLink.on('click',
+					() => this.emit('editTarefa'));
 				elements.task.on('dragover',
 					(e) => this.emit('dragOver', e));
 				elements.task.on('dragstart',
@@ -399,6 +596,18 @@
 	                //$(".task_running .work_icon").removeClass('fa-pause').addClass('fa-play');
 	                //$(".task_running").removeClass('task_running');
 				}
+
+	            if(obj=="changed")
+	            {
+	            	if(this._model.Status == "Concluida")
+	            	{
+	            		this._elements.task.hide()
+	            	}
+	            	else {
+
+	            		this._elements.task.show()
+	            	}
+	            }
 			}
 
 
@@ -428,19 +637,24 @@
 				//view.on('listModified', idx => this.updateSelected(idx));
 				view.on('runButtonClicked', () => this.runPauseTask());
 				view.on('stopButtonClicked', () => this.stopTask());
+				view.on('editTarefa', () => this.editTarefa());
 				view.on('dragOver', (e) => this.dragOver(e));
 				view.on('dragStart', (e) => this.dragStart(e));
 				view.on('dragEnd', (e) => this.dragEnd(e));
 			}
 			get isRunning()
 			{
+				console.log("isRunning?")
 				return this._model.isRunning;
 			}
 			runPauseTask(){
 				console.log("---------------------------")
 				console.log("Controller.RunPause Click")
-	            if(this.isRunning) this.stop();
-	            else this.start();
+	            if(this.isRunning) 
+	            	this.stop();
+	            else 
+	            	this.start();
+				console.log("Controller.RunPause Concluido")
 	            return;
 
 			}
@@ -524,6 +738,23 @@
 			}
 			stopTask(){
 				console.log("stopClicked Controller");
+				this._model.Status = "Concluida";
+			}
+
+			editTarefa()
+			{
+				/*
+				$('#exampleModal').on('show.bs.modal', function (event) {
+				  var button = $(event.relatedTarget) // Button that triggered the modal
+				  var recipient = button.data('whatever') // Extract info from data-* attributes
+				  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+				  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+				  var modal = $(this)
+				  modal.find('.modal-title').text('New message to ' + recipient)
+				  modal.find('.modal-body input').val(recipient)
+				})
+				*/
+				pageController.editModal(this._model)
 			}
 			/*
 			static get dragged() { return TarefaController.dragged; }
@@ -534,6 +765,7 @@
 
 			dragStart(event) {
                 console.log("Drag Start " + this._model.ID);
+                console.log("event " ,event);
                 //this.refs['update'].updateGoal();
                 console.log("drag start");
                 TarefaController.dragged = event.currentTarget;
@@ -620,6 +852,242 @@
                 //jQuery("#card12").before(jQuery("#card20"));
                     //
             };
+
+		}
+
+		class PageView extends EventEmitter{
+			constructor(elements, callback) {
+				super();
+				this._elements = elements;
+
+				elements.createSaveButton.on('click',() => this.emit('createSaveButtonClick'));
+				elements.createAndAddButton.on('click',() => this.emit('createAndAddButtonClick'));
+				elements.createButton.on('click',() => this.emit('createButton'));
+
+				elements.createModal.on('show.bs.modal', (event) => this.clearCreateModal(event));
+
+				this._tagsView = new EditView(null, "Tags", "update.Tags", 
+					{"root":elements.modalTaskTags},
+					{
+						getAnchorData: (data) => {
+			                var tags = data.map((value) => value.tag);
+
+			                var tagshtml = '<span class="badge badge-pill gradient-1 " aria-hidden="true">'+ 
+			                	tags.join('</span><span class="badge badge-pill gradient-1 " aria-hidden="true">') +
+			                	"</span>";
+			                return tagshtml;
+			            },
+			            getInputData:(data) =>  {
+			                var tags = data.map((value) => value.tag);
+			                return tags.join(",");
+			            }
+					} );
+
+				this._statusView = new EditView(null, "Status", "update.status", 
+					{"root":elements.statusTaskTags},
+						{
+							getAnchorData: (data) => data.status ,
+						getInputData:(data) => data.status
+						});
+
+
+				var projeto = new EditView(null, "Projeto", "update.project_id", 
+					{"root":elements.modalTaskInfo},
+					{
+						getAnchorData: (data) => 
+						"Cliente > " + 
+						$(projeto.InputElement[0])
+							.find("option[value='"+data.project_id+"']")[0]
+							.text ,
+						getInputData:(data) => data.project_id
+					} );
+				this._projeto = projeto;
+					
+
+			}
+
+			createButtonClick()
+			{
+				this._elements.createButton[0].click()
+			}
+			closeCreateModal()
+			{
+				$(this._elements.createModal).find(".close")[0].click()
+			}
+			clearCreateModal(event)
+			{
+				var modal = $(this._elements.createModal)
+				//modal.find('.modal-title').text('New message to ' + recipient)
+				modal.find('#task-title').val("")
+				modal.find('#task-rank').val("99")
+				modal.find('#task-detalhes').val("")
+			}
+		}
+
+		class PageController{
+			constructor() {
+				this._view = new PageView(
+				{
+					createSaveButton: $("#createSaveButton"),
+					createAndAddButton: $("#createAndAddButton"),
+					createModal: $("#novaTarefaModal"),
+					createButton: $("#createButton"),
+					popoverForm: $("#myForm"),
+					modalTaskTags: $("#modal-task-tags"),
+					statusTaskTags: $("#modal-task-status"),
+					modalTaskInfo: $("#modal-task-Info"),
+
+				});
+
+
+
+				this._view
+					.on("createSaveButtonClick", (e) => this.createSaveButtonClick(e))
+					.on("createAndAddButtonClick", (e) => this.createAndAddButton(e))	
+					.on("createButton", (e) => this.createButtonClick(e))	
+
+				/*
+				this._view._elements.modalTaskTags.popover({
+       
+			        placement: 'top',
+			        title: 'Popover Form',
+			        html:true,
+			        content:  $('#myForm').html()
+			    }).on('click', function(){
+			      // had to put it within the on click action so it grabs the correct info on submit
+			      $('.btn-primary').click(function(){
+			       $('#result').after("form submitted by " + $('#email').val())
+			        $.post('/echo/html/',  {
+			            email: $('#email').val(),
+			            name: $('#name').val(),
+			            gender: $('#gender').val()
+			        }, function(r){
+			          $('#pops').popover('hide')
+			          $('#result').html('resonse from server could be here' )
+			        })
+			      })
+			  })	
+			  */			
+			}
+
+			editModal(model)
+			{
+				this._view._tagsView.Model = model;
+				this._view._statusView.Model = model;
+				this._view._projeto.Model = model;
+
+				var modal = $('#editTarefaModal');
+				//modal.find('.modal-title').text('Editar Tarefa ' + this._model.ID)
+				modal.find('.modal-title').text('' + model.Titulo)
+				modal.find('#modal-task-id').text('' + model.ID)
+				modal.find('#modal-task-createdAt').text('' + model._data.created_at)
+				modal.find('#modal-task-detalhes').text('' + model._data.detalhes)
+				modal.find('#modal-task-TipoTarefa').text('' + model._data.__tipo_tarefa.nome)
+				modal.find('#modal-task-Projeto').text('' + model._data.__projeto.title)
+				//modal.find('#modal-task-Info').text('' + model._data.__projeto.title)
+				
+				$("#editTarefaModal").find("#modal-task-Info")
+					.html(controllers[model.ID]._view._elements.task.find(".Info").html())
+				this._view._projeto.refreshFunctions()
+				
+				modal.find('#editID').attr("href", "{{ path('tarefas')}}/" + model.ID)
+				modal.find('#modal-task-esforcoestimado').text('' + model._data.__tempo_estimado_final)
+				modal.find('#modal-task-percentual').width(model._data .__perc + "%")
+				//modal.find('#modal-task-status').text('' + model._data.status)
+				this._view._tagsView.update(
+						{ data: { res: model._data.tags}}
+					)
+				this._view._statusView.update(
+						{ data: { res: {status:model._data.status}}}
+					)
+				this._view._projeto.update(
+						{ data: { res: {project_id:model._data.__projeto.id}}}
+					)
+
+				//$('#tarefa-title').val(model.Titulo)
+				//$('#tarefa-detalhes').val(model.Detalhes)
+			}
+
+			f()
+			{
+				$('#login').popover({
+       
+			        placement: 'bottom',
+			        title: 'Popover Form',
+			        html:true,
+			        content:  $('#myForm').html()
+			    }).on('click', function(){
+			      // had to put it within the on click action so it grabs the correct info on submit
+			      $('.btn-primary').click(function(){
+			       $('#result').after("form submitted by " + $('#email').val())
+			        $.post('/echo/html/',  {
+			            email: $('#email').val(),
+			            name: $('#name').val(),
+			            gender: $('#gender').val()
+			        }, function(r){
+			          $('#pops').popover('hide')
+			          $('#result').html('resonse from server could be here' )
+			        })
+			      })
+			  })
+			}
+
+			createButtonClick(e)
+			{
+				//this._view.Model = 
+			}
+			createSaveButtonClick(e)
+			{
+				console.log("Save Clicado")
+				this.createAndAddButton(e);
+				this._view.closeCreateModal()
+			}
+			createAndAddButton(e)
+			{
+				console.log("Save and Add Clicado")
+				//var formdata = new FormData($("#novaTarefaModal form")[0]);
+				var formdata = $("#novaTarefaModal form").serialize();
+				console.log(formdata);
+				//return;
+				TarefaModel.s_Call_ajax("{{ path("Tarefas/create") }}?datatype=Version3", event, formdata, "", {
+					success: (e)=> this.insertResult(e),
+					fail:(e) => toast("error", "Erro ao Criar Tarefa " + e, "Erro")
+				}, this._view, "json", "POST", false)
+				
+				this._view.clearCreateModal()
+
+			}
+			emulateV3(e)
+			{
+				TarefaModel.s_Call_ajax("{{ path("Tarefas/edit/95/Version3") }}", event, {}, "", {
+					success: (e)=> this.insertResult(e)
+				}, this._view, "json", "POST", false)
+
+				//this._view.clearCreateModal()
+
+			}
+			insertResult(e)
+			{
+				var last = $(".Tarefa:last")[0]
+				var parent = last.parentElement;
+				//var div = $($.parseHTML(e.html)).filter((e,v)=>$(v).hasClass("Tarefa"));
+				$(parent).append(e.html);
+
+				var task = $(".Tarefa:last");
+				tmodel = new TarefaModel(e.data);
+				tView = new TarefaView(tmodel, 
+				{
+					'task' : $(task), 
+					'runButton': $(task).find(".Trabalhar"), 
+					'stopButton': $(task).find(".Entregar"), 
+					'tituloLink': $(task).find(".Titulo a"), 
+					'tags': $(task).find(".Tags"),
+					'tags': $(task).find(".Tags"),
+				});
+				tController = new TarefaController(tmodel, tView)
+				window.controllers[$(task).data("id")] = tController;
+				toast("success", "Criada Com Sucesso", "Sucesso")
+			}
 
 		}
 

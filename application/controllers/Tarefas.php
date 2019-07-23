@@ -32,9 +32,45 @@ class Tarefas extends CRUD_Controller {
 		->build();
 	}
 
-	protected function getCreateForm($data)
+	public function getCustom($type, $entry)
 	{
-		return $this->form("tarefas/create", $data["entry"])
+		return $this->edit($entry["id"], "Version3");
+	}
+	protected function getEditVersion($version)
+	{
+		if($version == "Version2")
+		{
+			return 'twig/tarefas/show_entry.html.twig';
+
+		}
+		else
+		{
+			return parent::getEditVersion($version);
+		}
+	}
+
+	protected function editResult($data, $model, $datatype)
+	{
+		if($model == "Version3")
+		{
+			$file = $this->getEditVersion("Version2");
+			log_message('info', "Carregando Pagina $file");
+			log_message('debug', $data);
+			$res = $this->twig->render($file, $data);
+			return $this->json(["html"=>"$res", "data"=>$data["entry"]]);
+		}
+		else
+		{
+			return parent::editResult($data, $model);
+		}
+	}
+
+
+
+	protected function getCreateForm($data, $entry = [])
+	{
+		$entry = $entry ?: $data["entry"];
+		return $this->form("tarefas/create", $entry)
 			->input("codigo"		, "codigo"		, "task-code"		, "text"			, "Código"		, ["hidden"=>""])
 			->input("titulo"		, "titulo"		, "task-title"		, "text"			, "Título"		)
 			->input("rank"			, "rank"		, "task-rank"		, "text"			, "Rank"		, ["hidden"=>""])
@@ -51,16 +87,16 @@ class Tarefas extends CRUD_Controller {
 	protected function createDefaultEntry()
 	{
 		return [
-			"codigo" 		=> 'S0001',		
-			"titulo"  		=> 'Tarefa1',
-			"rank"			=>  '1', 
-			"parent_task" 	=>  '2',
+			"codigo" 		=> '',		
+			"titulo"  		=> '',
+			"rank"			=>  '99', 
+			"parent_task" 	=>  '1',
 			"tipo_tarefa_id"=>  '1',
 			"project_id"	=>  '1',
 			"cli_id"	 	=>  '2',
 			"data"		 	=>  '2019-01-01T10:10:10',
 			"status"	 	=> 'Inicializada'		,
-			"detalhes"	 	=>  	'detalhes',
+			"detalhes"	 	=>  	'',
 		];
 	}
 	
@@ -209,6 +245,7 @@ class Tarefas extends CRUD_Controller {
 		$data = $this->getPostData($this);
 		$task_id = $data["id"];
 		$tags = $data["tags"];
+		log_message('debug', $tags);
 
 		$this->load->model('Tags_Model');
 		$tags2 =  $this->Tags_Model->updateTags($task_id, $tags);
@@ -394,6 +431,8 @@ class Tarefas extends CRUD_Controller {
 		$projetos_options = $options($projetos,  'id', 'title');
 		$obj['projetos_options'] = $projetos_options;
 		
+		$createForm = $this->getCreateForm($obj, $this->createDefaultEntry());
+		$obj['createForm'] = $createForm; 
 		return $obj;
 	}
 	

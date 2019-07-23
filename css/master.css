@@ -1,5 +1,5 @@
 
-@import url("reset.css");
+/*@import url("reset.css");*/
 /*@import url("global.css");
 @import url("flash.css");
 @import url("structure.css");
@@ -48,7 +48,8 @@ h3{}
   	display:block;
 }
 
-.Tarefa button{ 
+.Tarefa button, 
+#editTarefaModal .modal-header .Work-actions button { 
 	background-color: white;
 	color:#49baec;
 	border:1px solid #49baec;
@@ -81,6 +82,22 @@ h3{}
 	padding: 0;
 }
 
+/* -----------------------------------*/
+/* ------->>>  Colors   <<<--------*/
+/* -----------------------------------*/
+.Task_bg_gray_4 { background-color: #444; }
+.Task_bg_gray_8 { background-color: #888; }
+.Task_bg_gray_a { background-color: #aaa; }
+.Task_bg_gray_b { background-color: #bbb; }
+.Task_bg_gray_c { background-color: #ccc; }
+.Task_bg_gray_e { background-color: #eee; }
+.Task_h-025 { height: 0.25em; }
+.Task_h-05 { height: 0.5em; }
+.Task_h-1 { height: 1em; }
+.Task_h-5 { height: 10em; }
+.Task_h-10 { height: 10em; }
+
+.Detalhes-2{}
 
 /* -----------------------------------*/
 /* ------->>>  Typography   <<<--------*/
@@ -88,6 +105,15 @@ h3{}
 ._Tarefa span
 {
 	font-sidse: 0.9em;
+}
+
+.Tarefa  *
+{
+	font-size: 11px;
+}
+.Tarefa .Titulo
+{
+	font-size: 25px;
 }
 
 .Tarefa .Titulo a
@@ -106,14 +132,6 @@ h3{}
 {
 	visibility: visible;
 	/*background-color:White;*/
-}
-.Tarefa *
-{
-	font-size: 11px;
-}
-.Tarefa .Titulo
-{
-	font-size: 25px;
 }
 
 .Tarefa .Data a, 

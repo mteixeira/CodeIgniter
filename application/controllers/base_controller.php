@@ -85,17 +85,17 @@ abstract class base_controller extends CI_Controller {
 					base_controller::form_row($this->twig, $value);
 				}
 		});
-		$this->twig->add_function2('form_row', function($form){
-			return base_controller::form_row($this->twig, $form);
+		$this->twig->add_function2('form_row', function($form, $data=[]){
+			return base_controller::form_row($this->twig, $form, $data);
 		});
 		$this->init();
 		//base_url
 	}
 	
-	static public function form_row($twig, $field){
+	static public function form_row($twig, $field, $data=[]){
  
 		$file = 'twig/form/form_row.html.twig';
-		$twig->display($file, ["field" =>$field]);
+		$twig->display($file, ["field" =>array_merge_recursive($field,$data)]);
 		return ;
 		if(false){
 			$c = "";
@@ -182,9 +182,12 @@ abstract class base_controller extends CI_Controller {
 	function handleRequest($request, $form)
 	{
 		log_message('debug', __METHOD__);
+		log_message('debug', $form);
 		if($request->isPost()) 
 		{
 			$data = $request->input->input_stream();
+			log_message('debug', $data);
+		
 			$form["_data"] = $data;
 			foreach ($form as $key => $value)
 			{

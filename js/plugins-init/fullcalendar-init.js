@@ -1,7 +1,14 @@
 ! function(e) {
     "use strict";
     var t = function() {
-        this.$body = e("body"), this.$modal = e("#event-modal"), this.$event = "#external-events div.external-event", this.$calendar = e("#calendar"), this.$saveCategoryBtn = e(".save-category"), this.$categoryForm = e("#add-category form"), this.$extEvents = e("#external-events"), this.$calendarObj = null
+        this.$body = e("body"), 
+        this.$modal = e("#event-modal"), 
+        this.$event = "#external-events div.external-event", 
+        this.$calendar = e("#calendar"), 
+        this.$saveCategoryBtn = e(".save-category"), 
+        this.$categoryForm = e("#add-category form"), 
+        this.$extEvents = e("#external-events"), 
+        this.$calendarObj = null
     };
     t.prototype.onDrop = function(t, n) {
         var a = t.data("eventObject"),

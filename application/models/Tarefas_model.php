@@ -45,9 +45,13 @@ class Tarefas_Model extends Abstract_Model {
 		$res = parent::get_by_id($id);
 		if($res)
 		{
+			log_message('debug', "getByID resultado Positivo");
+			
 			$parent_id = $res["parent_task"];
 			$res["parent"] = $this->get_by_id($parent_id);
 		}
+		log_message('debug', "Retornando");
+		log_message('debug',  $res);
 		return $res;
 	}
 
@@ -111,16 +115,21 @@ class Tarefas_Model extends Abstract_Model {
 		//SELECT `mteixeira_task_work`.`task_id`, ts_final - ts_inicio as total FROM `mteixeira_task_work` group by task_id
 		//select task_id, sum(IF(ts_final="0000-00-00 00:00:00", CURRENT_TIMESTAMP, ts_final) - ts_inicio) as total FROM `mteixeira_task_work` group by task_id
 
-		$this->db->select('task_id');
-		$query = $this->db->get_where("mteixeira_task_work", ["usuario_id"=>$user_id,'ts_final'=> "0000-00-00 00:00:00"]);
-		
-		$row = $query->row();
-
-		if (isset($row))
+		$tw = $this->get_ActiveTaskWork($user_id);
+		if (isset($tw))
 		{
-				return $row->task_id;
+			return $tw->task_id;
 		}
 		return 0;
+	}
+	public function get_ActiveTaskWork($user_id)
+	{
+		//SELECT `mteixeira_task_work`.`task_id`, ts_final - ts_inicio as total FROM `mteixeira_task_work` group by task_id
+		//select task_id, sum(IF(ts_final="0000-00-00 00:00:00", CURRENT_TIMESTAMP, ts_final) - ts_inicio) as total FROM `mteixeira_task_work` group by task_id
+
+		$query = $this->db->get_where("mteixeira_task_work", ["usuario_id"=>$user_id,'ts_final'=> "0000-00-00 00:00:00"]);
+		
+		return $query->row()?:[];
 	}
 
 	public function stop_works($user_id)

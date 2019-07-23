@@ -1,0 +1,191 @@
+{% set active_time = '' %}
+{% if entry.__is_active %}
+    {% set active_time = 'active_time' %}
+{% endif %}
+
+
+{% set time = "00:00:00" %}
+{% if times[entry.id][1] %}
+    {% set time = times[entry.id][1] %}
+{% endif %}
+{% set timeInSec = getTimeInSeconds(time) %}
+
+{% set tempo_estimado_final = entry.tempo_estimado=="00:00:00"? TiposTarefas_ids[entry.tipo_tarefa_id].esforco_estimado: entry.tempo_estimado %}
+{% set tempoEstimadoInSeconds = getTimeInSeconds(tempo_estimado_final) %}
+
+{% set entry = entry|merge(
+	{
+	__play_text: entry.__is_active?'Pausar':'Trabalhar' ,
+	__icon: entry.__is_active?'fa-pause work_running':'fa-play',
+	}) %}
+
+	<!--entry {#{entry|json_encode}#}-->
+	<!--tempo {{timeInSec}}-->
+	<!--tempo Estimado {{entry.tempo_estimado}}-->
+	<!--tempo Padrao Estimado {{TiposTarefas_ids[entry.tipo_tarefa_id].esforco_estimado}}-->
+	<!--tempo Estimado in sec {{entry.__tempoEstimadoInSeconds}}-->
+<div id="card_{{entry.id}}" class="card Tarefa bb_t{{entry.tipo_tarefa_id}} {{ entry.__is_active ? 'task_running'}}" data-id="{{entry.id}}" data-user_id='2' draggable="true">
+
+
+
+    <span class="Task resact" 
+    	taskID="{{entry.id}}" 
+    	rank="{{entry.rank}}" 
+    	titulo="{{ entry.titulo }}"
+    	project_id="{{ entry.project_id }}"
+    	active="{{entry.__is_active}}"
+    ></span>
+
+	<div class="border-left-primary card-header justify-content-between px-4 row mx-0 align-items-start">
+			
+
+		<!--**********************************************
+		** 					Rank 				
+		**************************************************-->
+        <span class="Rank d-sinline-block badge badge-pill gradient-1 float-left h-25 mt-2 ">
+        	<a class="edit collapse show multi-collapse" aria-expanded="true" >{{entry.rank}}</a>
+			<span class="collapse multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="false" >
+            	<input type="text" class="text-dark" value="{{entry.rank}}" />
+            	<i class="cancel fas fa-times-circle text-warning"></i>
+               	<i class="save fas fa-check text-success"  ></i>
+            </span>
+        </span>
+
+        <div class="col m-1">
+        	<div class="row {{entry.__is_active? 'd-inline-block' : 'd-flex'}} justify-content-around">
+            	<!--**********************************************
+				** 					Titulo 				
+				**************************************************-->
+                <span class="Titulo   my-2 col-6"><a {#href="{{ path('tarefas/{id}', { id:entry.id} )}}"#} href="#editTarefaModal" data-toggle="modal"  class="multi-collapse">{{entry.id}} - {{ entry.titulo }}</a><i class="edit fas fa-pencil-alt text-success p-2"  ></i>
+                	<span class="collapse multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="false" >
+                		<input type="text" value="{{entry.titulo}}" data-keypress="dataKey"/>
+                		<i class="cancel fas fa-times-circle text-warning"></i>
+                		<i class="save fas fa-check text-success"  ></i>
+                	</span>
+                </span>
+
+                <!--**********************************************
+				** 					Info(Cliente>Projeto) 				
+				**************************************************-->
+                <span class="Info d-block my-2"> 
+                	<a class="edit {#collapse show #} multi-collapse" aria-expanded="true" >Cliente > {{ Projetos_ids[entry.project_id].title }} </a>
+					<span class="collapse multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="false" >
+                    	{#<input type="text" value="{{entry.project_id}}" />#}
+                    	<select>
+                    		{% for projeto in Projetos_ids %}
+				              <option value="{{ projeto.id }}" {{entry.project_id == projeto.id? 'selected'}}>{{ projeto.title }}</option>
+                    		{% endfor %}
+                    	</select>
+                    	<i class="cancel fas fa-times-circle text-warning"></i>
+                       	<i class="save fas fa-check text-success"  ></i>
+                    </span>
+
+                </span>
+				{#
+                <div class="dropdown">
+				  <a class="btn btn-secondary dropdown-toggle" href="#"  role="button" id="dropdownMenuButton{{entry.id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				    Dropdown button
+				  </a>
+				  <form class="dropdown-menu p-4">
+				  	<button type="button" class="close p-2" data-toggle="dropdown" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+				    <div class="form-group">
+				      <label for="exampleDropdownFormEmail{{entry.id}}">Email address</label>
+				      <input type="email" class="form-control" id="exampleDropdownFormEmail{{entry.id}}" placeholder="email@example.com">
+				    </div>
+				  </form>
+				</div>
+                #}
+
+				{% if entry.__is_active %}
+                    <!--**********************************************
+					** 					Progresso 				
+					**************************************************-->
+					<div class="Progresso w-50 my-2 small align-self-center progress no-gutters" style="height: 10px">
+						<div class="progress-bar gradient-1" style="width: {{entry.__perc}}%;" role="progressbar">	
+							<span class="sr-only">10% Complete</span>
+						</div>
+					</div> 
+					<!--**********************************************
+					** 					Date 				
+					**************************************************-->
+                    <span class="Data my-2">Data Desejada: <a class="edit   multi-collapse " aria-expanded="true" data-click="__toggleData"  >{{entry.data|date('d/m/Y')}}</a>
+                    	<span class="collapse multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="false" >
+                    		<input type="date" value="{{entry.data|date('Y-m-d')}}" data-keypress="__dataKey"/>
+                    		<i class="cancel fas fa-times-circle text-warning" data-click="toggleData"></i>
+                    		<i class="save fas fa-check text-success" data-click="dataSave" ></i>
+                    	</span>
+                    </span>
+
+                    <!--**********************************************
+					** 					Esforco Estimado				
+					**************************************************-->
+                    <span class="Estimado my-2">Esforço Estimado: <a class="edit multi-collapse">{{entry.__tempo_estimado_final}}</a>
+                    <!--<a class="collapse show multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="true" data-click="toggleData"  >{{entry.data|date('d/m/Y')}}</a>-->
+                    	<span class="collapse multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="false" >
+                    		<input type="time" max="72:00" value="{{entry.__tempo_estimado_final}}" data-keypress="dataKey"/>
+                    		<i class="cancel fas fa-times-circle text-warning"></i>
+                    		<i class="save fas fa-check text-success"  ></i>
+                    	</span>
+                    </span>
+                    <!--**********************************************
+					** 					Entrega Estimada 				
+					**************************************************-->
+                    <span class="Entrega my-2">Est. Entrega: <a href="">10/03/2019</a></span>
+
+				{% endif %}
+                <!--**********************************************
+				** 					Tags				
+				**************************************************-->
+                <span class="Tags my-2 col-1">{{ entry.__is_active ? 'Tags: '}}
+                	<a id="Tags_a_{{entry.id}}" role="button"  class="edit colapse {#show collapsed #} multi-collapse " data-toggle="collapse" data-click="T_Tags.toggle"  aria-expanded="true" aria-controls="Tag_input_{{entry.id}} Tags_a_{{entry.id}}" data-target=".multi-collapse_{{entry.id}}" >
+                	{% set tagsVal = [] %}
+		            {% for tag in Tags if tag.task_id == entry.id %}
+                    	<span class="badge badge-pill gradient-1 " aria-hidden="true">{{ tag.tag }}</span>
+                    	{% set tagsVal = tagsVal|merge([tag.tag|e]) %}
+                    {#	<span class="badge badge-pill gradient-1 "aria-hidden="true">T2</span>,
+                    	<span class="badge badge-pill gradient-1 "aria-hidden="true">T3</span>
+                    #}
+                	{% else %}
+                		Sem Tags
+		            {% endfor %}
+
+		            {% set entry = entry|merge({tags: tagsVal}) %}
+
+                    </a>
+		            <span class="input_span collapse multi-collapse " aria-expanded="false" >
+		            	<input id="Tag_input_{{entry.id}}" class="Tag_input" value="{{tagsVal|join(',')}}" data-keypress="T_Tags.key"/>
+		            	<i data-input_id="#Tag_input_{{entry.id}}" class="cancel fas fa-times-circle text-warning" data-click="T_Tags.toggle"  ></i>
+		            	<i data-input_id="#Tag_input_{{entry.id}}" data-click="T_Tags.save" class="save fas fa-check text-success"></i>
+		            </span>
+               	</span>
+
+               	<!--**********************************************
+				** 					Status 				
+				**************************************************-->
+                <span class="Status my-2">{{ entry.__is_active?'Status: ' }}
+
+                	<a class="edit {#collapse show #} multi-collapse" aria-expanded="true" >{{ entry.status }} </a>
+					<span class="collapse multi-collapse multi-collapse_date_{{entry.id}}" aria-expanded="false" >
+                    	{#<input type="text" value="{{entry.project_id}}" />#}
+                    	<select>
+                    		{% for status in status_entries %}
+				              <option value="{{ status }}" {{entry.status == status ? 'selected'}}>{{ status }}</option>
+                    		{% endfor %}
+                    	</select>
+                    	<i class="cancel fas fa-times-circle text-warning"></i>
+                       	<i class="save fas fa-check text-success"  ></i>
+                    </span>
+                </span>
+
+        	</div>
+        </div>
+
+        <div class="d-none ButtonContainer align-self-center d-inline-block bordedrRed">
+            <button class="Entregar btn btn-primary px-lg-5 p-2 mx-2 "><i class="fas fa-stop work_icon {{entry.__is_active ? 'pr-lg-4'}}" id="icon_stop_act_{{entry.id}}"></i><span class="d-none {{entry.__is_active ? 'd-lg-inline'}}">Entregar</span></button>
+            <button class="Trabalhar start_work btn btn-primary btn-circle px-lg-4 p-2 mx-2 " data-task_id="{{entry.id}}" data-card_id="card_{{entry.id}}"><i class="fas {{entry.__icon}} work_icon {{entry.__is_active ? 'pr-lg-4'}}" id="icon_work_act_{{entry.id}}"></i> <span class="d-none {{entry.__is_active ? 'd-lg-inline'}}">{{entry.__play_text}}</span></button>
+         </div>
+
+   </div>
+</div>

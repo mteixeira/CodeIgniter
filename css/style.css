@@ -11701,10 +11701,13 @@ table.dataTable thead .sorting::after {
     cursor: pointer;
     display: block;
     line-height: 52px;
-    padding-left: 1.5rem;
+    padding-left: 2rem;
     position: relative;
     margin: 0 !important;
     color: #464a53; }
+	  .tdl-holder label i {
+	    position: absolute;
+	    left: 0;}
     .tdl-holder label a {
       color: #464a53;
       line-height: normal;

@@ -7,7 +7,45 @@
   {% set __currentPath = _current_url() %} 
   {% block title %}MTeixeira - Tarefas{% endblock %}
 
+	{% set entries = entries|map(entry => 
+											entry| merge(
+											{
+												__tipo_tarefa: TiposTarefas_ids[entry.tipo_tarefa_id],
+												__projeto: Projetos_ids[entry.project_id],
+												__is_active:(active_task_id == entry.id),
+												__timeInSec: getTimeInSeconds(times[entry.id][1] ?: "00:00:00") ,
+												__tempo_estimado_final : entry.tempo_estimado=="00:00:00"? 
+																		TiposTarefas_ids[entry.tipo_tarefa_id].esforco_estimado: 
+																		entry.tempo_estimado ,
+												__tempoEstimadoInSeconds: 
+																		getTimeInSeconds(
+																			entry.tempo_estimado=="00:00:00"? 
+																				TiposTarefas_ids[entry.tipo_tarefa_id].esforco_estimado: 
+																				entry.tempo_estimado
+																		),
+												__perc: 
+																	getTimeInSeconds(
+																			entry.tempo_estimado=="00:00:00"? 
+																				TiposTarefas_ids[entry.tipo_tarefa_id].esforco_estimado: 
+																				entry.tempo_estimado
+																		)? 
+															(getTimeInSeconds(times[entry.id][1] ?: "00:00:00")/
+															getTimeInSeconds(
+																			entry.tempo_estimado=="00:00:00"? 
+																				TiposTarefas_ids[entry.tipo_tarefa_id].esforco_estimado: 
+																				entry.tempo_estimado
+																		))*100 :
+															100, 
 
+											})
+						)
+	%}
+
+	{% block title_create_button %}
+		<a href="#novaTarefaModal" id="createButton" data-toggle="modal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" {#data-toggle="modal" data-target="#novaTarefa"#}>
+                                <i class="fas fa-download fa-sm text-white-50"></i> Criar {{app.controller}}
+                            </a>
+  {% endblock %}
 
   {% block stylesheets %}
       {{ parent() }}
@@ -34,9 +72,9 @@
             <li class="nav-item"><a class="nav-link {{ status=="closed"? 'active'}}" href="?status=closed">Encerradas</a>
             </li>
             <li class="nav-item"><a class="nav-link {{ status=="canceled"? 'active'}}" href="?status=canceled">Canceladas</a>
-            <li class="nav-item"><a class="nav-link {{ status=="all"? 'active'}}" href="?tag=Pessoal">Pessoais</a>
-            <li class="nav-item"><a class="nav-link {{ status=="all"? 'active'}}" href="?tag=Pneuscar">Pneuscar</a>
-            <li class="nav-item"><a class="nav-link {{ status=="all"? 'active'}}" href="?tag=Task">Task</a>
+            <li class="nav-item"><a class="nav-link {{ status=="all"? 'active'}}" href="?tag=Pessoal&status=opened">Pessoais</a>
+            <li class="nav-item"><a class="nav-link {{ status=="all"? 'active'}}" href="?tag=Pneuscar&status=opened">Pneuscar</a>
+            <li class="nav-item"><a class="nav-link {{ status=="all"? 'active'}}" href="?tag=Task&status=opened">Task</a>
             </li>
             <select class="Filter_Tags" onchange="location = this.value;"{#id="task-parent" name="parent_task" class="form-control"#}>
               <option value="?status=all">Todos</option>
@@ -62,50 +100,182 @@
 
 
   {% block show_entries %}
-    <!--Block Show Entries-->
-    {% embed 'twig/tarefas/show_entries.html.twig' %}
-    {% endembed %}
-    <!--end Block Show Entries-->
+	    <!--Block Show Entries-->
+	    {% embed 'twig/tarefas/show_entries.html.twig' %}
+	    {% endembed %}
+	    <!--end Block Show Entries-->
   {% endblock %}
 
 
   {% block modals %}
  
      {{ parent() }}
-      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">New message</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <form>
-                <div class="form-group">
-                  <label for="recipient-name" class="col-form-label">Recipient:</label>
-                  <input type="text" class="form-control" id="recipient-name">
-                </div>
-                <div class="form-group">
-                  <label for="message-text" class="col-form-label">Message:</label>
-                  <textarea class="form-control" id="message-text"></textarea>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Send message</button>
-            </div>
-          </div>
-        </div>
-      </div>
+			<div class="modal fade" id="editTarefaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
+			  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+				      	<div >
+				      		<h5 class="modal-title" id="exampleModalLabel">Editar</h5>
+							<span class="small">#<span id="modal-task-id">00</span> - Criado em  <span id="modal-task-createdAt"></span></span>
+						</div>
+							<div class="Work-actions w-25 mt-5 mx-5 align-self-end d-inline-flex">
+								<button type="button" class="btn btn-success mr-2 px-5">00:20</button> 
+								<button type="button" class="btn btn-primary px-5">Encerrar</button> 
+								</div>
 
-      <div class="modal fade" id="novaTarefa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+				          <span aria-hidden="true">&times;</span>
+				        </button>
+			      </div>
+			      <div class="modal-body p-0">
+				      	{#
+				        <form>
+				          <div class="form-group row px-4">
+				            <label for="tarefa-title " class="col-form-label">Titulo:</label>
+				            <input type="text" class="form-control" id="tarefa-title">
+				          </div>
+				          <div class="form-group ">
+				            <textarea class="form-control" id="tarefa-detalhes"></textarea>
+				          </div>
+				        </form>
+				        #}
+				        <section class="Detalhes-2 Task_bg_gray_e Task_h-10 row d-flex  mx-0">
+					        	<div class="col-6 border-right rounded">	
+					        		<div class="h-25 row align-items-center">
+					        			<span class="col-3 small text-black-50 font-weight-bold">Status: </span>
+					        			<span class="col-9 " id="modal-task-status"><a class="edit">Em Execução</a></span>
+					        		</div>
+					        		<div class="h-25 row align-items-center">
+					        			<span class="col-3 small text-black-50 font-weight-bold">Tipo: </span>
+					        			<span id="modal-task-TipoTarefa"  class="col-9 ">Tipo de Tarefa</span>
+					        		</div>
+					        		<div class="h-25 row align-items-center">
+					        			<span class="col-3 small text-black-50 font-weight-bold">Cliente > Projeto: </span>
+					        			<span id="modal-task-Info" class="col-9 ">Cliente > <span id="modal-task-Projeto" >Projeto</span></span>
+					        		</div>
+					        		<div class="h-25 row align-items-center">
+					        			<span class="col-3 small text-black-50 font-weight-bold">Tags: </span>
+					        			<span class="col-9 " id="modal-task-tags"><a class="edit">Nenhuma</a></span>
+
+					        				<!--<a tabindex="0" class="btn btn-sm btn-danger" role="button" data-toggle="popover" title="Popover title" data-template="<div class='popover' role='tooltip'><div class='arrow'></div><h3 class='popover-header'></h3><input class='popover-body '/><div class='popover-bosdy'>abc</div>abc</div>">Nenhuma</a>-->
+					        			<div id="myForm" class="hide" hidden>
+												    <form action="/echo/html/" id="popForm" method="get">
+												        <div>
+												            <label for="name">Name:</label>
+												            <input type="text" name="name" id="name" class="form-control input-md">
+												        </div>
+												    </form>
+												</div>
+					        		</div>
+					        	</div>
+					        	<div class="col-2 border-right rounded ">
+					        		<div class="row align-items-center mx-0 my-2 d-block">
+					        			<span class="small text-black-50 d-block font-weight-bold">Esforço Total: </span>
+					        			<span id="modal-task-esforcoestimado" class="d-block font-weight-bold">08:00</span>
+					        		</div>
+					        		<div class="row align-items-center mx-0 my-2 d-block">
+					        			<span class="small text-black-50 d-block font-weight-bold">Total Trabalhado: </span>
+					        			<span class="d-block font-weight-bold">08:00</span>
+					        		</div>
+
+					        		<div class="row align-items-center mx-0 my-2 d-block">
+					        			<span class="small text-black-50 d-block">Progresso: </span>
+					        			<div class="progress bg-white my-1" style="height: 5px;">
+												  <div id="modal-task-percentual" class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25"  aria-valuemin="0" aria-valuemax="100"></div>
+												</div>
+					        		</div>
+					        	</div>
+					        	<div class="col-2 border-right rounded">
+
+					        		<div class="row align-items-center mx-0 my-2 d-block">
+					        			<span class="small text-black-50 d-block">Inicio: </span>
+					        			<span class="d-block font-weight-bold">30 JAN</span>
+					        		</div>
+					        	</div>
+					        	<div class="col-2 rounded">
+
+					        		<div class="row align-items-center mx-0 my-2 d-block">
+					        			<span class="small text-black-50 d-block">Data de Entrega: </span>
+					        			<span class="d-block font-weight-bold">10 FEV</span>
+					        		</div>
+					        	</div>
+
+				        </section>
+
+				        <section class="Task_h-10 row d-block  mx-0 m-3">
+				        	<h6>Descrição</h6>
+				        	<textarea id="modal-task-detalhes" class="d-block h-75 w-100 border-0" readonly>Detalhasdes </textarea>
+				        </section>
+
+				        <section class="Task_h-10 row d-block  mx-0 m-3">
+									<div id="exTab3" class="container">	
+										<ul class="nav nav-tabs" id="myTab" role="tablist">
+										  <li class="nav-item">
+										    <a class="nav-link active" id="comentarios-tab" data-toggle="tab" href="#comentarios" role="tab" aria-controls="comentarios" aria-selected="true">Comentarios</a>
+										  </li>
+										  <li class="nav-item">
+										    <a class="nav-link" id="anexos-tab" data-toggle="tab" href="#anexos" role="tab" aria-controls="anexos" aria-selected="false">Anexos</a>
+										  </li>
+										  <li class="nav-item">
+										    <a class="nav-link" id="checklist-tab" data-toggle="tab" href="#checklist" role="tab" aria-controls="checklist" aria-selected="false">Checklist</a>
+										  </li>
+										</ul>
+										<div class="tab-content" id="myTabContent">
+										  <div class="tab-pane fade show active" id="Comentarios" role="tabpanel" aria-labelledby="Comentarios-tab">Comentarios</div>
+										  <div class="tab-pane fade" id="anexos" role="tabpanel" aria-labelledby="anexos-tab">Anexos abcd</div>
+										  <div class="tab-pane fade" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">Checklist</div>
+										</div>
+									</div>
+				        </section>
+
+			      </div>
+			      <div class="modal-footer">
+				        <button type="button" class="option1 " href="#editTarefaDetalhesModal"  data-toggle="modal"  aria-label="Detalhes">
+				          <i class="fas fa-info-circle"></i>
+				        </button>
+				        <a id="editID" type="button" class="btn edit1 " href="{{ path('tarefas/{id}', {id:0})}}">
+				          <i class="fas fa-info-circle"></i>
+				        </a>
+				        <button type="button" class="option1 mr-auto" href="#editTarefaDetalhesModal"  data-toggle="modal"  aria-label="Detalhes">
+				          <i class="fas fa-calendar-alt"></i>
+				        </button>
+				        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+				        <button type="button" class="btn btn-primary">Enviar</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+		  <div class="modal fade" id="editTarefaDetalhesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="false">
+			  <div class="modal-dialog modal-dialog-centered modal-msd" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="exampleModalLabel">Nova mensagem</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body">
+			        <form>
+			        </form>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="option1 " data-dismiss="modal" aria-label="Detalhes">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+			        <button type="button" class="btn btn-primary">Enviar</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+			
+
+      <div class="modal fade" id="novaTarefaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
           <div class="modal-content">
           
-            <form  method="POST" id="createForm" action="{{ path('create_tarefa') }}">
             <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLabel">Criar uma Tarefa</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -113,39 +283,28 @@
               </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                  <label for="task-title" class="col-form-label">Titulo da tarefa:</label>
-                  <input type="text" class="form-control" id="task-title" name="titulo">
-                </div>
-                <div class="form-group">
-                  <label for="task-description" class="col-form-label">Descrição:</label>
-                  <textarea class="form-control" id="task-description" name="detalhes"></textarea>
-                </div>
-                <div class="form-group">
-                  <label for="task-status" class="col-form-label">Status:</label>
-                  <!--<input type="text"  class="form-control" id="message-text">{#{ entry.status }#}</input>-->
-                  <select class="form-control" name="status" id="task-status">
-                  
-                            {% for status_entry in status_entries %}
-                                {% set selected = '' %}
-                                {#{% if status_entry.status  == entry.status %}
-                                {% set selected = 'selected' %}
-                                {% endif %}#}
-                                        <option {{ selected }}>{{ status_entry }}</option>
-                            {% endfor %}
-                  </select>
-                </div>
+
+            	{{ form_start(createForm) }}
+            		{{ form_row(createForm.codigo) }}
+            		{{ form_row(createForm.titulo) }}
+            		{{ form_row(createForm.tipo_tarefa_id) }}
+            		{{ form_row(createForm.project_id) }}
+            		{{ form_row(createForm.detalhes) }}
+            		{{ form_row(createForm.cli_id, {vars:{hidden:""} }) }}
+            		{{ form_row(createForm.rank) }}
+            		{{ form_row(createForm.parent_task, {vars:{hidden:""} }) }}
+            		{{ form_row(createForm.data) }}
+            		{{ form_row(createForm.status) }}
+            	{#{ form_widget(createForm) }#}
+            	{#<form  method="POST" id="createForm" action="{{ path('create_tarefa') }}">#}
                 
-                <div class="form-group">
-                  <label for="task-cli" class="col-form-label">Cliente:</label>
-                  <input type="text" class="form-control" id="task-cli" name="titulo">
-                </div>
+            	{{ form_end(createForm) }}
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-              <button type="submit" class="btn btn-primary" id="createSubmit">Salvar</button>
+              <button type="button" class="btn btn-secondary" id="createSaveButton">Salvar</button>
+              <button type="button" class="btn btn-primary" id="createAndAddButton">Salvar e Criar outra</button>
             </div>
-            </form>
             
           </div>
         </div>
@@ -159,7 +318,7 @@
       <script src="{{ asset('plugins/summernote/dist/summernote.min.js') }}"></script>
       <script src="{{ asset('plugins/summernote/dist/summernote-init.js') }}"></script>
 
-
+	  {#% include 'twig/tarefas/tarefa_react.jsx'  %#}
       <!-- Toastr -->
       <script src="{{ asset('plugins/toastr/js/toastr.min.js') }}"></script>
       <script src="{{ asset('plugins/toastr/js/toastr.init.js') }}"></script>
@@ -185,6 +344,36 @@
       {#{ block('js', 'twig/Tarefas/task.html.twig') }#}
    {% endblock %}
 
+	{% block javascripts_begin %}
+	      {{ parent() }}
+		<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">-->
+		<script type="text/javascript" src="{{ asset('includes/bootstrap/js/bootstrap.min.js') }}"></script>
+		<script type="text/javascript" src="{{ asset('includes/jquery/jquery.min.js') }}"></script>
+		<link rel="stylesheet" type="text/css" href="{{ asset('includes/bootstrap/css/bootstrap.min.css') }}">
+
+
+		{% set env = false ? "production.min" : "development" %}
+  		
+      	<script src="https://unpkg.com/react@16/umd/react.{{env}}.js" ></script>
+  		<script src="https://unpkg.com/react-dom@16/umd/react-dom.{{env}}.js" ></script>
+		<!--
+
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react.js" crossorigin></script>
+  		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.js" crossorigin></script>
+  		-->
+    
+  		<script src="https://unpkg.com/babel-core@5.8.38/browser.min.js"></script>
+
+ 
+		<!-- Adicione nosso componente React. -->
+		  <!--<script src="{{ asset('js/like_button.js') }}"></script>-->
+
+		  <script type="text/babel" src="{{ asset('js/tarefa_react.js') }}" ></script>
+		
+	{% endblock %}
 
   {% block table_row_column %}
     <!-- table_row_Column -->

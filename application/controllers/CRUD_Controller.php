@@ -39,12 +39,13 @@ abstract class CRUD_Controller extends base_controller {
 		->build();
 	}
 
-	protected function getCreateForm($data)
+	protected function getCreateForm($data, $entry = [])
 	{
 		log_message('debug', __METHOD__);
 		log_message('debug', $data);
 
-		return $this->form($this->getName()+"/create", $data["entry"])
+		$entry = $entry ?: $data["entry"];
+		return $this->form($this->getName()+"/create", $entry)
 			->submit("btn-submit", "Salvar")
 			->build();
 	}
@@ -59,9 +60,34 @@ abstract class CRUD_Controller extends base_controller {
 		return;
 	*/		
 
-	public function edit($id) {
+	protected function getEditVersion($version)
+	{
+		return 'twig/default/edit.html.twig';	
+	}
+	protected function editResult($data, $model, $datatype)
+	{
+		$file = $this->getEditVersion($model);
+		log_message('info', "Carregando Pagina $file");
+		log_message('debug', $data);
+		if($model == "json" || $datatype == "json")
+		{
+			return $this->json($data["entry"]);
+		}
+		$this->twig->display($file, $data);
+	}
+
+	protected function json($data)
+	{
+		echo json_encode($data);
+		return;
+	}
+
+	public function edit($id, $model = "default") {
 		log_message('info', __METHOD__);
 		log_message('info', $id);
+		log_message('info', $model);
+
+		$datatype = $this->input->get('datatype') ?: "html";
 		
 		
 		log_message('info', 'Metodo Edit');
@@ -102,7 +128,7 @@ abstract class CRUD_Controller extends base_controller {
 
 		log_message('info', "Montando Formulario");
 		$form = $this->getEditForm($data);
-		if($this->isPost()) 
+		if( $model !== "Version3" && $this->isPost()) 
 		{
 			log_message('debug', "isPost");
 			$form = $this->handleRequest($this, $form);
@@ -117,22 +143,23 @@ abstract class CRUD_Controller extends base_controller {
 		log_message('debug', "get");
 		log_message('debug', $form);
 		$data['form'] = $form;
-		$file = 'twig/default/edit.html.twig';
-		log_message('info', "Carregando Pagina $file");
-		log_message('debug', $data);
-		$this->twig->display($file, $data);
+		$this->editResult($data, $model, $datatype);
 	}
 	
 	protected function createDefaultEntry()
 	{
 		return [];
 	}
+	public function getCustom($type, $entry)
+	{
+		return $entry;
+	}
 
 	public function create() {
 		log_message('info', 'Create Controller.'); 
 
 		$note = $this->createDefaultEntry();
-		
+
 
 		$this->loadModel();
 		$data['entry'] = $note;
@@ -141,18 +168,24 @@ abstract class CRUD_Controller extends base_controller {
 
 		if($this->isPost()) 
 		{
+			log_message('debug', 'isPost'); 
+			log_message('debug', "datatype = ".$this->input->get('datatype')); 
+
 			$this->loadModel();
 			$form = $this->handleRequest($this, $form);
 			$data = $this->getData($this, $form);
 			
 			log_message('debug', json_encode($data));
 			log_message('debug', json_encode($form));
-			$notes = $this->model->insert_entry($data);
+			$entry = $this->model->insert_entry($data, true);
 			$this->load->helper('url');
 			//echo base_url();
-			redirect($this->getName(), 'refresh', 301);
+			if($this->input->get('datatype') == "json") echo json_encode($entry);
+			elseif($this->input->get('datatype') == "Version3") return $this->getCustom("Single", $entry);
+			else	redirect($this->getName(), 'refresh', 301);
 			return;
 		}
+		log_message('debug', 'isGet'); 
 		//$note = $this->model->get_by_id($id);
 			 
 		$data['form'] = $form;
@@ -184,6 +217,7 @@ abstract class CRUD_Controller extends base_controller {
 
 	public function list($filter="") {
 		log_message('info', __METHOD__);
+		$datatype = $this->input->get('datatype') ?: "html";
 
 		//echo $this->input->get('abc');
 		//return;
@@ -224,6 +258,11 @@ abstract class CRUD_Controller extends base_controller {
 		$file = 'twig/default/index.html.twig';
 		log_message('info', "Carregando Pagina $file");
 		log_message('debug', $data);
+
+		if($datatype == "json")
+		{
+			return $this->json($data["entries"]);
+		}
 		$this->twig->display($file, $data);
 	}
 	

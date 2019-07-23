@@ -1,13 +1,30 @@
+function arrayRemove(arr, value) {
+
+   return arr.filter(function(ele){
+       return ele != value;
+   });
+
+}
 class EventEmitter {
 	constructor() {
 		this._events = {};
 	}
+
 	on(evt, listener) {
 		(this._events[evt] || (this._events[evt] = [])).push(listener);
 		return this;
 	}
 	emit(evt, arg) {
 		(this._events[evt] || []).slice().forEach(lsn => lsn(arg));
+	}
+	remove(evt, listener)
+	{
+		//var arr = (this._events[evt] || (this._events[evt] = []));
+
+		this._events[evt] = arrayRemove((this._events[evt] || (this._events[evt] = [])), listener);
+		return this;
+
+
 	}
 }
 

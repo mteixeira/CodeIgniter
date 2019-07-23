@@ -24,9 +24,10 @@ class Tipos_Tarefa extends CRUD_Controller {
 		];
 	}
 
-	protected function getCreateForm($data)
+	protected function getCreateForm($data, $entry = [])
 	{
-		return $this->form("", $data["entry"])
+		$entry = $entry ?: $data["entry"];
+		return $this->form("", $entry)
 		->input("nome"		, "nome"		, "task-nome"		, "text"			, "Nome"		)
 		->input("color"		, "color"		, "task-color"		, "text"			, "Cor"		)
 		->input("esforco_estimado"	, "esforco_estimado"		, "task-esforco"		, "time"			, "Esforco Estimado"		)

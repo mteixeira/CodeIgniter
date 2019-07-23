@@ -21,9 +21,10 @@ class Projetos extends CRUD_Controller {
 		];
 	}
 
-	protected function getCreateForm($data)
+	protected function getCreateForm($data, $entry = [])
 	{
-		return $this->form("", $data["entry"])
+		$entry = $entry ?: $data["entry"];
+		return $this->form("", $entry)
 		->input("title"		, "title"		, "project-title"		, "text"			, "Titulo"		)
 		->textarea("description"		, "description"		, "project-description"		, ""			, "Detalhes"		)
 		->submit("btn-submit", "Salvar")

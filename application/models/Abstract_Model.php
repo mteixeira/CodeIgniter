@@ -24,12 +24,21 @@ abstract class Abstract_model extends CI_Model {
 	}
 	
 	public function get_by($field, $value) {
+		log_message('debug', __METHOD__);
+		log_message('debug', $field);
+		log_message('debug', $value);
 		if($value != FALSE) {
+			log_message('debug', "not false");
 			$query = $this->db->get_where($this->getDatabase(), array($field => $value));
 			log_message('debug', json_encode($query));
-			return $query->row_array();
+			$rowArray = $query->row_array();
+			log_message('debug', "Consulta realizada");
+			log_message('debug', json_encode($rowArray));
+			
+			return $rowArray;
 		}
 		else {
+			log_message('debug', "false");
 			return FALSE;
 		}
 	}
@@ -72,11 +81,22 @@ abstract class Abstract_model extends CI_Model {
 		}
 	}
 	
-	public function get_entries($condition = [], $order_by = []) {
+	public function get_entries($condition = [], $order_by = [], $like = []) {
 		//"parent_task" => null
 		log_message('debug', __METHOD__);
 		log_message('debug', $condition);
 		log_message('debug', $order_by);
+
+		foreach($like as $a => $b)
+		{
+			$this->db->like($a, $b);
+		}
+		
+		foreach($order_by as $a => $b)
+		{
+			$this->db->order_by($a, $b);
+		}
+		
 		$query = $this->db->get_where($this->getDatabase(), $condition);
 		$res = $query->result();
 		log_message('debug', $res);
@@ -119,11 +139,21 @@ abstract class Abstract_model extends CI_Model {
 		return $res;
 
 	}
-	public function get_entries_array($condition = [], $order_by = []) {
+	public function get_entries_array($condition = [], $order_by = [], $like = []) {
 		//"parent_task" => null
 		log_message('debug', __METHOD__);
 		log_message('debug', $condition);
 		log_message('debug', $order_by);
+
+		foreach($like as $a => $b)
+		{
+			$this->db->like($a, $b);
+		}
+
+		foreach($order_by as $a => $b)
+		{
+			$this->db->order_by($a, $b);
+		}
 		$query = $this->db->get_where($this->getDatabase(), $condition);
 		$res = $query->result_array();
 		log_message('debug', $res);
@@ -143,15 +173,22 @@ abstract class Abstract_model extends CI_Model {
 
 	
 	
-	public function insert_entry($data)	{
+	public function insert_entry($data, $lastEntry = false)	{
 		
 		log_message('debug', __METHOD__);
 		log_message('debug', $data);
 		$this->setFields($data); // please read the below note
 		$data = $this->preInsert($data); // please read the below note
 		
-
-        return $this->db->insert($this->getDatabase(), $data);
+		$res = $this->db->insert($this->getDatabase(), $data);
+        if($lastEntry)
+        {
+        	if($res) return $this->get_by_id($this->db->insert_id());
+        	else return [];
+        } 
+        else {
+        	return $res;
+        }
 	}
 		
 	public function update_entry($uuid, $data)	{
@@ -172,6 +209,18 @@ abstract class Abstract_model extends CI_Model {
 		log_message('debug', $res);
 		return $res;
 		
+	}
+
+	public function update_entries($condition = [], $data, $useData=false){
+		log_message('debug', __METHOD__);
+		log_message('debug', $condition);
+		log_message('debug', $data);
+		$updateData = $this;
+		if($useData) $updateData = $data;
+        if(!$useData) $this->setFields($data); // please read the below note
+		$res = $this->db->update($this->getDatabase(), $updateData, $condition);
+		log_message('debug', $res);
+		return $res;
 	}
 }
 ?>
